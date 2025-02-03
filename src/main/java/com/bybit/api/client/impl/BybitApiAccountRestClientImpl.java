@@ -1,5 +1,6 @@
 package com.bybit.api.client.impl;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.account.request.BatchSetCollateralCoinRequest;
 import com.bybit.api.client.restApi.BybitApiAccountRestClient;
 import com.bybit.api.client.restApi.BybitApiService;
@@ -18,7 +19,7 @@ public class BybitApiAccountRestClientImpl implements BybitApiAccountRestClient 
     }
     // Account endpoints
     @Override
-    public Object getWalletBalance(AccountDataRequest walletBalanceRequest) {
+    public GenericResponse<?> getWalletBalance(AccountDataRequest walletBalanceRequest) {
         return executeSync(bybitApiService.getWalletBalance(
                 walletBalanceRequest.getAccountType() == null ? null : walletBalanceRequest.getAccountType().getAccountTypeValue(),
                 walletBalanceRequest.getCoins()
@@ -26,12 +27,12 @@ public class BybitApiAccountRestClientImpl implements BybitApiAccountRestClient 
     }
 
     @Override
-    public Object upgradeAccountToUTA() {
+    public GenericResponse<?> upgradeAccountToUTA() {
         return executeSync(bybitApiService.upgradeAccountToUTA());
     }
 
     @Override
-    public Object getAccountBorrowHistory(AccountDataRequest borrowHistoryRequest) {
+    public GenericResponse<?> getAccountBorrowHistory(AccountDataRequest borrowHistoryRequest) {
         return executeSync(bybitApiService.getAccountBorrowHistory(
                 borrowHistoryRequest.getCurrency(),
                 borrowHistoryRequest.getStartTime(),
@@ -42,30 +43,30 @@ public class BybitApiAccountRestClientImpl implements BybitApiAccountRestClient 
     }
 
     @Override
-    public Object setAccountCollateralCoin(AccountDataRequest setCollateralCoinRequest) {
+    public GenericResponse<?> setAccountCollateralCoin(AccountDataRequest setCollateralCoinRequest) {
         var request = converter.mapToSetCollateralCoinRequest(setCollateralCoinRequest);
         return executeSync(bybitApiService.setAccountCollateralCoin(request));
     }
 
     @Override
-    public Object batchSetAccountCollateralCoin(BatchSetCollateralCoinRequest batchSetCollateralCoinRequest) {
+    public GenericResponse<?> batchSetAccountCollateralCoin(BatchSetCollateralCoinRequest batchSetCollateralCoinRequest) {
         return executeSync(bybitApiService.batchSetAccountCollateralCoin(batchSetCollateralCoinRequest));
     }
 
     @Override
-    public Object getAccountCollateralInfo(AccountDataRequest request) {
+    public GenericResponse<?> getAccountCollateralInfo(AccountDataRequest request) {
         return executeSync((bybitApiService.getAccountCollateralInfo(
                 request.getCurrency()
         )));
     }
 
     @Override
-    public Object getAccountCoinGeeks(AccountDataRequest request) {
+    public GenericResponse<?> getAccountCoinGeeks(AccountDataRequest request) {
         return executeSync((bybitApiService.getAccountCoinGeeks(request.getBaseCoin())));
     }
 
     @Override
-    public Object getAccountFreeRate(AccountDataRequest getFeeRateRequest) {
+    public GenericResponse<?> getAccountFreeRate(AccountDataRequest getFeeRateRequest) {
         return executeSync(bybitApiService.getAccountFreeRate(
                 getFeeRateRequest.getCategory().getCategoryTypeId(),
                 getFeeRateRequest.getSymbol(),
@@ -75,12 +76,12 @@ public class BybitApiAccountRestClientImpl implements BybitApiAccountRestClient 
 
 
     @Override
-    public Object getAccountInfo() {
+    public GenericResponse<?> getAccountInfo() {
         return executeSync(bybitApiService.getAccountInfo());
     }
 
     @Override
-    public Object getTransactionLog(AccountDataRequest getTransactionLogRequest) {
+    public GenericResponse<?> getTransactionLog(AccountDataRequest getTransactionLogRequest) {
         boolean isUta = getTransactionLogRequest.getIsUta() == null || getTransactionLogRequest.getIsUta().isUta();
         if(isUta)
             return executeSync(bybitApiService.getUtaTransactionLog(
@@ -110,36 +111,36 @@ public class BybitApiAccountRestClientImpl implements BybitApiAccountRestClient 
 
 
     @Override
-    public Object setAccountMarginMode(AccountDataRequest setMarginMode) {
+    public GenericResponse<?> setAccountMarginMode(AccountDataRequest setMarginMode) {
         var request = converter.mapToSetMarginModeRequest(setMarginMode);
         return executeSync(bybitApiService.setAccountMarginMode(request));
     }
 
     @Override
-    public Object setAccountSpotHedging(AccountDataRequest setSpotHedging) {
+    public GenericResponse<?> setAccountSpotHedging(AccountDataRequest setSpotHedging) {
         var request = converter.mapToSetSpotHedgingModeRequest(setSpotHedging);
         return executeSync(bybitApiService.setAccountSpotHedging(request));
     }
 
     @Override
-    public Object modifyAccountMMP(AccountDataRequest setMMPRequest) {
+    public GenericResponse<?> modifyAccountMMP(AccountDataRequest setMMPRequest) {
         var request = converter.mapToSetMMPRequest(setMMPRequest);
         return executeSync(bybitApiService.modifyAccountMMP(request));
     }
 
     @Override
-    public Object resetAccountMMP(AccountDataRequest request) {
+    public GenericResponse<?> resetAccountMMP(AccountDataRequest request) {
         var resetMMPRequest = converter.mapToResetMarginModeRequest(request);
         return executeSync(bybitApiService.resetAccountMMP(resetMMPRequest));
     }
 
     @Override
-    public Object getAccountMMPState(AccountDataRequest request) {
+    public GenericResponse<?> getAccountMMPState(AccountDataRequest request) {
         return executeSync(bybitApiService.getAccountMMPState(request.getBaseCoin()));
     }
 
     @Override
-    public Object getAccountSMPGroup() {
+    public GenericResponse<?> getAccountSMPGroup() {
         return executeSync(bybitApiService.getAccountSMPGroupId());
     }
 }

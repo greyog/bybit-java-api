@@ -19,7 +19,7 @@ public class BybitApiLoanRestClientImpl implements BybitApiLoanRestClient {
     }
 
     @Override
-    public Object getCollateralCoins(CryptoLoanDataRequest request) {
+    public GenericResponse<?> getCollateralCoins(CryptoLoanDataRequest request) {
         return executeSync(bybitApiService.getCollateralCoins(
                 request.getVipLevel() == null ? null : request.getVipLevel().getLevel(),
                 request.getCurrency()
@@ -27,7 +27,7 @@ public class BybitApiLoanRestClientImpl implements BybitApiLoanRestClient {
     }
 
     @Override
-    public Object getBorrowableCoins(CryptoLoanDataRequest request) {
+    public GenericResponse<?> getBorrowableCoins(CryptoLoanDataRequest request) {
         return executeSync(bybitApiService.getBorrowableCoins(
                 request.getVipLevel() == null ? null : request.getVipLevel().getLevel(),
                 request.getCurrency()
@@ -35,7 +35,7 @@ public class BybitApiLoanRestClientImpl implements BybitApiLoanRestClient {
     }
 
     @Override
-    public Object getAcctMortgageLoanLimit(CryptoLoanDataRequest request) {
+    public GenericResponse<?> getAcctMortgageLoanLimit(CryptoLoanDataRequest request) {
         return executeSync(bybitApiService.getAcctMortgageLoanLimit(
                 request.getLoanCurrency(),
                 request.getCollateralCurrency()
@@ -43,25 +43,25 @@ public class BybitApiLoanRestClientImpl implements BybitApiLoanRestClient {
     }
 
     @Override
-    public Object borrow(CryptoLoanBorrowRequest borrowRequest) {
+    public GenericResponse<?> borrow(CryptoLoanBorrowRequest borrowRequest) {
         var request = converter.mapToCryptoLoanBorrowRequest(borrowRequest);
         return executeSync(bybitApiService.borrow(request));
     }
 
     @Override
-    public Object repay(CryptoLoanRepayRequest repayRequest) {
+    public GenericResponse<?> repay(CryptoLoanRepayRequest repayRequest) {
         var request = converter.mapToCryptoLoanRepayRequest(repayRequest);
         return executeSync(bybitApiService.repay(request));
     }
 
     @Override
-    public Object adjustCollateralAmount(CryptoLoanAdjustLtvRequest adjustLtvRequest) {
+    public GenericResponse<?> adjustCollateralAmount(CryptoLoanAdjustLtvRequest adjustLtvRequest) {
         var request = converter.mapToCryptoLoanAdjustLtvRequest(adjustLtvRequest);
         return executeSync(bybitApiService.adjustCollateralAmount(request));
     }
 
     @Override
-    public Object getUnpaidOrders(CryptoLoanDataRequest request) {
+    public GenericResponse<?> getUnpaidOrders(CryptoLoanDataRequest request) {
         return executeSync(bybitApiService.getUnpaidOrders(
                 request.getOrderId(),
                 request.getLoanCurrency(),
@@ -74,7 +74,7 @@ public class BybitApiLoanRestClientImpl implements BybitApiLoanRestClient {
     }
 
     @Override
-    public Object getCompletedOrders(CryptoLoanDataRequest request) {
+    public GenericResponse<?> getCompletedOrders(CryptoLoanDataRequest request) {
         return executeSync(bybitApiService.getCompletedOrders(
                 request.getOrderId(),
                 request.getCollateralCurrency(),
@@ -85,7 +85,7 @@ public class BybitApiLoanRestClientImpl implements BybitApiLoanRestClient {
     }
 
     @Override
-    public Object getRepayTransactions(CryptoLoanDataRequest request) {
+    public GenericResponse<?> getRepayTransactions(CryptoLoanDataRequest request) {
         return executeSync(bybitApiService.getRepayTransactions(
                 request.getOrderId(),
                 request.getRepayId(),
@@ -96,7 +96,7 @@ public class BybitApiLoanRestClientImpl implements BybitApiLoanRestClient {
     }
 
     @Override
-    public Object getLtvAdjustmentHistory(CryptoLoanDataRequest request) {
+    public GenericResponse<?> getLtvAdjustmentHistory(CryptoLoanDataRequest request) {
         return executeSync(bybitApiService.getLtvAdjustmentHistory(
                 request.getOrderId(),
                 request.getAdjustId(),
@@ -107,7 +107,7 @@ public class BybitApiLoanRestClientImpl implements BybitApiLoanRestClient {
     }
 
     @Override
-    public Object getMaxReduceAmount(CryptoLoanDataRequest request) {
+    public GenericResponse<?> getMaxReduceAmount(CryptoLoanDataRequest request) {
         return executeSync(bybitApiService.getMaxReduceAmount(
                 request.getOrderId()
         ));

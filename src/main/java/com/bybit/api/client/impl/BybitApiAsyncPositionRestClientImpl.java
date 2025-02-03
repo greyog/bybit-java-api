@@ -23,7 +23,7 @@ public class BybitApiAsyncPositionRestClientImpl implements BybitApiAsyncPositio
 
     // Position Data
     @Override
-    public void getPositionInfo(PositionDataRequest positionListRequest, BybitApiCallback<Object> callback) {
+    public void getPositionInfo(PositionDataRequest positionListRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getPositionInfo(
                 positionListRequest.getCategory().getCategoryTypeId(),
                 positionListRequest.getSymbol(),
@@ -35,57 +35,57 @@ public class BybitApiAsyncPositionRestClientImpl implements BybitApiAsyncPositio
     }
 
     @Override
-    public void setPositionLeverage(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void setPositionLeverage(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var setLeverageRequest = converter.mapToSetLeverageRequest(positionDataRequest);
         bybitApiService.setPositionLeverage(setLeverageRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void swithMarginRequest(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void swithMarginRequest(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var switchMarginRequest = converter.mapToSwitchMarginRequest(positionDataRequest);
         bybitApiService.swithMarginRequest(switchMarginRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void switchPositionMode(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void switchPositionMode(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var switchPositionModeRequest = converter.mapToSwitchPositionModeRequest(positionDataRequest);
         bybitApiService.switchPositionMode(switchPositionModeRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
     @Deprecated
-    public void setTpslMode(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void setTpslMode(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var setTpSlModeRequest = converter.mapToSetTpSlModeRequest(positionDataRequest);
         bybitApiService.setTpslMode(setTpSlModeRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
     @Deprecated
-    public void setRiskLimit(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void setRiskLimit(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var setRiskLimitRequest = converter.mapToSetRiskLimitRequest(positionDataRequest);
         bybitApiService.setRiskLimit(setRiskLimitRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void setTradingStop(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void setTradingStop(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var tradingStopRequest = converter.mapToTradingStopRequest(positionDataRequest);
         bybitApiService.setTradingStop(tradingStopRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void setAutoAddMargin(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void setAutoAddMargin(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var setAutoAddMarginRequest = converter.mapToSetAutoAddMarginRequest(positionDataRequest);
         bybitApiService.setAutoAddMargin(setAutoAddMarginRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void modifyPositionMargin(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void modifyPositionMargin(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var modifyMarginRequest = converter.mapToModifyMarginRequest(positionDataRequest);
         bybitApiService.modifyPositionMargin(modifyMarginRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getClosePnlList(PositionDataRequest closePnlHistoryRequest, BybitApiCallback<Object> callback) {
+    public void getClosePnlList(PositionDataRequest closePnlHistoryRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getClosePnlList(
                 closePnlHistoryRequest.getCategory().getCategoryTypeId(),
                 closePnlHistoryRequest.getSymbol(),
@@ -97,7 +97,7 @@ public class BybitApiAsyncPositionRestClientImpl implements BybitApiAsyncPositio
     }
 
     @Override
-    public void getMovePositionHistory(PositionDataRequest movePositionHistoryRequest, BybitApiCallback<Object> callback) {
+    public void getMovePositionHistory(PositionDataRequest movePositionHistoryRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getMovePositionHistory(
                 movePositionHistoryRequest.getCategory().getCategoryTypeId(),
                 movePositionHistoryRequest.getSymbol(),
@@ -111,12 +111,12 @@ public class BybitApiAsyncPositionRestClientImpl implements BybitApiAsyncPositio
     }
 
     @Override
-    public void batchMovePositions(BatchMovePositionRequest batchMovePositionRequest, BybitApiCallback<Object> callback) {
+    public void batchMovePositions(BatchMovePositionRequest batchMovePositionRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.batchMovePositions(batchMovePositionRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void confirmPositionRiskLimit(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void confirmPositionRiskLimit(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var confirmNewRiskLimitRequest = converter.mapToConfirmNewRiskLimitRequest(positionDataRequest);
         bybitApiService.confirmPositionRiskLimit(confirmNewRiskLimitRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }

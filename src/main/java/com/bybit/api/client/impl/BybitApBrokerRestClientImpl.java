@@ -17,7 +17,7 @@ public class BybitApBrokerRestClientImpl implements BybitApiBrokerRestClient {
     }
     // Broker
     @Override
-    public Object getBrokerEarningData(BrokerDataRequest brokerDataRequest) {
+    public GenericResponse<?> getBrokerEarningData(BrokerDataRequest brokerDataRequest) {
         return executeSync(bybitApiService.getBrokerEarningData(
                 brokerDataRequest.getBizType() == null ? null : brokerDataRequest.getBizType().getType(),
                 brokerDataRequest.getStartTime(),
@@ -28,12 +28,12 @@ public class BybitApBrokerRestClientImpl implements BybitApiBrokerRestClient {
     }
 
     @Override
-    public Object getBrokerAccountInfo() {
+    public GenericResponse<?> getBrokerAccountInfo() {
         return executeSync(bybitApiService.getBrokerAccountInfo());
     }
 
     @Override
-    public Object getSubAccountsDeposits(BrokerDataRequest brokerDataRequest) {
+    public GenericResponse<?> getSubAccountsDeposits(BrokerDataRequest brokerDataRequest) {
         return executeSync(bybitApiService.getBrokerSubDeposits(
                 brokerDataRequest.getSubMemberId(),
                 brokerDataRequest.getCoin(),
@@ -45,24 +45,24 @@ public class BybitApBrokerRestClientImpl implements BybitApiBrokerRestClient {
     }
 
     @Override
-    public Object getSubAccountsDeposits() {
+    public GenericResponse<?> getSubAccountsDeposits() {
         return executeSync(bybitApiService.getBrokerSubDeposits());
     }
 
     @Override
-    public Object getVoucherSpec(BrokerDataRequest voucherSpecRequest) {
+    public GenericResponse<?> getVoucherSpec(BrokerDataRequest voucherSpecRequest) {
         var request = converter.mapToBrokerVoucherSpecRequest(voucherSpecRequest);
         return executeSync(bybitApiService.getVoucherSpec(request));
     }
 
     @Override
-    public Object issueVoucher(BrokerDataRequest issueVoucherRequest) {
+    public GenericResponse<?> issueVoucher(BrokerDataRequest issueVoucherRequest) {
         var request = converter.mapToBrokerIssueVoucherRequest(issueVoucherRequest);
         return executeSync(bybitApiService.issueVoucher(request));
     }
 
     @Override
-    public Object getIssuedVoucher(BrokerDataRequest getIssuedVoucherRequest) {
+    public GenericResponse<?> getIssuedVoucher(BrokerDataRequest getIssuedVoucherRequest) {
         var request = converter.mapToBrokerGetIssuedVoucherRequest(getIssuedVoucherRequest);
         return executeSync(bybitApiService.getIssuedVoucher(request));
     }

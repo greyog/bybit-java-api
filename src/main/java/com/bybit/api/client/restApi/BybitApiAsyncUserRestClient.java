@@ -8,27 +8,27 @@ import com.bybit.api.client.domain.user.UserDataRequest;
  */
 public interface BybitApiAsyncUserRestClient {
     // Pre upgrade endpoints
-    void getPreUpgradeOrderHistory(PreUpgradeDataRequest preupgradeOderHistoryRequest, BybitApiCallback<Object> callback);
-    void getPreUpgradeTradeHistory(PreUpgradeDataRequest preUpgradeTradeHistoryRequest, BybitApiCallback<Object> callback);
-    void getPreUpgradeClosePnl(PreUpgradeDataRequest preUpgradeClosePnlRequest, BybitApiCallback<Object> callback);
-    void getPreUpgradeTransaction(PreUpgradeDataRequest preUpgradeTransactionRequest, BybitApiCallback<Object> callback);
-    void getPreUpgradeOptionDelivery(PreUpgradeDataRequest preUpgradeOptionDeliveryRequest, BybitApiCallback<Object> callback);
-    void getPreUpgradeUsdcSettlement(PreUpgradeDataRequest preUpgradeUsdcSettlementRequest, BybitApiCallback<Object> callback);
+    void getPreUpgradeOrderHistory(PreUpgradeDataRequest preupgradeOderHistoryRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getPreUpgradeTradeHistory(PreUpgradeDataRequest preUpgradeTradeHistoryRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getPreUpgradeClosePnl(PreUpgradeDataRequest preUpgradeClosePnlRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getPreUpgradeTransaction(PreUpgradeDataRequest preUpgradeTransactionRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getPreUpgradeOptionDelivery(PreUpgradeDataRequest preUpgradeOptionDeliveryRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getPreUpgradeUsdcSettlement(PreUpgradeDataRequest preUpgradeUsdcSettlementRequest, BybitApiCallback<GenericResponse<?>> callback);
 
     // User Data
-    void createSubMember(UserDataRequest subUserRequest, BybitApiCallback<Object> callback);
-    void createSubAPI(UserDataRequest createApiKeyRequest, BybitApiCallback<Object> callback);
-    void getSubUIDList(BybitApiCallback<Object> callback);
-    void freezeSubMember(UserDataRequest freezeSubUIDRequest, BybitApiCallback<Object> callback);
-    void getCurrentAPIKeyInfo(BybitApiCallback<Object> callback);
-    void getUIDWalletType(UserDataRequest userDataRequest, BybitApiCallback<Object> callback);
-    void modifyMasterApiKey(UserDataRequest userDataRequest, BybitApiCallback<Object> callback);
-    void modifySubApiKey(UserDataRequest userDataRequest, BybitApiCallback<Object> callback);
-    void deleteMasterApiKey(BybitApiCallback<Object> callback);
-    void deleteSubApiKey(UserDataRequest userDataRequest, BybitApiCallback<Object> callback);
-    void getAffiliateUserInfo(UserDataRequest userDataRequest, BybitApiCallback<Object> callback);
+    void createSubMember(UserDataRequest subUserRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void createSubAPI(UserDataRequest createApiKeyRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getSubUIDList(BybitApiCallback<GenericResponse<?>> callback);
+    void freezeSubMember(UserDataRequest freezeSubUIDRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getCurrentAPIKeyInfo(BybitApiCallback<GenericResponse<?>> callback);
+    void getUIDWalletType(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void modifyMasterApiKey(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void modifySubApiKey(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void deleteMasterApiKey(BybitApiCallback<GenericResponse<?>> callback);
+    void deleteSubApiKey(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getAffiliateUserInfo(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback);
 
-    void getSubUIDListUnlimited(UserDataRequest subUserRequest, BybitApiCallback<Object> callback);
-    void getSubUIDListUnlimited(BybitApiCallback<Object> callback);
-    void getSubAccAllAPIKeyInfo(UserDataRequest subUserRequest, BybitApiCallback<Object> callback);
+    void getSubUIDListUnlimited(UserDataRequest subUserRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getSubUIDListUnlimited(BybitApiCallback<GenericResponse<?>> callback);
+    void getSubAccAllAPIKeyInfo(UserDataRequest subUserRequest, BybitApiCallback<GenericResponse<?>> callback);
 }

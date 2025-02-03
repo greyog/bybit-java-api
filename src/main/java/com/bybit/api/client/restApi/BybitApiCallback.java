@@ -10,7 +10,7 @@ public interface BybitApiCallback<T> {
     /**
      * Called whenever a response comes back from the Bybit API.
      *
-     * @param response the expected response object
+     * @param response the expected response GenericResponse<?>
      */
     void onResponse(T response);
 

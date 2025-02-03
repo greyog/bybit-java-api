@@ -26,29 +26,29 @@ public class BybitApiSpotMarginRestClientImpl implements BybitApiSpotMarginRestC
     // Spots
     // Spot Leverage endpoints
     @Override
-    public Object getSpotLeverageTokenInfo(SpotMarginDataRequest spotMarginDataRequest) {
+    public GenericResponse<?> getSpotLeverageTokenInfo(SpotMarginDataRequest spotMarginDataRequest) {
         return executeSync(bybitApiService.getSpotLeverageTokenInfo(spotMarginDataRequest.getLtCoin()));
     }
 
     @Override
-    public Object getSpotLeverageTokenMarket(SpotMarginDataRequest spotMarginDataRequest) {
+    public GenericResponse<?> getSpotLeverageTokenMarket(SpotMarginDataRequest spotMarginDataRequest) {
         return executeSync(bybitApiService.getSpotLeverageTokenMarket(spotMarginDataRequest.getLtCoin()));
     }
 
     @Override
-    public Object purchaseSpotLeverageToken(SpotMarginDataRequest spotMarginDataRequest) {
+    public GenericResponse<?> purchaseSpotLeverageToken(SpotMarginDataRequest spotMarginDataRequest) {
         var spotLeverageTokenRequest = converter.mapToSpotLeverageTokenRequest(spotMarginDataRequest);
         return executeSync(bybitApiService.purchaseSpotLeverageToken(spotLeverageTokenRequest));
     }
 
     @Override
-    public Object redeemSpotLeverageToken(SpotMarginDataRequest spotMarginDataRequest) {
+    public GenericResponse<?> redeemSpotLeverageToken(SpotMarginDataRequest spotMarginDataRequest) {
         var spotLeverageTokenRequest = converter.mapToSpotLeverageTokenRequest(spotMarginDataRequest);
         return executeSync(bybitApiService.redeemSpotLeverageToken(spotLeverageTokenRequest));
     }
 
     @Override
-    public Object getSpotLeverageRecords(SpotMarginDataRequest spotLeverageOrdersRecordRequest) {
+    public GenericResponse<?> getSpotLeverageRecords(SpotMarginDataRequest spotLeverageOrdersRecordRequest) {
         return executeSync(bybitApiService.getSpotLeverageRecords(
                 spotLeverageOrdersRecordRequest.getLtCoin(),
                 spotLeverageOrdersRecordRequest.getOrderId(),
@@ -62,7 +62,7 @@ public class BybitApiSpotMarginRestClientImpl implements BybitApiSpotMarginRestC
 
     // Spot Margin UTA
     @Override
-    public Object getUtaVipSpotMarginTradeData(SpotMarginDataRequest utaMarginDataRequest) {
+    public GenericResponse<?> getUtaVipSpotMarginTradeData(SpotMarginDataRequest utaMarginDataRequest) {
         return executeSync(bybitApiService.getUtaVipSpotMarginTradeData(
                 utaMarginDataRequest.getVipLevel() == null ? null : utaMarginDataRequest.getVipLevel().getLevel(),
                 utaMarginDataRequest.getCurrency())
@@ -70,28 +70,28 @@ public class BybitApiSpotMarginRestClientImpl implements BybitApiSpotMarginRestC
     }
 
     @Override
-    public Object setUTASpotMarginTrade(String mode) {
+    public GenericResponse<?> setUTASpotMarginTrade(String mode) {
         Map<String, String> map = new HashMap<>();
         map.put("spotMarginMode", mode);
         return executeSync(bybitApiService.setUTASpotMarginTrade(map));
     }
 
     @Override
-    public Object setUTASpotMarginTradeLeverage(String leverage) {
+    public GenericResponse<?> setUTASpotMarginTradeLeverage(String leverage) {
         Map<String, String> map = new HashMap<>();
         map.put("leverage", leverage);
         return executeSync(bybitApiService.setUTASpotMarginTradeLeverage(map));
     }
 
     @Override
-    public Object getUTASpotMarginTradeLeverageState() {
+    public GenericResponse<?> getUTASpotMarginTradeLeverageState() {
         return executeSync(bybitApiService.getUTASpotMarginTradeLeverageState());
     }
 
     // Spot Margin Normal
     @Deprecated
     @Override
-    public Object getNormalVipSpotMarginTradeData(SpotMarginDataRequest normalMarginDataRequest) {
+    public GenericResponse<?> getNormalVipSpotMarginTradeData(SpotMarginDataRequest normalMarginDataRequest) {
         return executeSync(bybitApiService.getNormalVipSpotMarginTradeData(
                 normalMarginDataRequest.getVipLevel() == null ? null : normalMarginDataRequest.getVipLevel().getLevel(),
                 normalMarginDataRequest.getCurrency())
@@ -100,52 +100,52 @@ public class BybitApiSpotMarginRestClientImpl implements BybitApiSpotMarginRestC
 
     @Deprecated
     @Override
-    public Object getNormalSpotMarginTradeCoinInfo(SpotMarginDataRequest normalMarginDataRequest) {
+    public GenericResponse<?> getNormalSpotMarginTradeCoinInfo(SpotMarginDataRequest normalMarginDataRequest) {
         return executeSync(bybitApiService.getNormalSpotMarginTradeCoinInfo(normalMarginDataRequest.getCoin()));
     }
 
     @Deprecated
     @Override
-    public Object getNormalSpotMarginTradeBorrowCoinInfo(SpotMarginDataRequest normalMarginDataRequest) {
+    public GenericResponse<?> getNormalSpotMarginTradeBorrowCoinInfo(SpotMarginDataRequest normalMarginDataRequest) {
         return executeSync(bybitApiService.getNormalSpotMarginTradeBorrowCoinInfo(normalMarginDataRequest.getCoin()));
     }
 
     @Deprecated
     @Override
-    public Object getNormalSpotMarginTradeInterestQuota(SpotMarginDataRequest spotMarginDataRequest) {
+    public GenericResponse<?> getNormalSpotMarginTradeInterestQuota(SpotMarginDataRequest spotMarginDataRequest) {
         return executeSync(bybitApiService.getNormalSpotMarginTradeInterestQuota(spotMarginDataRequest.getCoin()));
     }
 
     @Deprecated
     @Override
-    public Object getNormalSpotMarginTradeAccountInfo() {
+    public GenericResponse<?> getNormalSpotMarginTradeAccountInfo() {
         return executeSync(bybitApiService.getNormalSpotMarginTradeAccountInfo());
     }
 
     @Deprecated
     @Override
-    public Object setNormalSpotToggleMarginTrade(SpotMarginDataRequest spotMarginDataRequest) {
+    public GenericResponse<?> setNormalSpotToggleMarginTrade(SpotMarginDataRequest spotMarginDataRequest) {
         int switchStatus = spotMarginDataRequest.getSwitchStatus() == null ? 0 : spotMarginDataRequest.getSwitchStatus().getValue();
         return executeSync(bybitApiService.setNormalSpotToggleMarginTrade(switchStatus));
     }
 
     @Deprecated
     @Override
-    public Object loanNormalSpotMarginTrade(SpotMarginDataRequest spotMarginDataRequest) {
+    public GenericResponse<?> loanNormalSpotMarginTrade(SpotMarginDataRequest spotMarginDataRequest) {
         var spotMarginTradeBorrowRequest = converter.mapToSpotMarginBorrowRequest(spotMarginDataRequest);
         return executeSync(bybitApiService.loanNormalSpotMarginTrade(spotMarginTradeBorrowRequest));
     }
 
     @Deprecated
     @Override
-    public Object repayNormalSpotMarginTrade(SpotMarginDataRequest spotMarginDataRequest) {
+    public GenericResponse<?> repayNormalSpotMarginTrade(SpotMarginDataRequest spotMarginDataRequest) {
         var spotMarginTradeRePayRequest = converter.mapToSpotMarginRepayRequest(spotMarginDataRequest);
         return executeSync(bybitApiService.repayNormalSpotMarginTrade(spotMarginTradeRePayRequest));
     }
 
     @Deprecated
     @Override
-    public Object getNormalSpotMarginTradeBorrowOrders(SpotMarginDataRequest spotMarginTradeBorrowOrdersRequest) {
+    public GenericResponse<?> getNormalSpotMarginTradeBorrowOrders(SpotMarginDataRequest spotMarginTradeBorrowOrdersRequest) {
         return executeSync(bybitApiService.getNormalMarginTradeBorrowOrders(
                 spotMarginTradeBorrowOrdersRequest.getStartTime(),
                 spotMarginTradeBorrowOrdersRequest.getEndTime(),
@@ -157,7 +157,7 @@ public class BybitApiSpotMarginRestClientImpl implements BybitApiSpotMarginRestC
 
     @Deprecated
     @Override
-    public Object getNormalSpotMarginTradeRepayOrders(SpotMarginDataRequest spotMarginTradeRepayOrdersRequest) {
+    public GenericResponse<?> getNormalSpotMarginTradeRepayOrders(SpotMarginDataRequest spotMarginTradeRepayOrdersRequest) {
         return executeSync(bybitApiService.getNormalMarginTradeRepayOrders(
                 spotMarginTradeRepayOrdersRequest.getStartTime(),
                 spotMarginTradeRepayOrdersRequest.getEndTime(),

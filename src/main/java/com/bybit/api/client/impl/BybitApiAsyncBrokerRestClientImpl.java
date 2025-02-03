@@ -16,7 +16,7 @@ public class BybitApiAsyncBrokerRestClientImpl implements BybitApiAsyncBrokerRes
     }
 
     @Override
-    public void getBrokerEarningData(BrokerDataRequest brokerEarningRequest, BybitApiCallback<Object> callback) {
+    public void getBrokerEarningData(BrokerDataRequest brokerEarningRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getBrokerEarningData(
                 brokerEarningRequest.getBizType() == null ? null : brokerEarningRequest.getBizType().getType(),
                 brokerEarningRequest.getStartTime(),
@@ -27,12 +27,12 @@ public class BybitApiAsyncBrokerRestClientImpl implements BybitApiAsyncBrokerRes
     }
 
     @Override
-    public void getBrokerAccountInfo(BybitApiCallback<Object> callback) {
+    public void getBrokerAccountInfo(BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getBrokerAccountInfo().enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getSubAccountsDeposits(BrokerDataRequest brokerDataRequest, BybitApiCallback<Object> callback) {
+    public void getSubAccountsDeposits(BrokerDataRequest brokerDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getBrokerSubDeposits(
                 brokerDataRequest.getSubMemberId(),
                 brokerDataRequest.getCoin(),
@@ -44,24 +44,24 @@ public class BybitApiAsyncBrokerRestClientImpl implements BybitApiAsyncBrokerRes
     }
 
     @Override
-    public void getSubAccountsDeposits(BybitApiCallback<Object> callback) {
+    public void getSubAccountsDeposits(BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getBrokerSubDeposits().enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getVoucherSpec(BrokerDataRequest voucherSpecRequest, BybitApiCallback<Object> callback) {
+    public void getVoucherSpec(BrokerDataRequest voucherSpecRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToBrokerVoucherSpecRequest(voucherSpecRequest);
         bybitApiService.getVoucherSpec(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void issueVoucher(BrokerDataRequest issueVoucherRequest, BybitApiCallback<Object> callback) {
+    public void issueVoucher(BrokerDataRequest issueVoucherRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToBrokerIssueVoucherRequest(issueVoucherRequest);
         bybitApiService.issueVoucher(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getIssuedVoucher(BrokerDataRequest getIssuedVoucherRequest, BybitApiCallback<Object> callback) {
+    public void getIssuedVoucher(BrokerDataRequest getIssuedVoucherRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToBrokerGetIssuedVoucherRequest(getIssuedVoucherRequest);
         bybitApiService.getIssuedVoucher(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }

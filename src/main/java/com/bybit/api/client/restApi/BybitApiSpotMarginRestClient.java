@@ -5,27 +5,27 @@ import com.bybit.api.client.domain.spot.SpotMarginDataRequest;
 public interface BybitApiSpotMarginRestClient {
     // Spot Endpoints
     // Spot Leverage Token
-    Object getSpotLeverageTokenInfo(SpotMarginDataRequest spotMarginDataRequest);
-    Object getSpotLeverageTokenMarket(SpotMarginDataRequest spotMarginDataRequest);
-    Object purchaseSpotLeverageToken(SpotMarginDataRequest spotMarginDataRequest);
-    Object redeemSpotLeverageToken(SpotMarginDataRequest spotMarginDataRequest);
-    Object getSpotLeverageRecords(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getSpotLeverageTokenInfo(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getSpotLeverageTokenMarket(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> purchaseSpotLeverageToken(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> redeemSpotLeverageToken(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getSpotLeverageRecords(SpotMarginDataRequest spotMarginDataRequest);
 
     // Spot Margin UTA
-    Object getUtaVipSpotMarginTradeData(SpotMarginDataRequest spotMarginDataRequest);
-    Object setUTASpotMarginTrade(String mode);
-    Object setUTASpotMarginTradeLeverage(String leverage);
-    Object getUTASpotMarginTradeLeverageState();
+    GenericResponse<?> getUtaVipSpotMarginTradeData(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> setUTASpotMarginTrade(String mode);
+    GenericResponse<?> setUTASpotMarginTradeLeverage(String leverage);
+    GenericResponse<?> getUTASpotMarginTradeLeverageState();
 
     // Spot Margin Normal
-    Object getNormalVipSpotMarginTradeData(SpotMarginDataRequest spotMarginDataRequest);
-    Object getNormalSpotMarginTradeCoinInfo(SpotMarginDataRequest spotMarginDataRequest);
-    Object getNormalSpotMarginTradeBorrowCoinInfo(SpotMarginDataRequest spotMarginDataRequest);
-    Object getNormalSpotMarginTradeInterestQuota(SpotMarginDataRequest spotMarginDataRequest);
-    Object getNormalSpotMarginTradeAccountInfo();
-    Object setNormalSpotToggleMarginTrade(SpotMarginDataRequest spotMarginDataRequest);
-    Object loanNormalSpotMarginTrade(SpotMarginDataRequest spotMarginDataRequest);
-    Object repayNormalSpotMarginTrade(SpotMarginDataRequest spotMarginDataRequest);
-    Object getNormalSpotMarginTradeBorrowOrders(SpotMarginDataRequest spotMarginDataRequest);
-    Object getNormalSpotMarginTradeRepayOrders(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getNormalVipSpotMarginTradeData(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getNormalSpotMarginTradeCoinInfo(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getNormalSpotMarginTradeBorrowCoinInfo(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getNormalSpotMarginTradeInterestQuota(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getNormalSpotMarginTradeAccountInfo();
+    GenericResponse<?> setNormalSpotToggleMarginTrade(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> loanNormalSpotMarginTrade(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> repayNormalSpotMarginTrade(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getNormalSpotMarginTradeBorrowOrders(SpotMarginDataRequest spotMarginDataRequest);
+    GenericResponse<?> getNormalSpotMarginTradeRepayOrders(SpotMarginDataRequest spotMarginDataRequest);
 }

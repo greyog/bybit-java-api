@@ -6,17 +6,17 @@ import com.bybit.api.client.domain.institution.clientLending.ClientLendingOrderR
 
 public interface BybitApiLendingRestClient {
     // Institution Endpoints
-    Object getInsProductInfo(LendingDataRequest lendingDataRequest);
-    Object getInsMarginCoinInfo(LendingDataRequest lendingDataRequest);
-    Object getInsLoanOrders(LendingDataRequest lendingDataRequest);
-    Object getInsRepayOrders(LendingDataRequest lendingDataRequest);
-    Object getInsLoanToValue();
-    Object updateInstitutionLoanUid(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> getInsProductInfo(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> getInsMarginCoinInfo(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> getInsLoanOrders(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> getInsRepayOrders(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> getInsLoanToValue();
+    GenericResponse<?> updateInstitutionLoanUid(LendingDataRequest lendingDataRequest);
     // C2C Endpoints
-/*    Object getC2CLendingCoinInfo(LendingDataRequest lendingDataRequest);
-    Object C2cLendingDepositFunds(LendingDataRequest lendingDataRequest);
-    Object C2cLendingRedeemFunds(LendingDataRequest lendingDataRequest);
-    Object C2cLendingRedeemCancel(LendingDataRequest lendingDataRequest);
-    Object getC2cOrdersRecords(LendingDataRequest lendingDataRequest);
-    Object getC2CLendingAccountInfo(LendingDataRequest lendingDataRequest);*/
+/*    GenericResponse<?> getC2CLendingCoinInfo(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> C2cLendingDepositFunds(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> C2cLendingRedeemFunds(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> C2cLendingRedeemCancel(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> getC2cOrdersRecords(LendingDataRequest lendingDataRequest);
+    GenericResponse<?> getC2CLendingAccountInfo(LendingDataRequest lendingDataRequest);*/
 }

@@ -4,11 +4,11 @@ import com.bybit.api.client.domain.broker.request.BrokerDataRequest;
 
 public interface BybitApiBrokerRestClient {
     // Broker endpoints
-    Object getBrokerEarningData(BrokerDataRequest brokerDataRequest);
-    Object getBrokerAccountInfo();
-    Object getSubAccountsDeposits(BrokerDataRequest brokerDataRequest);
-    Object getSubAccountsDeposits();
-    Object getVoucherSpec(BrokerDataRequest brokerDataRequest);
-    Object issueVoucher(BrokerDataRequest brokerDataRequest);
-    Object getIssuedVoucher(BrokerDataRequest brokerDataRequest);
+    GenericResponse<?> getBrokerEarningData(BrokerDataRequest brokerDataRequest);
+    GenericResponse<?> getBrokerAccountInfo();
+    GenericResponse<?> getSubAccountsDeposits(BrokerDataRequest brokerDataRequest);
+    GenericResponse<?> getSubAccountsDeposits();
+    GenericResponse<?> getVoucherSpec(BrokerDataRequest brokerDataRequest);
+    GenericResponse<?> issueVoucher(BrokerDataRequest brokerDataRequest);
+    GenericResponse<?> getIssuedVoucher(BrokerDataRequest brokerDataRequest);
 }

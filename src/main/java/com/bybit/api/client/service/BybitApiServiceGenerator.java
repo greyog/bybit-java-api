@@ -1,5 +1,6 @@
 package com.bybit.api.client.service;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.restApi.BybitApiService;
 import com.bybit.api.client.exception.BybitApiError;
 import com.bybit.api.client.exception.BybitApiException;
@@ -88,11 +89,11 @@ public class BybitApiServiceGenerator {
     /**
      * Execute a REST call and block until the response is received.
      */
-    public static <T> Object executeSync(Call<T> call) {
+    public static <T> GenericResponse<T> executeSync(Call<T> call) {
         try {
             var response = call.execute();
             if (response.isSuccessful()) {
-                return response.body();
+                return new GenericResponse<>();
             } else {
                 BybitApiError apiError = getBybitApiError(response);
                 throw new BybitApiException(apiError);

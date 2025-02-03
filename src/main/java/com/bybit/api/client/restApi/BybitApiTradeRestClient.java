@@ -10,24 +10,24 @@ import java.util.Map;
 public interface BybitApiTradeRestClient {
 
     // Trade
-    Object getOrderHistory(TradeOrderRequest orderHistoryRequest);
-    Object setDisconnectCancelAllTime(TradeOrderRequest setDcpRequest);
-    Object getBorrowQuota(TradeOrderRequest borrowQuotaRequest);
-    Object getOpenOrders(TradeOrderRequest order);
-    Object getTradeHistory(TradeOrderRequest order);
-    Object createOrder(TradeOrderRequest order);
-    Object createOrder(Map<String, Object> payload);
-    Object createOrder(String json) throws IOException;
-    Object createBatchOrder(BatchOrderRequest batchOrderRequest);
-    Object createBathOrder(Map<String, Object> payload);
-    Object createBathOrder(String json) throws IOException;
-    Object amendBatchOrder(BatchOrderRequest batchOrderRequest);
-    Object amendBatchOrder(Map<String, Object> payload);
-    Object amendBatchOrder(String json) throws IOException;
-    Object cancelBatchOrder(BatchOrderRequest batchOrderRequest);
-    Object cancelBatchOrder(Map<String, Object> payload);
-    Object cancelBatchOrder(String json) throws IOException;
-    Object cancelOrder(TradeOrderRequest order);
-    Object cancelAllOrder(TradeOrderRequest order);
-    Object amendOrder(TradeOrderRequest order);
+    GenericResponse<?> getOrderHistory(TradeOrderRequest orderHistoryRequest);
+    GenericResponse<?> setDisconnectCancelAllTime(TradeOrderRequest setDcpRequest);
+    GenericResponse<?> getBorrowQuota(TradeOrderRequest borrowQuotaRequest);
+    GenericResponse<?> getOpenOrders(TradeOrderRequest order);
+    GenericResponse<?> getTradeHistory(TradeOrderRequest order);
+    GenericResponse<?> createOrder(TradeOrderRequest order);
+    GenericResponse<?> createOrder(Map<String, GenericResponse<?>> payload);
+    GenericResponse<?> createOrder(String json) throws IOException;
+    GenericResponse<?> createBatchOrder(BatchOrderRequest batchOrderRequest);
+    GenericResponse<?> createBathOrder(Map<String, GenericResponse<?>> payload);
+    GenericResponse<?> createBathOrder(String json) throws IOException;
+    GenericResponse<?> amendBatchOrder(BatchOrderRequest batchOrderRequest);
+    GenericResponse<?> amendBatchOrder(Map<String, GenericResponse<?>> payload);
+    GenericResponse<?> amendBatchOrder(String json) throws IOException;
+    GenericResponse<?> cancelBatchOrder(BatchOrderRequest batchOrderRequest);
+    GenericResponse<?> cancelBatchOrder(Map<String, GenericResponse<?>> payload);
+    GenericResponse<?> cancelBatchOrder(String json) throws IOException;
+    GenericResponse<?> cancelOrder(TradeOrderRequest order);
+    GenericResponse<?> cancelAllOrder(TradeOrderRequest order);
+    GenericResponse<?> amendOrder(TradeOrderRequest order);
 }

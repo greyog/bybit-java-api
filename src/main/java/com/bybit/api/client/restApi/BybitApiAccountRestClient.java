@@ -1,24 +1,25 @@
 package com.bybit.api.client.restApi;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
 import com.bybit.api.client.domain.account.request.BatchSetCollateralCoinRequest;
 
 public interface BybitApiAccountRestClient {
     // Account endpoints
-    Object getWalletBalance(AccountDataRequest walletBalanceRequest);
-    Object upgradeAccountToUTA();
-    Object getAccountBorrowHistory(AccountDataRequest borrowHistoryRequest);
-    Object setAccountCollateralCoin(AccountDataRequest setCollateralCoinRequest);
-    Object batchSetAccountCollateralCoin(BatchSetCollateralCoinRequest batchSetCollateralCoinRequest);
-    Object getAccountCollateralInfo(AccountDataRequest request);
-    Object getAccountCoinGeeks(AccountDataRequest request);
-    Object getAccountFreeRate(AccountDataRequest getFeeRateRequest);
-    Object getAccountInfo();
-    Object getTransactionLog(AccountDataRequest getTransactionLogRequest);
-    Object setAccountMarginMode(AccountDataRequest request);
-    Object setAccountSpotHedging(AccountDataRequest request);
-    Object modifyAccountMMP(AccountDataRequest setMMPRequest);
-    Object resetAccountMMP(AccountDataRequest request);
-    Object getAccountMMPState(AccountDataRequest request);
-    Object getAccountSMPGroup();
+    GenericResponse<?> getWalletBalance(AccountDataRequest walletBalanceRequest);
+    GenericResponse<?> upgradeAccountToUTA();
+    GenericResponse<?> getAccountBorrowHistory(AccountDataRequest borrowHistoryRequest);
+    GenericResponse<?> setAccountCollateralCoin(AccountDataRequest setCollateralCoinRequest);
+    GenericResponse<?> batchSetAccountCollateralCoin(BatchSetCollateralCoinRequest batchSetCollateralCoinRequest);
+    GenericResponse<?> getAccountCollateralInfo(AccountDataRequest request);
+    GenericResponse<?> getAccountCoinGeeks(AccountDataRequest request);
+    GenericResponse<?> getAccountFreeRate(AccountDataRequest getFeeRateRequest);
+    GenericResponse<?> getAccountInfo();
+    GenericResponse<?> getTransactionLog(AccountDataRequest getTransactionLogRequest);
+    GenericResponse<?> setAccountMarginMode(AccountDataRequest request);
+    GenericResponse<?> setAccountSpotHedging(AccountDataRequest request);
+    GenericResponse<?> modifyAccountMMP(AccountDataRequest setMMPRequest);
+    GenericResponse<?> resetAccountMMP(AccountDataRequest request);
+    GenericResponse<?> getAccountMMPState(AccountDataRequest request);
+    GenericResponse<?> getAccountSMPGroup();
 }

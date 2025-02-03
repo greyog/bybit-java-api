@@ -5,19 +5,19 @@ import com.bybit.api.client.domain.position.request.PositionDataRequest;
 
 public interface BybitApiPositionRestClient {
     // Position Data
-    Object getPositionInfo(PositionDataRequest positionListRequest);
-    Object setPositionLeverage(PositionDataRequest setLeverageRequest);
-    Object swithMarginRequest(PositionDataRequest switchMarginRequest);
-    Object switchPositionMode(PositionDataRequest switchPositionModeRequest);
+    GenericResponse<?> getPositionInfo(PositionDataRequest positionListRequest);
+    GenericResponse<?> setPositionLeverage(PositionDataRequest setLeverageRequest);
+    GenericResponse<?> swithMarginRequest(PositionDataRequest switchMarginRequest);
+    GenericResponse<?> switchPositionMode(PositionDataRequest switchPositionModeRequest);
     @Deprecated
-    Object setTpslMode(PositionDataRequest setTpSlModeRequest);
+    GenericResponse<?> setTpslMode(PositionDataRequest setTpSlModeRequest);
     @Deprecated
-    Object setRiskLimit(PositionDataRequest setRiskLimitRequest);
-    Object setTradingStop(PositionDataRequest tradingStopRequest);
-    Object setAutoAddMargin(PositionDataRequest setAutoAddMarginRequest);
-    Object modifyPositionMargin(PositionDataRequest modifyMarginRequest);
-    Object getClosePnlList(PositionDataRequest closePnlHistoryRequest);
-    Object getMovePositionHistory(PositionDataRequest movePositionHistoryRequest);
-    Object batchMovePositions(BatchMovePositionRequest batchMovePositionRequest);
-    Object confirmPositionRiskLimit(PositionDataRequest confirmNewRiskLimitRequest);
+    GenericResponse<?> setRiskLimit(PositionDataRequest setRiskLimitRequest);
+    GenericResponse<?> setTradingStop(PositionDataRequest tradingStopRequest);
+    GenericResponse<?> setAutoAddMargin(PositionDataRequest setAutoAddMarginRequest);
+    GenericResponse<?> modifyPositionMargin(PositionDataRequest modifyMarginRequest);
+    GenericResponse<?> getClosePnlList(PositionDataRequest closePnlHistoryRequest);
+    GenericResponse<?> getMovePositionHistory(PositionDataRequest movePositionHistoryRequest);
+    GenericResponse<?> batchMovePositions(BatchMovePositionRequest batchMovePositionRequest);
+    GenericResponse<?> confirmPositionRiskLimit(PositionDataRequest confirmNewRiskLimitRequest);
 }

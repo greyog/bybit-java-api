@@ -5,22 +5,22 @@ import com.bybit.api.client.domain.market.request.MarketDataRequest;
 
 public interface BybitApiMarketRestClient {
     // Market Data
-    Object getServerTime();
-    Object getMarketLinesData(MarketDataRequest marketKlineRequest);
-    Object getMarketPriceLinesData(MarketDataRequest marketKlineRequest);
-    Object getIndexPriceLinesData(MarketDataRequest marketKlineRequest);
-    Object getPremiumIndexPriceLinesData(MarketDataRequest marketKlineRequest);
-    Object getInstrumentsInfo(MarketDataRequest instrumentInfoRequest);
-    Object getMarketOrderBook(MarketDataRequest marketOrderBookRequest);
-    Object getMarketTickers(MarketDataRequest marketDataTickerRequest);
-    Object getFundingHistory(MarketDataRequest fundingHistoryRequest);
-    Object getRecentTradeData(MarketDataRequest recentTradeRequest);
-    Object getOpenInterest(MarketDataRequest openInterestRequest);
-    Object getHistoricalVolatility(MarketDataRequest HistoricalVolatilityRequest);
-    Object getInsurance(MarketDataRequest marketDataRequest);
-    Object getInsurance();
-    Object getRiskLimit(MarketDataRequest marketRiskLimitRequest);
-    Object getDeliveryPrice(MarketDataRequest deliveryPriceRequest);
-    Object getMarketAccountRatio(MarketDataRequest marketAccountRatioRequest);
-    Object getAnnouncementInfo(MarketDataRequest announcementInfoRequest);
+    GenericResponse<?> getServerTime();
+    GenericResponse<?> getMarketLinesData(MarketDataRequest marketKlineRequest);
+    GenericResponse<?> getMarketPriceLinesData(MarketDataRequest marketKlineRequest);
+    GenericResponse<?> getIndexPriceLinesData(MarketDataRequest marketKlineRequest);
+    GenericResponse<?> getPremiumIndexPriceLinesData(MarketDataRequest marketKlineRequest);
+    GenericResponse<?> getInstrumentsInfo(MarketDataRequest instrumentInfoRequest);
+    GenericResponse<?> getMarketOrderBook(MarketDataRequest marketOrderBookRequest);
+    GenericResponse<?> getMarketTickers(MarketDataRequest marketDataTickerRequest);
+    GenericResponse<?> getFundingHistory(MarketDataRequest fundingHistoryRequest);
+    GenericResponse<?> getRecentTradeData(MarketDataRequest recentTradeRequest);
+    GenericResponse<?> getOpenInterest(MarketDataRequest openInterestRequest);
+    GenericResponse<?> getHistoricalVolatility(MarketDataRequest HistoricalVolatilityRequest);
+    GenericResponse<?> getInsurance(MarketDataRequest marketDataRequest);
+    GenericResponse<?> getInsurance();
+    GenericResponse<?> getRiskLimit(MarketDataRequest marketRiskLimitRequest);
+    GenericResponse<?> getDeliveryPrice(MarketDataRequest deliveryPriceRequest);
+    GenericResponse<?> getMarketAccountRatio(MarketDataRequest marketAccountRatioRequest);
+    GenericResponse<?> getAnnouncementInfo(MarketDataRequest announcementInfoRequest);
 }

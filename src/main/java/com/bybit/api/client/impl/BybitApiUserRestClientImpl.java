@@ -25,17 +25,17 @@ public class BybitApiUserRestClientImpl implements BybitApiUserRestClient {
 
     // User endpoints
     @Override
-    public Object getCurrentAPIKeyInfo() {
+    public GenericResponse<?> getCurrentAPIKeyInfo() {
         return executeSync(bybitApiService.getCurrentAPIKeyInfo());
     }
 
     @Override
-    public Object getSubUIDList() {
+    public GenericResponse<?> getSubUIDList() {
         return executeSync(bybitApiService.getSubUIDList());
     }
 
     @Override
-    public Object getSubUIDListUnlimited(UserDataRequest subUserRequest) {
+    public GenericResponse<?> getSubUIDListUnlimited(UserDataRequest subUserRequest) {
         return executeSync(bybitApiService.getSubUIDListUnlimited(
                 subUserRequest.getPageSize(),
                 subUserRequest.getNextCursor()
@@ -43,12 +43,12 @@ public class BybitApiUserRestClientImpl implements BybitApiUserRestClient {
     }
 
     @Override
-    public Object getSubUIDListUnlimited() {
+    public GenericResponse<?> getSubUIDListUnlimited() {
         return executeSync(bybitApiService.getSubUIDListUnlimited());
     }
 
     @Override
-    public Object getSubAccAllAPIKeyInfo(UserDataRequest subUserRequest) {
+    public GenericResponse<?> getSubAccAllAPIKeyInfo(UserDataRequest subUserRequest) {
         return executeSync(bybitApiService.getSubAccAllAPIKeyInfo(
                 subUserRequest.getSubMemberId(),
                 subUserRequest.getLimit(),
@@ -57,59 +57,59 @@ public class BybitApiUserRestClientImpl implements BybitApiUserRestClient {
     }
 
     @Override
-    public Object createSubMember(UserDataRequest request) {
+    public GenericResponse<?> createSubMember(UserDataRequest request) {
         UserSubMemberRequest subUserRequest = converter.mapToCreateSubMemberRequest(request);
         return executeSync(bybitApiService.createSubMember(subUserRequest));
     }
 
     @Override
-    public Object createSubAPI(UserDataRequest request) {
+    public GenericResponse<?> createSubAPI(UserDataRequest request) {
         var createApiKeyRequest = converter.mapToCreateSubApiRequest(request);
         return executeSync(bybitApiService.createSubAPI(createApiKeyRequest));
     }
 
     @Override
-    public Object freezeSubMember(UserDataRequest request) {
+    public GenericResponse<?> freezeSubMember(UserDataRequest request) {
         var freezeSubUIDRquest = converter.mapToFreezeSubApiRequest(request);
         return executeSync(bybitApiService.freezeSubMember(freezeSubUIDRquest));
     }
 
     @Override
-    public Object getUIDWalletType(UserDataRequest request) {
+    public GenericResponse<?> getUIDWalletType(UserDataRequest request) {
         return executeSync(bybitApiService.getUIDWalletType(request.getMemberIds() == null ? null : listToString(request.getMemberIds())));
     }
 
     @Override
-    public Object modifyMasterApiKey(UserDataRequest userDataRequest) {
+    public GenericResponse<?> modifyMasterApiKey(UserDataRequest userDataRequest) {
         var modifyMasterApiKeyRequest = converter.mapToModifyApiKeyRequest(userDataRequest);
         return executeSync(bybitApiService.modifyMasterApiKey(modifyMasterApiKeyRequest));
     }
 
     @Override
-    public Object modifySubApiKey(UserDataRequest userDataRequest) {
+    public GenericResponse<?> modifySubApiKey(UserDataRequest userDataRequest) {
         var modifySubApiKeyRequest = converter.mapToModifyApiKeyRequest(userDataRequest);
         return executeSync(bybitApiService.modifySubApiKey(modifySubApiKeyRequest));
     }
 
     @Override
-    public Object deleteMasterApiKey() {
+    public GenericResponse<?> deleteMasterApiKey() {
         return executeSync(bybitApiService.deleteMasterApiKey());
     }
 
     @Override
-    public Object deleteSubApiKey(UserDataRequest userDataRequest) {
+    public GenericResponse<?> deleteSubApiKey(UserDataRequest userDataRequest) {
         var deleteSubApiKeyRequest = converter.mapToDeleteSubApiKeyRequest(userDataRequest);
         return executeSync(bybitApiService.deleteSubApiKey(deleteSubApiKeyRequest));
     }
 
     @Override
-    public Object getAffiliateUserInfo(UserDataRequest request) {
+    public GenericResponse<?> getAffiliateUserInfo(UserDataRequest request) {
         return executeSync(bybitApiService.getAffiliateUserInfo(request.getUid()));
     }
 
     // Pre upgrade endpoints
     @Override
-    public Object getPreUpgradeClosePnl(PreUpgradeDataRequest request) {
+    public GenericResponse<?> getPreUpgradeClosePnl(PreUpgradeDataRequest request) {
         return executeSync(bybitApiService.getPreUpgradeClosePnl(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -121,7 +121,7 @@ public class BybitApiUserRestClientImpl implements BybitApiUserRestClient {
     }
 
     @Override
-    public Object getPreUpgradeOrderHistory(PreUpgradeDataRequest request) {
+    public GenericResponse<?> getPreUpgradeOrderHistory(PreUpgradeDataRequest request) {
         return executeSync(bybitApiService.getPreUpgradeOrderHistory(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -138,7 +138,7 @@ public class BybitApiUserRestClientImpl implements BybitApiUserRestClient {
     }
 
     @Override
-    public Object getPreUpgradeTradeHistory(PreUpgradeDataRequest request) {
+    public GenericResponse<?> getPreUpgradeTradeHistory(PreUpgradeDataRequest request) {
         return executeSync(bybitApiService.getPreUpgradeTradeHistory(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -154,7 +154,7 @@ public class BybitApiUserRestClientImpl implements BybitApiUserRestClient {
     }
 
     @Override
-    public Object getPreUpgradeTransaction(PreUpgradeDataRequest request) {
+    public GenericResponse<?> getPreUpgradeTransaction(PreUpgradeDataRequest request) {
         return executeSync(bybitApiService.getPreUpgradeTransaction(
                 request.getCategory().getCategoryTypeId(),
                 request.getBaseCoin(),
@@ -167,7 +167,7 @@ public class BybitApiUserRestClientImpl implements BybitApiUserRestClient {
     }
 
     @Override
-    public Object getPreUpgradeOptionDelivery(PreUpgradeDataRequest request) {
+    public GenericResponse<?> getPreUpgradeOptionDelivery(PreUpgradeDataRequest request) {
         return executeSync(bybitApiService.getPreUpgradeOptionDelivery(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -178,7 +178,7 @@ public class BybitApiUserRestClientImpl implements BybitApiUserRestClient {
     }
 
     @Override
-    public Object getPreUpgradeUsdcSettlement(PreUpgradeDataRequest request) {
+    public GenericResponse<?> getPreUpgradeUsdcSettlement(PreUpgradeDataRequest request) {
         return executeSync(bybitApiService.getPreUpgradeUsdcSettlement(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),

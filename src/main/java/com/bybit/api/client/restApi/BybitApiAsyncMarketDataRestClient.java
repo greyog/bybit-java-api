@@ -5,22 +5,22 @@ import com.bybit.api.client.domain.market.request.MarketDataRequest;
 
 public interface BybitApiAsyncMarketDataRestClient {
     // Market endpoints
-    void getServerTime(BybitApiCallback<Object> callback);
-    void getMarketLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);
-    void getMarketPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);
-    void getIndexPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);
-    void getPremiumIndexPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);
-    void getInstrumentsInfo(MarketDataRequest instrumentInfoRequest, BybitApiCallback<Object> callback);
-    void getMarketOrderBook(MarketDataRequest marketOrderBookRequest, BybitApiCallback<Object> callback);
-    void getMarketTickers(MarketDataRequest marketDataTickerRequest, BybitApiCallback<Object> callback);
-    void getFundingHistory(MarketDataRequest fundingHistoryRequest, BybitApiCallback<Object> callback);
-    void getRecentTradeData(MarketDataRequest recentTradeRequest, BybitApiCallback<Object> callback);
-    void getOpenInterest(MarketDataRequest openInterestRequest, BybitApiCallback<Object> callback);
-    void getHistoricalVolatility(MarketDataRequest historicalVolatilityRequest, BybitApiCallback<Object> callback);
-    void getInsurance(MarketDataRequest marketDataRequest, BybitApiCallback<Object> callback);
-    void getInsurance(BybitApiCallback<Object> callback);
-    void getRiskLimit(MarketDataRequest marketRiskLimitRequest, BybitApiCallback<Object> callback);
-    void getDeliveryPrice(MarketDataRequest deliveryPriceRequest, BybitApiCallback<Object> callback);
-    void getMarketAccountRatio(MarketDataRequest marketAccountRatioRequest, BybitApiCallback<Object> callback);
-    void getAnnouncementInfo(MarketDataRequest announcementInfoRequest, BybitApiCallback<Object> callback);
+    void getServerTime(BybitApiCallback<GenericResponse<?>> callback);
+    void getMarketLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getMarketPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getIndexPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getPremiumIndexPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getInstrumentsInfo(MarketDataRequest instrumentInfoRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getMarketOrderBook(MarketDataRequest marketOrderBookRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getMarketTickers(MarketDataRequest marketDataTickerRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getFundingHistory(MarketDataRequest fundingHistoryRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getRecentTradeData(MarketDataRequest recentTradeRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getOpenInterest(MarketDataRequest openInterestRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getHistoricalVolatility(MarketDataRequest historicalVolatilityRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getInsurance(MarketDataRequest marketDataRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getInsurance(BybitApiCallback<GenericResponse<?>> callback);
+    void getRiskLimit(MarketDataRequest marketRiskLimitRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getDeliveryPrice(MarketDataRequest deliveryPriceRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getMarketAccountRatio(MarketDataRequest marketAccountRatioRequest, BybitApiCallback<GenericResponse<?>> callback);
+    void getAnnouncementInfo(MarketDataRequest announcementInfoRequest, BybitApiCallback<GenericResponse<?>> callback);
 }

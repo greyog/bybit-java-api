@@ -5,27 +5,27 @@ import com.bybit.api.client.domain.user.UserDataRequest;
 
 public interface BybitApiUserRestClient {
     // User Data
-    Object createSubMember(UserDataRequest subUserRequest);
-    Object createSubAPI(UserDataRequest createApiKeyRequest);
-    Object getSubUIDList();
-    Object freezeSubMember(UserDataRequest freezeSubUIDRequest);
-    Object getCurrentAPIKeyInfo();
-    Object getUIDWalletType(UserDataRequest userDataRequest);
-    Object modifyMasterApiKey(UserDataRequest userDataRequest);
-    Object modifySubApiKey(UserDataRequest userDataRequest);
-    Object deleteMasterApiKey();
-    Object deleteSubApiKey(UserDataRequest userDataRequest);
-    Object getAffiliateUserInfo(UserDataRequest userDataRequest);
+    GenericResponse<?> createSubMember(UserDataRequest subUserRequest);
+    GenericResponse<?> createSubAPI(UserDataRequest createApiKeyRequest);
+    GenericResponse<?> getSubUIDList();
+    GenericResponse<?> freezeSubMember(UserDataRequest freezeSubUIDRequest);
+    GenericResponse<?> getCurrentAPIKeyInfo();
+    GenericResponse<?> getUIDWalletType(UserDataRequest userDataRequest);
+    GenericResponse<?> modifyMasterApiKey(UserDataRequest userDataRequest);
+    GenericResponse<?> modifySubApiKey(UserDataRequest userDataRequest);
+    GenericResponse<?> deleteMasterApiKey();
+    GenericResponse<?> deleteSubApiKey(UserDataRequest userDataRequest);
+    GenericResponse<?> getAffiliateUserInfo(UserDataRequest userDataRequest);
 
     // Pre Upgrade
-    Object getPreUpgradeOrderHistory(PreUpgradeDataRequest preupgradeOderHistoryRequest);
-    Object getPreUpgradeTradeHistory(PreUpgradeDataRequest preUpgradeTradeHistoryRequest);
-    Object getPreUpgradeClosePnl(PreUpgradeDataRequest preUpgradeClosePnlRequest);
-    Object getPreUpgradeTransaction(PreUpgradeDataRequest preUpgradeTransactionRequest);
-    Object getPreUpgradeOptionDelivery(PreUpgradeDataRequest preUpgradeOptionDeliveryRequest);
-    Object getPreUpgradeUsdcSettlement(PreUpgradeDataRequest preUpgradeUsdcSettlementRequest);
+    GenericResponse<?> getPreUpgradeOrderHistory(PreUpgradeDataRequest preupgradeOderHistoryRequest);
+    GenericResponse<?> getPreUpgradeTradeHistory(PreUpgradeDataRequest preUpgradeTradeHistoryRequest);
+    GenericResponse<?> getPreUpgradeClosePnl(PreUpgradeDataRequest preUpgradeClosePnlRequest);
+    GenericResponse<?> getPreUpgradeTransaction(PreUpgradeDataRequest preUpgradeTransactionRequest);
+    GenericResponse<?> getPreUpgradeOptionDelivery(PreUpgradeDataRequest preUpgradeOptionDeliveryRequest);
+    GenericResponse<?> getPreUpgradeUsdcSettlement(PreUpgradeDataRequest preUpgradeUsdcSettlementRequest);
 
-    Object getSubUIDListUnlimited(UserDataRequest subUserRequest);
-    Object getSubUIDListUnlimited();
-    Object getSubAccAllAPIKeyInfo(UserDataRequest subUserRequest);
+    GenericResponse<?> getSubUIDListUnlimited(UserDataRequest subUserRequest);
+    GenericResponse<?> getSubUIDListUnlimited();
+    GenericResponse<?> getSubAccAllAPIKeyInfo(UserDataRequest subUserRequest);
 }

@@ -17,17 +17,17 @@ public class BybitApiLendingRestClientImpl implements BybitApiLendingRestClient 
     }
     // Institution endpoints
     @Override
-    public Object getInsProductInfo(LendingDataRequest lendingDataRequest) {
+    public GenericResponse<?> getInsProductInfo(LendingDataRequest lendingDataRequest) {
         return executeSync(bybitApiService.getInsProductInfo(lendingDataRequest.getProductId()));
     }
 
     @Override
-    public Object getInsMarginCoinInfo(LendingDataRequest lendingDataRequest) {
+    public GenericResponse<?> getInsMarginCoinInfo(LendingDataRequest lendingDataRequest) {
         return executeSync(bybitApiService.getInsMarginCoinInfo(lendingDataRequest.getProductId()));
     }
 
     @Override
-    public Object getInsLoanOrders(LendingDataRequest institutionLoanOrdersRequest) {
+    public GenericResponse<?> getInsLoanOrders(LendingDataRequest institutionLoanOrdersRequest) {
         return executeSync(bybitApiService.getInsLoanOrders(institutionLoanOrdersRequest.getOrderId(),
                 institutionLoanOrdersRequest.getStartTime(),
                 institutionLoanOrdersRequest.getEndTime(),
@@ -35,49 +35,49 @@ public class BybitApiLendingRestClientImpl implements BybitApiLendingRestClient 
     }
 
     @Override
-    public Object getInsRepayOrders(LendingDataRequest institutionRepayOrdersRequest) {
+    public GenericResponse<?> getInsRepayOrders(LendingDataRequest institutionRepayOrdersRequest) {
         return executeSync(bybitApiService.getInsRepayOrders(institutionRepayOrdersRequest.getStartTime(),
                 institutionRepayOrdersRequest.getEndTime(),
                 institutionRepayOrdersRequest.getLimit()));
     }
 
     @Override
-    public Object getInsLoanToValue() {
+    public GenericResponse<?> getInsLoanToValue() {
         return executeSync(bybitApiService.getInsLoanToValue());
     }
 
     @Override
-    public Object updateInstitutionLoanUid(LendingDataRequest lendingDataRequest) {
+    public GenericResponse<?> updateInstitutionLoanUid(LendingDataRequest lendingDataRequest) {
         var updateInstitutionLoanUidRequest = converter.convertToUpdateInsUidRequest(lendingDataRequest);
         return executeSync(bybitApiService.updateInstitutionLoanUid(updateInstitutionLoanUidRequest));
     }
 
     // C2C Endpoints
     /*@Override
-    public Object getC2CLendingCoinInfo(LendingDataRequest lendingDataRequest) {
+    public GenericResponse<?> getC2CLendingCoinInfo(LendingDataRequest lendingDataRequest) {
         return executeSync(bybitApiService.getC2CLendingCoinInfo(lendingDataRequest.getCoin()));
     }
 
     @Override
-    public Object C2cLendingDepositFunds(LendingDataRequest lendingDataRequest) {
+    public GenericResponse<?> C2cLendingDepositFunds(LendingDataRequest lendingDataRequest) {
         var depsoitFundRequest = converter.mapToC2CLendingFundRequest(lendingDataRequest);
         return executeSync(bybitApiService.C2cLendingDepositFunds(depsoitFundRequest));
     }
 
     @Override
-    public Object C2cLendingRedeemFunds(LendingDataRequest lendingDataRequest) {
+    public GenericResponse<?> C2cLendingRedeemFunds(LendingDataRequest lendingDataRequest) {
         var redeemFundRequest = converter.mapToC2CLendingFundRequest(lendingDataRequest);
         return executeSync(bybitApiService.C2cLendingRedeemFunds(redeemFundRequest));
     }
 
     @Override
-    public Object C2cLendingRedeemCancel(LendingDataRequest lendingDataRequest) {
+    public GenericResponse<?> C2cLendingRedeemCancel(LendingDataRequest lendingDataRequest) {
         var redeemFundCancelRequest = converter.mapToC2CLendingFundRequest(lendingDataRequest);
         return executeSync(bybitApiService.C2cLendingRedeemFunds(redeemFundCancelRequest));
     }
 
     @Override
-    public Object getC2cOrdersRecords(LendingDataRequest c2cOrdersRecordsRequest) {
+    public GenericResponse<?> getC2cOrdersRecords(LendingDataRequest c2cOrdersRecordsRequest) {
         return executeSync(bybitApiService.getC2cOrdersRecords(
                 c2cOrdersRecordsRequest.getCoin(),
                 c2cOrdersRecordsRequest.getOrderId(),
@@ -89,7 +89,7 @@ public class BybitApiLendingRestClientImpl implements BybitApiLendingRestClient 
     }
 
     @Override
-    public Object getC2CLendingAccountInfo(LendingDataRequest lendingDataRequest) {
+    public GenericResponse<?> getC2CLendingAccountInfo(LendingDataRequest lendingDataRequest) {
         String coin = lendingDataRequest.getCoin();
         return executeSync(bybitApiService.getC2CLendingAccountInfo(coin));
     }*/

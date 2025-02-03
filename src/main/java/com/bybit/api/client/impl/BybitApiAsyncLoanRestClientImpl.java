@@ -22,7 +22,7 @@ public class BybitApiAsyncLoanRestClientImpl implements BybitApiAsyncLoanRestCli
     }
 
     @Override
-    public void getCollateralCoins(CryptoLoanDataRequest request, BybitApiCallback<Object> callback) {
+    public void getCollateralCoins(CryptoLoanDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getCollateralCoins(
                 request.getVipLevel() == null ? null : request.getVipLevel().getLevel(),
                 request.getCurrency()
@@ -30,7 +30,7 @@ public class BybitApiAsyncLoanRestClientImpl implements BybitApiAsyncLoanRestCli
     }
 
     @Override
-    public void getBorrowableCoins(CryptoLoanDataRequest request, BybitApiCallback<Object> callback) {
+    public void getBorrowableCoins(CryptoLoanDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getBorrowableCoins(
                 request.getVipLevel() == null ? null : request.getVipLevel().getLevel(),
                 request.getCurrency()
@@ -38,7 +38,7 @@ public class BybitApiAsyncLoanRestClientImpl implements BybitApiAsyncLoanRestCli
     }
 
     @Override
-    public void getAcctMortgageLoanLimit(CryptoLoanDataRequest request, BybitApiCallback<Object> callback) {
+    public void getAcctMortgageLoanLimit(CryptoLoanDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAcctMortgageLoanLimit(
                 request.getLoanCurrency(),
                 request.getCollateralCurrency()
@@ -46,25 +46,25 @@ public class BybitApiAsyncLoanRestClientImpl implements BybitApiAsyncLoanRestCli
     }
 
     @Override
-    public void borrow(CryptoLoanBorrowRequest borrowRequest, BybitApiCallback<Object> callback) {
+    public void borrow(CryptoLoanBorrowRequest borrowRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToCryptoLoanBorrowRequest(borrowRequest);
         bybitApiService.borrow(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void repay(CryptoLoanRepayRequest repayRequest, BybitApiCallback<Object> callback) {
+    public void repay(CryptoLoanRepayRequest repayRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToCryptoLoanRepayRequest(repayRequest);
         bybitApiService.repay(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void adjustCollateralAmount(CryptoLoanAdjustLtvRequest adjustLtvRequest, BybitApiCallback<Object> callback) {
+    public void adjustCollateralAmount(CryptoLoanAdjustLtvRequest adjustLtvRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToCryptoLoanAdjustLtvRequest(adjustLtvRequest);
         bybitApiService.adjustCollateralAmount(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getUnpaidOrders(CryptoLoanDataRequest request, BybitApiCallback<Object> callback) {
+    public void getUnpaidOrders(CryptoLoanDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getUnpaidOrders(
                 request.getOrderId(),
                 request.getCollateralCurrency(),
@@ -77,7 +77,7 @@ public class BybitApiAsyncLoanRestClientImpl implements BybitApiAsyncLoanRestCli
     }
 
     @Override
-    public void getCompletedOrders(CryptoLoanDataRequest request, BybitApiCallback<Object> callback) {
+    public void getCompletedOrders(CryptoLoanDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getCompletedOrders(
                 request.getOrderId(),
                 request.getCollateralCurrency(),
@@ -88,7 +88,7 @@ public class BybitApiAsyncLoanRestClientImpl implements BybitApiAsyncLoanRestCli
     }
 
     @Override
-    public void getRepayTransactions(CryptoLoanDataRequest request, BybitApiCallback<Object> callback) {
+    public void getRepayTransactions(CryptoLoanDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getRepayTransactions(
                 request.getOrderId(),
                 request.getRepayId(),
@@ -99,7 +99,7 @@ public class BybitApiAsyncLoanRestClientImpl implements BybitApiAsyncLoanRestCli
     }
 
     @Override
-    public void getLtvAdjustmentHistory(CryptoLoanDataRequest request, BybitApiCallback<Object> callback) {
+    public void getLtvAdjustmentHistory(CryptoLoanDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getLtvAdjustmentHistory(
                 request.getOrderId(),
                 request.getAdjustId(),
@@ -110,7 +110,7 @@ public class BybitApiAsyncLoanRestClientImpl implements BybitApiAsyncLoanRestCli
     }
 
     @Override
-    public void getMaxReduceAmount(CryptoLoanDataRequest request, BybitApiCallback<Object> callback) {
+    public void getMaxReduceAmount(CryptoLoanDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getMaxReduceAmount(
                 request.getOrderId()
         ).enqueue(new BybitApiCallbackAdapter<>(callback));

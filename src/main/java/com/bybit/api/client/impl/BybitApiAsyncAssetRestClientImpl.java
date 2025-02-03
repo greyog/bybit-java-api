@@ -27,7 +27,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
 
     // Asset endpoints
     @Override
-    public void getAssetCoinExchangeRecords(AssetDataRequest coinExchangeRecordsRequest, BybitApiCallback<Object> callback) {
+    public void getAssetCoinExchangeRecords(AssetDataRequest coinExchangeRecordsRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetCoinExchangeRecords(
                 coinExchangeRecordsRequest.getFromCoin(),
                 coinExchangeRecordsRequest.getToCoin(),
@@ -37,7 +37,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetDeliveryRecords(AssetDataRequest deliveryRecordsRequest, BybitApiCallback<Object> callback) {
+    public void getAssetDeliveryRecords(AssetDataRequest deliveryRecordsRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetDeliveryRecords(
                 deliveryRecordsRequest.getCategory() == null ? null : deliveryRecordsRequest.getCategory().getCategoryTypeId(),
                 deliveryRecordsRequest.getSymbol(),
@@ -48,7 +48,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetUSDCSettlementRecords(AssetDataRequest usdcSettlementRequest, BybitApiCallback<Object> callback) {
+    public void getAssetUSDCSettlementRecords(AssetDataRequest usdcSettlementRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetUSDCSettlementRecords(
                 usdcSettlementRequest.getCategory() == null ? null : usdcSettlementRequest.getCategory().getCategoryTypeId(),
                 usdcSettlementRequest.getSymbol(),
@@ -58,7 +58,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetInfo(AssetDataRequest assetInfoRequest, BybitApiCallback<Object> callback) {
+    public void getAssetInfo(AssetDataRequest assetInfoRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetInfo(
                 assetInfoRequest.getAccountType() == null ? null : assetInfoRequest.getAccountType().getAccountTypeValue(),
                 assetInfoRequest.getCoin()
@@ -66,7 +66,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetAllCoinsBalance(AssetDataRequest allCoinsBalanceRequest, BybitApiCallback<Object> callback) {
+    public void getAssetAllCoinsBalance(AssetDataRequest allCoinsBalanceRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetAllCoinsBalance(
                 allCoinsBalanceRequest.getAccountType() == null ? null : allCoinsBalanceRequest.getAccountType().getAccountTypeValue(),
                 allCoinsBalanceRequest.getMemberId(),
@@ -76,7 +76,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetTransferableCoins(AssetDataRequest request, BybitApiCallback<Object> callback) {
+    public void getAssetTransferableCoins(AssetDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetTransferableCoins(
                 request.getFromAccountType() == null ? null : request.getFromAccountType().getAccountTypeValue(),
                 request.getToAccountType() == null ? null : request.getToAccountType().getAccountTypeValue()
@@ -84,29 +84,29 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetSingleCoinBalance(AssetDataRequest singleCoinBalanceRequest, BybitApiCallback<Object> callback) {
+    public void getAssetSingleCoinBalance(AssetDataRequest singleCoinBalanceRequest, BybitApiCallback<GenericResponse<?>> callback) {
         converter.getSingleCoinBalance(bybitApiService, singleCoinBalanceRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void createAssetInternalTransfer(AssetDataRequest assetInternalTransferRequest, BybitApiCallback<Object> callback) {
+    public void createAssetInternalTransfer(AssetDataRequest assetInternalTransferRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToAssetInternalTransferRequest(assetInternalTransferRequest);
         bybitApiService.createAssetInternalTransfer(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getAssetTransferSubUidList(BybitApiCallback<Object> callback) {
+    public void getAssetTransferSubUidList(BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetTransferSubUidList().enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void createAssetUniversalTransfer(AssetDataRequest assetUniversalTransferRequest, BybitApiCallback<Object> callback) {
+    public void createAssetUniversalTransfer(AssetDataRequest assetUniversalTransferRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToAssetUniversalTransferRequest(assetUniversalTransferRequest);
         bybitApiService.createAssetUniversalTransfer(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getAssetInternalTransferRecords(AssetDataRequest internalTransferRequest, BybitApiCallback<Object> callback) {
+    public void getAssetInternalTransferRecords(AssetDataRequest internalTransferRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetInternalTransferRecords(
                 internalTransferRequest.getTransferId(),
                 internalTransferRequest.getCoin(),
@@ -119,7 +119,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetUniversalTransferRecords(AssetDataRequest universalTransferRequest, BybitApiCallback<Object> callback) {
+    public void getAssetUniversalTransferRecords(AssetDataRequest universalTransferRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetUniversalTransferRecords(
                 universalTransferRequest.getTransferId(),
                 universalTransferRequest.getCoin(),
@@ -132,7 +132,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetAllowedDepositCoinInfo(AssetDataRequest allowedDepositCoinRequest, BybitApiCallback<Object> callback) {
+    public void getAssetAllowedDepositCoinInfo(AssetDataRequest allowedDepositCoinRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetAllowedDepositCoinInfo(
                 allowedDepositCoinRequest.getCoin(),
                 allowedDepositCoinRequest.getChain(),
@@ -142,13 +142,13 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void setAssetDepositAccount(AssetDataRequest request, BybitApiCallback<Object> callback) {
+    public void setAssetDepositAccount(AssetDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         SetAssetDepositAccountRequest setAssetDepositAccountRequest = converter.mapToSetDepositAccountRequest(request);
         bybitApiService.setAssetDepositAccount(setAssetDepositAccountRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getAssetDepositRecords(AssetDataRequest assetDepositRecordsRequest, BybitApiCallback<Object> callback) {
+    public void getAssetDepositRecords(AssetDataRequest assetDepositRecordsRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetDepositRecords(
                 assetDepositRecordsRequest.getCoin(),
                 assetDepositRecordsRequest.getStartTime(),
@@ -159,7 +159,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetSubMembersDepositRecords(AssetDataRequest assetDepositRecordsRequest, BybitApiCallback<Object> callback) {
+    public void getAssetSubMembersDepositRecords(AssetDataRequest assetDepositRecordsRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetSubMembersDepositRecords(
                 assetDepositRecordsRequest.getSubMemberId(),
                 assetDepositRecordsRequest.getCoin(),
@@ -171,7 +171,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetInternalDepositRecords(AssetDataRequest assetDepositRecordsRequest, BybitApiCallback<Object> callback) {
+    public void getAssetInternalDepositRecords(AssetDataRequest assetDepositRecordsRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetInternalDepositRecords(
                 assetDepositRecordsRequest.getCoin(),
                 assetDepositRecordsRequest.getStartTime(),
@@ -182,7 +182,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetMasterDepositAddress(AssetDataRequest masterDepositRequest, BybitApiCallback<Object> callback) {
+    public void getAssetMasterDepositAddress(AssetDataRequest masterDepositRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetMasterDepositAddress(
                 masterDepositRequest.getCoin(),
                 masterDepositRequest.getChainType()
@@ -190,7 +190,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetSubMemberDepositAddress(AssetDataRequest subDepositRequest, BybitApiCallback<Object> callback) {
+    public void getAssetSubMemberDepositAddress(AssetDataRequest subDepositRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetSubMemberDepositAddress(
                 subDepositRequest.getCoin(),
                 subDepositRequest.getChainType(),
@@ -199,17 +199,17 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getAssetCoinInfo(AssetDataRequest request, BybitApiCallback<Object> callback) {
+    public void getAssetCoinInfo(AssetDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetCoinInfo(request.getCoin()).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getAssetWithdrawalAmount(AssetDataRequest request, BybitApiCallback<Object> callback) {
+    public void getAssetWithdrawalAmount(AssetDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetWithdrawalAmount(request.getCoin()).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getAssetWithdrawalRecords(AssetDataRequest assetWithdrawRecordsRequest, BybitApiCallback<Object> callback) {
+    public void getAssetWithdrawalRecords(AssetDataRequest assetWithdrawRecordsRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAssetWithdrawalRecords(
                 assetWithdrawRecordsRequest.getWithdrawID(),
                 assetWithdrawRecordsRequest.getCoin(),
@@ -222,38 +222,38 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void cancelAssetWithdraw(AssetDataRequest request, BybitApiCallback<Object> callback) {
+    public void cancelAssetWithdraw(AssetDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         AssetCancelWithdrawRequest assetCancelWithdrawRequest = converter.mapToAssetCancelWithdrawRequest(request);
         bybitApiService.cancelAssetWithdraw(assetCancelWithdrawRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void createAssetWithdraw(AssetDataRequest assetWithdrawRequest, BybitApiCallback<Object> callback) {
+    public void createAssetWithdraw(AssetDataRequest assetWithdrawRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToAssetWithdrawRequest(assetWithdrawRequest);
         bybitApiService.createAssetWithdraw(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void requestQuote(AssetDataRequest assetQuoteRequest, BybitApiCallback<Object> callback) {
+    public void requestQuote(AssetDataRequest assetQuoteRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToAssetQuoteRequest(assetQuoteRequest);
         bybitApiService.requestQuote(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void confirmQuote(String quoteTxId, BybitApiCallback<Object> callback) {
+    public void confirmQuote(String quoteTxId, BybitApiCallback<GenericResponse<?>> callback) {
         Map<String, String> map = new HashMap<>();
         map.put("quoteTxId", quoteTxId);
         bybitApiService.confirmQuote(map).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void confirmQuote(AssetDataRequest assetQuoteRequest, BybitApiCallback<Object> callback) {
+    public void confirmQuote(AssetDataRequest assetQuoteRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var request = converter.mapToAssetConfirmQuoteRequest(assetQuoteRequest);
         bybitApiService.confirmQuote(request).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getConvertCoinList(AssetDataRequest request, BybitApiCallback<Object> callback) {
+    public void getConvertCoinList(AssetDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getConvertCoinList(
                 request.getCoin(),
                 request.getSide(),
@@ -262,7 +262,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getConvertCoinStatus(AssetDataRequest request, BybitApiCallback<Object> callback) {
+    public void getConvertCoinStatus(AssetDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getConvertCoinStatus(
                 request.getQuoteTxId(),
                 request.getToAccountType() == null ? null : request.getToAccountType().getAccountTypeValue()
@@ -270,7 +270,7 @@ public class BybitApiAsyncAssetRestClientImpl implements BybitApiAsyncAssetRestC
     }
 
     @Override
-    public void getConvertCoinHistory(AssetDataRequest request, BybitApiCallback<Object> callback) {
+    public void getConvertCoinHistory(AssetDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getConvertCoinHistory(
                 request.getToAccountType() == null ? null : request.getToAccountType().getAccountTypeValue(),
                 request.getIndex(),

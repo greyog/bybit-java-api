@@ -25,7 +25,7 @@ public class BybitApiAsyncUserRestClientImpl implements BybitApiAsyncUserRestCli
 
     // pre upgrade endpoints
     @Override
-    public void getPreUpgradeOrderHistory(PreUpgradeDataRequest request, BybitApiCallback<Object> callback) {
+    public void getPreUpgradeOrderHistory(PreUpgradeDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getPreUpgradeOrderHistory(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -42,7 +42,7 @@ public class BybitApiAsyncUserRestClientImpl implements BybitApiAsyncUserRestCli
     }
 
     @Override
-    public void getPreUpgradeTradeHistory(PreUpgradeDataRequest request, BybitApiCallback<Object> callback) {
+    public void getPreUpgradeTradeHistory(PreUpgradeDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getPreUpgradeTradeHistory(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -58,7 +58,7 @@ public class BybitApiAsyncUserRestClientImpl implements BybitApiAsyncUserRestCli
     }
 
     @Override
-    public void getPreUpgradeClosePnl(PreUpgradeDataRequest request, BybitApiCallback<Object> callback) {
+    public void getPreUpgradeClosePnl(PreUpgradeDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getPreUpgradeClosePnl(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -70,7 +70,7 @@ public class BybitApiAsyncUserRestClientImpl implements BybitApiAsyncUserRestCli
     }
 
     @Override
-    public void getPreUpgradeTransaction(PreUpgradeDataRequest request, BybitApiCallback<Object> callback) {
+    public void getPreUpgradeTransaction(PreUpgradeDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getPreUpgradeTransaction(
                 request.getCategory().getCategoryTypeId(),
                 request.getBaseCoin(),
@@ -83,7 +83,7 @@ public class BybitApiAsyncUserRestClientImpl implements BybitApiAsyncUserRestCli
     }
 
     @Override
-    public void getPreUpgradeOptionDelivery(PreUpgradeDataRequest request, BybitApiCallback<Object> callback) {
+    public void getPreUpgradeOptionDelivery(PreUpgradeDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getPreUpgradeOptionDelivery(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -94,7 +94,7 @@ public class BybitApiAsyncUserRestClientImpl implements BybitApiAsyncUserRestCli
     }
 
     @Override
-    public void getPreUpgradeUsdcSettlement(PreUpgradeDataRequest request, BybitApiCallback<Object> callback) {
+    public void getPreUpgradeUsdcSettlement(PreUpgradeDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getPreUpgradeUsdcSettlement(
                 request.getCategory().getCategoryTypeId(),
                 request.getSymbol(),
@@ -105,68 +105,68 @@ public class BybitApiAsyncUserRestClientImpl implements BybitApiAsyncUserRestCli
 
     // User endpoints
     @Override
-    public void createSubMember(UserDataRequest request, BybitApiCallback<Object> callback) {
+    public void createSubMember(UserDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         UserSubMemberRequest subUserRequest = converter.mapToCreateSubMemberRequest(request);
         bybitApiService.createSubMember(subUserRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void createSubAPI(UserDataRequest request, BybitApiCallback<Object> callback) {
+    public void createSubAPI(UserDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         var createApiKeyRequest = converter.mapToCreateSubApiRequest(request);
         bybitApiService.createSubAPI(createApiKeyRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getSubUIDList(BybitApiCallback<Object> callback) {
+    public void getSubUIDList(BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getSubUIDList().enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void freezeSubMember(UserDataRequest request, BybitApiCallback<Object> callback) {
+    public void freezeSubMember(UserDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         var freezeSubUIDRquest = converter.mapToFreezeSubApiRequest(request);
         bybitApiService.freezeSubMember(freezeSubUIDRquest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getCurrentAPIKeyInfo(BybitApiCallback<Object> callback) {
+    public void getCurrentAPIKeyInfo(BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getCurrentAPIKeyInfo().enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getUIDWalletType(UserDataRequest request, BybitApiCallback<Object> callback) {
+    public void getUIDWalletType(UserDataRequest request, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getUIDWalletType(request.getMemberIds() == null ? null : listToString(request.getMemberIds())).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void modifyMasterApiKey(UserDataRequest userDataRequest, BybitApiCallback<Object> callback) {
+    public void modifyMasterApiKey(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var modifyMasterApiKeyRequest = converter.mapToModifyApiKeyRequest(userDataRequest);
         bybitApiService.modifyMasterApiKey(modifyMasterApiKeyRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void modifySubApiKey(UserDataRequest userDataRequest, BybitApiCallback<Object> callback) {
+    public void modifySubApiKey(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var modifySubApiKeyRequest = converter.mapToModifyApiKeyRequest(userDataRequest);
         bybitApiService.modifySubApiKey(modifySubApiKeyRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void deleteMasterApiKey(BybitApiCallback<Object> callback) {
+    public void deleteMasterApiKey(BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.deleteMasterApiKey().enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void deleteSubApiKey(UserDataRequest userDataRequest, BybitApiCallback<Object> callback) {
+    public void deleteSubApiKey(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var deleteSubApiKeyRequest = converter.mapToDeleteSubApiKeyRequest(userDataRequest);
         bybitApiService.deleteSubApiKey(deleteSubApiKeyRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getAffiliateUserInfo(UserDataRequest userDataRequest, BybitApiCallback<Object> callback) {
+    public void getAffiliateUserInfo(UserDataRequest userDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getAffiliateUserInfo(userDataRequest.getUid()).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getSubUIDListUnlimited(UserDataRequest subUserRequest, BybitApiCallback<Object> callback) {
+    public void getSubUIDListUnlimited(UserDataRequest subUserRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getSubUIDListUnlimited(
                 subUserRequest.getPageSize(),
                 subUserRequest.getNextCursor()
@@ -174,12 +174,12 @@ public class BybitApiAsyncUserRestClientImpl implements BybitApiAsyncUserRestCli
     }
 
     @Override
-    public void getSubUIDListUnlimited(BybitApiCallback<Object> callback) {
+    public void getSubUIDListUnlimited(BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getSubUIDListUnlimited().enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void getSubAccAllAPIKeyInfo(UserDataRequest subUserRequest, BybitApiCallback<Object> callback) {
+    public void getSubAccAllAPIKeyInfo(UserDataRequest subUserRequest, BybitApiCallback<GenericResponse<?>> callback) {
         bybitApiService.getSubAccAllAPIKeyInfo(
                 subUserRequest.getSubMemberId(),
                 subUserRequest.getLimit(),

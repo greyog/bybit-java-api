@@ -18,7 +18,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
 
     // Market Data endpoints
     @Override
-    public Object getAnnouncementInfo(MarketDataRequest announcementInfoRequest) {
+    public GenericResponse<?> getAnnouncementInfo(MarketDataRequest announcementInfoRequest) {
         return executeSync(bybitApiService.getAnouncementInfo(
                 announcementInfoRequest.getLocale() == null ? null : announcementInfoRequest.getLocale().getLanguageSymbol(),
                 announcementInfoRequest.getType() == null ? null : announcementInfoRequest.getType().getAnnouncementType(),
@@ -29,13 +29,13 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getServerTime() {
+    public GenericResponse<?> getServerTime() {
         return executeSync(
                 bybitApiService.getServerTime());
     }
 
     @Override
-    public Object getMarketLinesData(MarketDataRequest marketKlineRequest) {
+    public GenericResponse<?> getMarketLinesData(MarketDataRequest marketKlineRequest) {
         return executeSync(
                 bybitApiService.getMarketLinesData(
                         marketKlineRequest.getCategory().getCategoryTypeId(),
@@ -49,7 +49,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getMarketPriceLinesData(MarketDataRequest marketKlineRequest) {
+    public GenericResponse<?> getMarketPriceLinesData(MarketDataRequest marketKlineRequest) {
         return executeSync(
                 bybitApiService.getMarketPriceLinesData(
                         marketKlineRequest.getCategory().getCategoryTypeId(),
@@ -63,7 +63,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getIndexPriceLinesData(MarketDataRequest marketKlineRequest) {
+    public GenericResponse<?> getIndexPriceLinesData(MarketDataRequest marketKlineRequest) {
         return executeSync(
                 bybitApiService.getIndexPriceLinesData(
                         marketKlineRequest.getCategory().getCategoryTypeId(),
@@ -77,7 +77,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getPremiumIndexPriceLinesData(MarketDataRequest marketKlineRequest) {
+    public GenericResponse<?> getPremiumIndexPriceLinesData(MarketDataRequest marketKlineRequest) {
         return executeSync(
                 bybitApiService.getPremiumIndexPriceLinesData(
                         marketKlineRequest.getCategory().getCategoryTypeId(),
@@ -91,7 +91,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getInstrumentsInfo(MarketDataRequest instrumentInfoRequest) {
+    public GenericResponse<?> getInstrumentsInfo(MarketDataRequest instrumentInfoRequest) {
         return executeSync(bybitApiService.getInstrumentsInfo(
                 instrumentInfoRequest.getCategory().getCategoryTypeId(),
                 instrumentInfoRequest.getSymbol(),
@@ -103,7 +103,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getMarketOrderBook(MarketDataRequest marketOrderBookRequest) {
+    public GenericResponse<?> getMarketOrderBook(MarketDataRequest marketOrderBookRequest) {
         return executeSync(bybitApiService.getMarketOrderBook(
                 marketOrderBookRequest.getCategory().getCategoryTypeId(),
                 marketOrderBookRequest.getSymbol(),
@@ -112,7 +112,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getMarketTickers(MarketDataRequest marketDataTickerRequest) {
+    public GenericResponse<?> getMarketTickers(MarketDataRequest marketDataTickerRequest) {
         return executeSync(bybitApiService.getMarketTickers(
                 marketDataTickerRequest.getCategory().getCategoryTypeId(),
                 marketDataTickerRequest.getSymbol(),
@@ -122,7 +122,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getFundingHistory(MarketDataRequest fundingHistoryRequest) {
+    public GenericResponse<?> getFundingHistory(MarketDataRequest fundingHistoryRequest) {
         return executeSync(bybitApiService.getFundingHistory(
                 fundingHistoryRequest.getCategory().getCategoryTypeId(),
                 fundingHistoryRequest.getSymbol(),
@@ -133,7 +133,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getRecentTradeData(MarketDataRequest recentTradeRequest) {
+    public GenericResponse<?> getRecentTradeData(MarketDataRequest recentTradeRequest) {
         return executeSync(bybitApiService.getRecentTradeData(
                 recentTradeRequest.getCategory().getCategoryTypeId(),
                 recentTradeRequest.getSymbol(),
@@ -144,7 +144,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getOpenInterest(MarketDataRequest openInterestRequest) {
+    public GenericResponse<?> getOpenInterest(MarketDataRequest openInterestRequest) {
         return executeSync(bybitApiService.getOpenInterest(
                 openInterestRequest.getCategory().getCategoryTypeId(),
                 openInterestRequest.getSymbol(),
@@ -157,7 +157,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getHistoricalVolatility(MarketDataRequest historicalVolatilityRequest) {
+    public GenericResponse<?> getHistoricalVolatility(MarketDataRequest historicalVolatilityRequest) {
         return executeSync(bybitApiService.getHistoricalVolatility(
                 historicalVolatilityRequest.getCategory().getCategoryTypeId(),
                 historicalVolatilityRequest.getBaseCoin(),
@@ -168,24 +168,24 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getRiskLimit(MarketDataRequest marketRiskLimitRequest) {
+    public GenericResponse<?> getRiskLimit(MarketDataRequest marketRiskLimitRequest) {
         return executeSync(bybitApiService.getRiskLimit(
                 marketRiskLimitRequest.getCategory().getCategoryTypeId(),
                 marketRiskLimitRequest.getSymbol()));
     }
 
     @Override
-    public Object getInsurance(MarketDataRequest marketDataRequest) {
+    public GenericResponse<?> getInsurance(MarketDataRequest marketDataRequest) {
         return executeSync(bybitApiService.getInsurance(marketDataRequest.getCoin()));
     }
 
     @Override
-    public Object getInsurance() {
+    public GenericResponse<?> getInsurance() {
         return executeSync(bybitApiService.getInsurance());
     }
 
     @Override
-    public Object getDeliveryPrice(MarketDataRequest deliveryPriceRequest) {
+    public GenericResponse<?> getDeliveryPrice(MarketDataRequest deliveryPriceRequest) {
         return executeSync(bybitApiService.getDeliveryPrice(deliveryPriceRequest.getCategory().getCategoryTypeId(),
                 deliveryPriceRequest.getSymbol(),
                 deliveryPriceRequest.getBaseCoin(),
@@ -195,7 +195,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getMarketAccountRatio(MarketDataRequest marketAccountRatioRequest) {
+    public GenericResponse<?> getMarketAccountRatio(MarketDataRequest marketAccountRatioRequest) {
         return executeSync(bybitApiService.getMarketAccountRatio(marketAccountRatioRequest.getCategory().getCategoryTypeId(),
                 marketAccountRatioRequest.getSymbol(),
                 marketAccountRatioRequest.getDataRecordingPeriod() == null ? null : marketAccountRatioRequest.getDataRecordingPeriod().getPeriod(),
