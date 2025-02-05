@@ -1,6 +1,7 @@
 package com.bybit.api.client.restApi;
 
 import com.bybit.api.client.constant.BybitApiConstants;
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.account.request.*;
 import com.bybit.api.client.domain.asset.request.*;
 import com.bybit.api.client.domain.broker.request.BrokerGetIssuedVoucherRequest;
@@ -11,6 +12,7 @@ import com.bybit.api.client.domain.institution.insLending.UpdateInstitutionLoadU
 import com.bybit.api.client.domain.loan.request.CryptoLoanAdjustLtvRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanBorrowRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanRepayRequest;
+import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.position.request.ConfirmNewRiskLimitRequest;
 import com.bybit.api.client.domain.position.request.*;
 import com.bybit.api.client.domain.spot.leverageToken.SpotLeverageTokenRequest;
@@ -44,7 +46,7 @@ public interface BybitApiService {
      * timeNano	string	Bybit server timestamp (nano)
      */
     @GET("/v5/market/time")
-    Call<Object> getServerTime();
+    Call<GenericResponse<ServerTimeResult>> getServerTime();
 
     /**
      * Get Kline
