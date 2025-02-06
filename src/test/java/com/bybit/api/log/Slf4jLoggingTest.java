@@ -4,6 +4,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import com.bybit.api.client.config.BybitApiConfig;
+import com.bybit.api.client.log.LogOption;
 import com.bybit.api.client.service.BybitApiClientFactory;
 import com.bybit.api.client.service.BybitApiServiceGenerator;
 import org.junit.Before;
@@ -34,7 +35,7 @@ public class Slf4jLoggingTest {
     @Test
     public void testInterceptorLogsHeaders() {
         // Trigger the logging
-        BybitApiClientFactory.newInstance(BybitApiConfig.TESTNET_DOMAIN, true, "slf4j")
+        BybitApiClientFactory.newInstance(BybitApiConfig.TESTNET_DOMAIN, true, LogOption.SLF4J.getLogOptionType())
                 .newMarketDataRestClient().getServerTime();
 
         // Get captured log events

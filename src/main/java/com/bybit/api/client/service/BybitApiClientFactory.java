@@ -167,6 +167,21 @@ public class BybitApiClientFactory {
 
     /**
      *
+     * new instance set url with debug mode
+     *
+     * @param apiKey
+     * @param secret
+     * @param baseUrl
+     * @param debugMode
+     * @param logOption
+     * @return
+     */
+    public static BybitApiClientFactory newInstance(String apiKey, String secret, String baseUrl, boolean debugMode, String logOption) {
+        return new BybitApiClientFactory(apiKey, secret, baseUrl, debugMode, DEFAULT_RECEIVING_WINDOW, logOption, "");
+    }
+
+    /**
+     *
      * new instance with base url and receive windows
      *
      * @param apiKey

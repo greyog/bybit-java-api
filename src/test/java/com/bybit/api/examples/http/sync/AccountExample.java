@@ -3,11 +3,17 @@ package com.bybit.api.examples.http.sync;
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
 import com.bybit.api.client.domain.account.AccountType;
+import com.bybit.api.client.log.LogOption;
 import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class AccountExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET", BybitApiConfig.TESTNET_DOMAIN).newAccountRestClient();
+        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY",
+                "YOUR_API_SECRET",
+                BybitApiConfig.TESTNET_DOMAIN,
+                true,
+                LogOption.OKHTTP3.getLogOptionType()
+        ).newAccountRestClient();
 
         // Get wallet balance
         var walletBalanceRequest = AccountDataRequest.builder().accountType(AccountType.UNIFIED).build();

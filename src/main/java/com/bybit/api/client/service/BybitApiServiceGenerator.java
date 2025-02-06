@@ -88,7 +88,7 @@ public class BybitApiServiceGenerator {
     /**
      * Execute a REST call and block until the response is received.
      */
-    public static <T> Object executeSync(Call<T> call) {
+    public static <T> T executeSync(Call<T> call) {
         try {
             var response = call.execute();
             if (response.isSuccessful()) {
@@ -107,10 +107,12 @@ public class BybitApiServiceGenerator {
      */
     public static BybitApiError getBybitApiError(Response<?> response) throws IOException, BybitApiException {
         ResponseBody errorBody = response.errorBody();
-        if (errorBody != null && errorBodyConverter != null) {
+        if (errorBody != null && errorBodyConverter != null && errorBody.contentLength() > 0) {
             return errorBodyConverter.convert(errorBody);
         }
         // Handle the case where there is no error converter or error body.
-        throw new BybitApiException("Response error body was null or couldn't be converted.");
+        throw new BybitApiException("Response code: " + response.code()
+                                    + ", message: " + response.message()
+                                    + ". Response error body was null or couldn't be converted.");
     }
 }
