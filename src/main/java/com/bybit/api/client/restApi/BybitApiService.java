@@ -12,6 +12,7 @@ import com.bybit.api.client.domain.institution.insLending.UpdateInstitutionLoadU
 import com.bybit.api.client.domain.loan.request.CryptoLoanAdjustLtvRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanBorrowRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanRepayRequest;
+import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
 import com.bybit.api.client.domain.position.request.ConfirmNewRiskLimitRequest;
@@ -290,8 +291,8 @@ public interface BybitApiService {
      * &gt; &gt; tickSize	string	The step to increase/reduce order price
      */
     @GET("/v5/market/instruments-info")
-    Call<Object> getInstrumentsInfo(@Query("category") String category, @Query("symbol") String symbol, @Query("status") String status, @Query("baseCoin") String baseCoin,
-                                    @Query("limit") Integer limit, @Query("cursor") String cursor);
+    Call<GenericResponse<InstrumentInfoResult>> getInstrumentsInfo(@Query("category") String category, @Query("symbol") String symbol, @Query("status") String status, @Query("baseCoin") String baseCoin,
+                                                                   @Query("limit") Integer limit, @Query("cursor") String cursor);
 
     /**
      * Get Orderbook
@@ -911,7 +912,7 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @GET("/v5/order/realtime")
-    Call<Object> getOpenOrders(@Query("category") String category,
+    Call<GenericResponse<OrderResult>> getOpenOrders(@Query("category") String category,
                                @Query("symbol") String symbol,
                                @Query("baseCoin") String baseCoin,
                                @Query("settleCoin") String settleCoin,

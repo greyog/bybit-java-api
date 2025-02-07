@@ -1,6 +1,7 @@
 package com.bybit.api.client.impl;
 
 import com.bybit.api.client.domain.GenericResponse;
+import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.restApi.BybitApiAsyncMarketDataRestClient;
 import com.bybit.api.client.restApi.BybitApiCallback;
@@ -66,7 +67,7 @@ public class BybitApiMarketAsyncRestClientImpl implements BybitApiAsyncMarketDat
     }
 
     @Override
-    public void getInstrumentsInfo(MarketDataRequest instrumentInfoRequest, BybitApiCallback<Object> callback) {
+    public void getInstrumentsInfo(MarketDataRequest instrumentInfoRequest, BybitApiCallback<GenericResponse<InstrumentInfoResult>> callback) {
         bybitApiService.getInstrumentsInfo(
                 instrumentInfoRequest.getCategory().getCategoryTypeId(),
                 instrumentInfoRequest.getSymbol(),

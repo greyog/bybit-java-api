@@ -15,7 +15,7 @@ public interface BybitApiAsyncTradeRestClient {
     void getOrderHistory(TradeOrderRequest orderHistoryRequest, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void setDisconnectCancelAllTime(TradeOrderRequest tradeOrderRequest, BybitApiCallback<Object> callback);
     void getBorrowQuota(TradeOrderRequest borrowQuotaRequest, BybitApiCallback<Object> callback);
-    void getOpenOrders(TradeOrderRequest order, BybitApiCallback<Object> callback);
+    void getOpenOrders(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void getTradeHistory(TradeOrderRequest order, BybitApiCallback<Object> callback);
     void createOrder(TradeOrderRequest order, BybitApiCallback<Object> callback);
     void createOrder(Map<String, Object> order, BybitApiCallback<Object> callback);

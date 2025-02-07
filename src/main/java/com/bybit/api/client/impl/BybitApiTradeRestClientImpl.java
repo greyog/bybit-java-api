@@ -154,7 +154,7 @@ public class BybitApiTradeRestClientImpl implements BybitApiTradeRestClient {
     }
 
     @Override
-    public Object getOpenOrders(TradeOrderRequest order) {
+    public GenericResponse<OrderResult> getOpenOrders(TradeOrderRequest order) {
         return executeSync(bybitApiService.getOpenOrders(
                 order.getCategory().getCategoryTypeId(),
                 order.getSymbol(),

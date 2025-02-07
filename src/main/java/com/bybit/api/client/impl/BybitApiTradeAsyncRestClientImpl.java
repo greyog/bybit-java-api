@@ -56,7 +56,7 @@ public class BybitApiTradeAsyncRestClientImpl implements BybitApiAsyncTradeRestC
     }
 
     @Override
-    public void getOpenOrders(TradeOrderRequest order, BybitApiCallback<Object> callback) {
+    public void getOpenOrders(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         bybitApiService.getOpenOrders(
                         order.getCategory().getCategoryTypeId(),
                         order.getSymbol(),
