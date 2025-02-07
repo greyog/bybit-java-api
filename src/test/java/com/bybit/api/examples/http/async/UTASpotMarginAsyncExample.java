@@ -6,7 +6,8 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class UTASpotMarginAsyncExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET").newSpotMarginAsyncRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET")).newSpotMarginAsyncRestClient();
 
         // Get VIP Margin Data
         var utaMarginDataRequest = SpotMarginDataRequest.builder().build();

@@ -13,7 +13,9 @@ import com.bybit.api.client.service.BybitApiClientFactory;
  */
 public class TradeExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET", BybitApiConfig.TESTNET_DOMAIN).newTradeRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET")
+, BybitApiConfig.TESTNET_DOMAIN).newTradeRestClient();
 
         // Getting a list of history order between 2 years
         var orderHistory = TradeOrderRequest.builder().category(CategoryType.LINEAR).limit(10).build();

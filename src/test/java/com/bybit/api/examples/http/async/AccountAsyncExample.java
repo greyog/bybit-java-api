@@ -1,5 +1,6 @@
 package com.bybit.api.examples.http.async;
 
+import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
 import com.bybit.api.client.domain.account.AccountType;
 import com.bybit.api.client.domain.position.MarginMode;
@@ -7,14 +8,16 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class AccountAsyncExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET").newAsyncAccountRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET"),
+                BybitApiConfig.DEMO_TRADING_DOMAIN).newAsyncAccountRestClient();
 
         // Get wallet balance
         var walletBalanceRequest = AccountDataRequest.builder().accountType(AccountType.UNIFIED).build();
         client.getWalletBalance(walletBalanceRequest, System.out::println);
 
         // Upgrade to uta
-        client.upgradeAccountToUTA(System.out::println);
+//        client.upgradeAccountToUTA(System.out::println);
 
         // Get Borrow History
         var accountBorrowHistoryRequest = AccountDataRequest.builder().build();

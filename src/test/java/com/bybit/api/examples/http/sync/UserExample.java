@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Map;
 public class UserExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET", BybitApiConfig.TESTNET_DOMAIN).newUserRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET")
+, BybitApiConfig.TESTNET_DOMAIN).newUserRestClient();
 
         // create a new sub user
         var subUserRequest = UserDataRequest.builder().username("VictorWuTest3")

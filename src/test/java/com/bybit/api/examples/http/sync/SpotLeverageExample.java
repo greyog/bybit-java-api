@@ -5,7 +5,9 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class SpotLeverageExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET").newSpotMarginRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET")
+).newSpotMarginRestClient();
 
         // Get Leverage Token info
         var spotLeverageInfoRequest = SpotMarginDataRequest.builder().build();

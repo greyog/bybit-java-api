@@ -8,10 +8,10 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class AccountExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY",
-                "YOUR_API_SECRET",
-                BybitApiConfig.TESTNET_DOMAIN,
-                true,
+        var client = BybitApiClientFactory.newInstance( System.getenv("API_KEY"),
+                System.getenv("API_SECRET"),
+                BybitApiConfig.DEMO_TRADING_DOMAIN,
+                false,
                 LogOption.OKHTTP3.getLogOptionType()
         ).newAccountRestClient();
 
@@ -21,8 +21,8 @@ public class AccountExample {
         System.out.println(walletBalanceData);
 
         // Upgrade to uta
-        var upgradeToUTAResult = client.upgradeAccountToUTA();
-        System.out.println(upgradeToUTAResult);
+//        var upgradeToUTAResult = client.upgradeAccountToUTA();
+//        System.out.println(upgradeToUTAResult);
 
         // Get Borrow History
         var accountBorrowHistoryRequest = AccountDataRequest.builder().build();

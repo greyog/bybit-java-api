@@ -13,7 +13,8 @@ import java.util.Arrays;
 
 public class BatchOrderAsyncExampleAsync {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET", BybitApiConfig.TESTNET_DOMAIN).newAsyncTradeRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET"), BybitApiConfig.TESTNET_DOMAIN).newAsyncTradeRestClient();
 
         // Create a batch order
         var orderRequests = Arrays.asList(TradeOrderRequest.builder().category(CategoryType.OPTION).symbol("BTC-10FEB23-24000-C").side(Side.BUY).orderType(TradeOrderType.LIMIT).qty("0.1")

@@ -7,7 +7,9 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class NormalSpotMarginExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET").newSpotMarginRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET")
+).newSpotMarginRestClient();
 
         // Get VIP Margin Data
         var normalMarginDataRequest = SpotMarginDataRequest.builder().build();

@@ -9,7 +9,8 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 public class BrokerAsyncExample {
     public static void main(String[] args) {
         // Borker API key
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET").newAsyncBrokerRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET")).newAsyncBrokerRestClient();
 
         // Get Broker Earning
         var brokerEarningRequest = BrokerDataRequest.builder().bizType(BusinessType.SPOT).build();

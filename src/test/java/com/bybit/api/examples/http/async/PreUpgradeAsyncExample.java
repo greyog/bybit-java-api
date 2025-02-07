@@ -6,7 +6,8 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class PreUpgradeAsyncExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET").newAsyncUserRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET")).newAsyncUserRestClient();
 
         // Get pre-upgrade order history
         var preupgradeOrderHistoryRequest = PreUpgradeDataRequest.builder().category(CategoryType.LINEAR).build();

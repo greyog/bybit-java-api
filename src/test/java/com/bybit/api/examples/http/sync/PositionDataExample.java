@@ -8,7 +8,9 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class PositionDataExample {
     public static void main(String[] args) {
-        var client = BybitApiClientFactory.newInstance("YOUR_API_KEY", "YOUR_API_SECRET", BybitApiConfig.TESTNET_DOMAIN).newPositionRestClient();
+        var client = BybitApiClientFactory.newInstance(System.getenv("API_KEY"),
+                System.getenv("API_SECRET")
+, BybitApiConfig.TESTNET_DOMAIN).newPositionRestClient();
 
         // Get Position Info
         var positionListRequest = PositionDataRequest.builder().category(CategoryType.LINEAR).symbol("BTCUSDT").build();
