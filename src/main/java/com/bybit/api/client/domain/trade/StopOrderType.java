@@ -11,7 +11,8 @@ public enum StopOrderType {
     PARTIAL_TAKE_PROFIT("PartialTakeProfit"),
     PARTIAL_STOP_LOSS("PartialStopLoss"),
     TPSL_ORDER("tpslOrder"),
-    MM_RATE_CLOSE("MmRateClose");
+    MM_RATE_CLOSE("MmRateClose"),
+    EMPTY("");
 
     private final String description;
 

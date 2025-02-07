@@ -4,6 +4,8 @@ import com.bybit.api.client.restApi.BybitApiService;
 import com.bybit.api.client.exception.BybitApiError;
 import com.bybit.api.client.exception.BybitApiException;
 import com.bybit.api.client.security.AuthenticationInterceptor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
@@ -32,7 +34,7 @@ public class BybitApiServiceGenerator {
      */
     @Getter
     private static final OkHttpClient sharedClient;
-    private static final Converter.Factory converterFactory = JacksonConverterFactory.create();
+    private static final Converter.Factory converterFactory;
 
     static {
         Dispatcher dispatcher = new Dispatcher();
@@ -42,6 +44,9 @@ public class BybitApiServiceGenerator {
                 .dispatcher(dispatcher)
                 .pingInterval(20, TimeUnit.SECONDS)
                 .build();
+        var objectMapper = new ObjectMapper();
+        objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
+        converterFactory = JacksonConverterFactory.create(objectMapper);
     }
 
 

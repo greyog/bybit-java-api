@@ -1,6 +1,8 @@
 package com.bybit.api.client.impl;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
+import com.bybit.api.client.domain.trade.response.OrderResult;
 import com.bybit.api.client.restApi.BybitApiAsyncTradeRestClient;
 import com.bybit.api.client.restApi.BybitApiCallback;
 import com.bybit.api.client.restApi.BybitApiService;
@@ -21,7 +23,7 @@ public class BybitApiTradeAsyncRestClientImpl implements BybitApiAsyncTradeRestC
     }
 
     @Override
-    public void getOrderHistory(TradeOrderRequest orderHistoryRequest, BybitApiCallback<Object> callback) {
+    public void getOrderHistory(TradeOrderRequest orderHistoryRequest, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         bybitApiService.getOrderHistory(
                         orderHistoryRequest.getCategory().getCategoryTypeId(),
                         orderHistoryRequest.getSymbol(),

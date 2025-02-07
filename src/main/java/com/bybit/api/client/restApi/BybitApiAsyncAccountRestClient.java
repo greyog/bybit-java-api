@@ -1,11 +1,13 @@
 package com.bybit.api.client.restApi;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
 import com.bybit.api.client.domain.account.request.BatchSetCollateralCoinRequest;
+import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
 
 public interface BybitApiAsyncAccountRestClient {
     // Account endpoints
-    void getWalletBalance(AccountDataRequest walletBalanceRequest, BybitApiCallback<Object> callback);
+    void getWalletBalance(AccountDataRequest walletBalanceRequest, BybitApiCallback<GenericResponse<WalletBalanceResult>> callback);
     void upgradeAccountToUTA(BybitApiCallback<Object> callback);
     void getAccountBorrowHistory(AccountDataRequest borrowHistoryRequest, BybitApiCallback<Object> callback);
     void setAccountCollateralCoin(AccountDataRequest setCollateralCoinRequest, BybitApiCallback<Object> callback);

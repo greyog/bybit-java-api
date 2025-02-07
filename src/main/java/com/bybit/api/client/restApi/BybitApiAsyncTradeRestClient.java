@@ -1,16 +1,18 @@
 package com.bybit.api.client.restApi;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
 import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
+import com.bybit.api.client.domain.trade.response.OrderResult;
 
 import java.io.IOException;
 import java.util.Map;
 
 public interface BybitApiAsyncTradeRestClient {
     // Trade
-    void getOrderHistory(TradeOrderRequest orderHistoryRequest, BybitApiCallback<Object> callback);
+    void getOrderHistory(TradeOrderRequest orderHistoryRequest, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void setDisconnectCancelAllTime(TradeOrderRequest tradeOrderRequest, BybitApiCallback<Object> callback);
     void getBorrowQuota(TradeOrderRequest borrowQuotaRequest, BybitApiCallback<Object> callback);
     void getOpenOrders(TradeOrderRequest order, BybitApiCallback<Object> callback);

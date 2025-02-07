@@ -13,7 +13,8 @@ public enum CancelType {
     CANCEL_BY_ADMIN("CancelByAdmin"),
     CANCEL_BY_TP_SL_TS_CLEAR("CancelByTpSlTsClear"),
     CANCEL_BY_PZ_SIDE_CH("CancelByPzSideCh"),
-    CANCEL_BY_SMP("CancelBySmp");
+    CANCEL_BY_SMP("CancelBySmp"),
+    UNKNOWN("UNKNOWN");
 
     private final String cancelReason;
 

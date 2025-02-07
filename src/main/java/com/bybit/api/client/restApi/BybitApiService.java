@@ -13,6 +13,7 @@ import com.bybit.api.client.domain.loan.request.CryptoLoanAdjustLtvRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanBorrowRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanRepayRequest;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
+import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
 import com.bybit.api.client.domain.position.request.ConfirmNewRiskLimitRequest;
 import com.bybit.api.client.domain.position.request.*;
 import com.bybit.api.client.domain.spot.leverageToken.SpotLeverageTokenRequest;
@@ -20,6 +21,7 @@ import com.bybit.api.client.domain.spot.marginTrade.SpotMarginTradeBorrowRequest
 import com.bybit.api.client.domain.spot.marginTrade.SpotMarginTradeRePayRequest;
 import com.bybit.api.client.domain.trade.*;
 import com.bybit.api.client.domain.trade.request.*;
+import com.bybit.api.client.domain.trade.response.OrderResult;
 import com.bybit.api.client.domain.user.request.CreateSubApiKeyRequest;
 import com.bybit.api.client.domain.user.request.FreezeSubUIDRquest;
 import com.bybit.api.client.domain.user.request.ModifyApiKeyRequest;
@@ -781,18 +783,18 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @GET("/v5/order/history")
-    Call<Object> getOrderHistory(@Query("category") String category,
-                                       @Query("symbol") String symbol,
-                                       @Query("baseCoin") String baseCoin,
-                                       @Query("settleCoin") String settleCoin,
-                                       @Query("orderId") String orderId,
-                                       @Query("orderLinkId") String orderLinkId,
-                                       @Query("orderFilter") String orderFilter,
-                                       @Query("orderStatus") OrderStatus orderStatus,
-                                       @Query("startTime") Long startTime,
-                                       @Query("endTime") Long endTime,
-                                       @Query("limit") Integer limit,
-                                       @Query("cursor") String cursor);
+    Call<GenericResponse<OrderResult>> getOrderHistory(@Query("category") String category,
+                                                       @Query("symbol") String symbol,
+                                                       @Query("baseCoin") String baseCoin,
+                                                       @Query("settleCoin") String settleCoin,
+                                                       @Query("orderId") String orderId,
+                                                       @Query("orderLinkId") String orderLinkId,
+                                                       @Query("orderFilter") String orderFilter,
+                                                       @Query("orderStatus") OrderStatus orderStatus,
+                                                       @Query("startTime") Long startTime,
+                                                       @Query("endTime") Long endTime,
+                                                       @Query("limit") Integer limit,
+                                                       @Query("cursor") String cursor);
 
     /**
      * Get Borrow Quota (Spot)
@@ -2872,8 +2874,8 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @GET("/v5/account/wallet-balance")
-    Call<Object> getWalletBalance(@Query("accountType") String accountType,
-                                  @Query("coin") String coin);
+    Call<GenericResponse<WalletBalanceResult>> getWalletBalance(@Query("accountType") String accountType,
+                                                                @Query("coin") String coin);
 
     /**
      * Upgrade to Unified Account

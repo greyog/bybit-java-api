@@ -1,7 +1,9 @@
 package com.bybit.api.client.impl;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
+import com.bybit.api.client.domain.trade.response.OrderResult;
 import com.bybit.api.client.restApi.BybitApiService;
 import com.bybit.api.client.restApi.BybitApiTradeRestClient;
 import com.bybit.api.client.service.BybitJsonConverter;
@@ -37,7 +39,7 @@ public class BybitApiTradeRestClientImpl implements BybitApiTradeRestClient {
     }
 
     @Override
-    public Object getOrderHistory(TradeOrderRequest orderHistoryRequest) {
+    public GenericResponse<OrderResult> getOrderHistory(TradeOrderRequest orderHistoryRequest) {
         return executeSync(bybitApiService.getOrderHistory(
                 orderHistoryRequest.getCategory().getCategoryTypeId(),
                 orderHistoryRequest.getSymbol(),

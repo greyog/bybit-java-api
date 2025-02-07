@@ -1,6 +1,8 @@
 package com.bybit.api.client.impl;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.account.request.BatchSetCollateralCoinRequest;
+import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
 import com.bybit.api.client.restApi.BybitApiAccountRestClient;
 import com.bybit.api.client.restApi.BybitApiService;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
@@ -18,7 +20,7 @@ public class BybitApiAccountRestClientImpl implements BybitApiAccountRestClient 
     }
     // Account endpoints
     @Override
-    public Object getWalletBalance(AccountDataRequest walletBalanceRequest) {
+    public GenericResponse<WalletBalanceResult> getWalletBalance(AccountDataRequest walletBalanceRequest) {
         return executeSync(bybitApiService.getWalletBalance(
                 walletBalanceRequest.getAccountType() == null ? null : walletBalanceRequest.getAccountType().getAccountTypeValue(),
                 walletBalanceRequest.getCoins()
