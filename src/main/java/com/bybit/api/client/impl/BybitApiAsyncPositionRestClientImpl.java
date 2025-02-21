@@ -1,6 +1,8 @@
 package com.bybit.api.client.impl;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.position.request.BatchMovePositionRequest;
+import com.bybit.api.client.domain.position.response.PositionResult;
 import com.bybit.api.client.restApi.BybitApiAsyncPositionRestClient;
 import com.bybit.api.client.restApi.BybitApiCallback;
 import com.bybit.api.client.restApi.BybitApiService;
@@ -23,7 +25,7 @@ public class BybitApiAsyncPositionRestClientImpl implements BybitApiAsyncPositio
 
     // Position Data
     @Override
-    public void getPositionInfo(PositionDataRequest positionListRequest, BybitApiCallback<Object> callback) {
+    public void getPositionInfo(PositionDataRequest positionListRequest, BybitApiCallback<GenericResponse<PositionResult>> callback) {
         bybitApiService.getPositionInfo(
                 positionListRequest.getCategory().getCategoryTypeId(),
                 positionListRequest.getSymbol(),
@@ -31,7 +33,7 @@ public class BybitApiAsyncPositionRestClientImpl implements BybitApiAsyncPositio
                 positionListRequest.getSettleCoin(),
                 positionListRequest.getLimit(),
                 positionListRequest.getCursor()
-        ).enqueue(new BybitApiCallbackAdapter<>(callback));
+        ).enqueue(new BybitApiCallbackAdapter<GenericResponse<PositionResult>>(callback));
     }
 
     @Override

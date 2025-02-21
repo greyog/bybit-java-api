@@ -6,6 +6,7 @@ import com.bybit.api.client.exception.BybitApiException;
 import com.bybit.api.client.security.AuthenticationInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.Getter;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
@@ -45,7 +46,9 @@ public class BybitApiServiceGenerator {
                 .pingInterval(20, TimeUnit.SECONDS)
                 .build();
         var objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.enable(DeserializationFeature.READ_UNKNOWN_ENUM_VALUES_AS_NULL);
+//        objectMapper.enable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
         converterFactory = JacksonConverterFactory.create(objectMapper);
     }
 

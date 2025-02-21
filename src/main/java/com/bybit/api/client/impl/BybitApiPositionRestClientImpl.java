@@ -1,6 +1,8 @@
 package com.bybit.api.client.impl;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.position.request.BatchMovePositionRequest;
+import com.bybit.api.client.domain.position.response.PositionResult;
 import com.bybit.api.client.restApi.BybitApiPositionRestClient;
 import com.bybit.api.client.restApi.BybitApiService;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
@@ -19,7 +21,7 @@ public class BybitApiPositionRestClientImpl implements BybitApiPositionRestClien
 
     // Position endpoints
     @Override
-    public Object getPositionInfo(PositionDataRequest positionListRequest) {
+    public GenericResponse<PositionResult> getPositionInfo(PositionDataRequest positionListRequest) {
         return executeSync(bybitApiService.getPositionInfo(
                 positionListRequest.getCategory().getCategoryTypeId(),
                 positionListRequest.getSymbol(),

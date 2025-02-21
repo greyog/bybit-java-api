@@ -1,11 +1,13 @@
 package com.bybit.api.client.restApi;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.position.request.BatchMovePositionRequest;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
+import com.bybit.api.client.domain.position.response.PositionResult;
 
 public interface BybitApiAsyncPositionRestClient {
     // Position endpoints
-    void getPositionInfo(PositionDataRequest positionListRequest, BybitApiCallback<Object> callback);
+    void getPositionInfo(PositionDataRequest positionListRequest, BybitApiCallback<GenericResponse<PositionResult>> callback);
     void setPositionLeverage(PositionDataRequest setLeverageRequest, BybitApiCallback<Object> callback);
     void swithMarginRequest(PositionDataRequest switchMarginRequest, BybitApiCallback<Object> callback);
     void switchPositionMode(PositionDataRequest switchPositionModeRequest, BybitApiCallback<Object> callback);

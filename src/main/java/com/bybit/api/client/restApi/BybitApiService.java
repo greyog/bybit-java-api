@@ -17,6 +17,7 @@ import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
 import com.bybit.api.client.domain.position.request.ConfirmNewRiskLimitRequest;
 import com.bybit.api.client.domain.position.request.*;
+import com.bybit.api.client.domain.position.response.PositionResult;
 import com.bybit.api.client.domain.spot.leverageToken.SpotLeverageTokenRequest;
 import com.bybit.api.client.domain.spot.marginTrade.SpotMarginTradeBorrowRequest;
 import com.bybit.api.client.domain.spot.marginTrade.SpotMarginTradeRePayRequest;
@@ -1961,12 +1962,12 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @GET("/v5/position/list")
-    Call<Object> getPositionInfo(@Query("category") String category,
-                                 @Query("symbol") String symbol,
-                                 @Query("baseCoin") String baseCoin,
-                                 @Query("settleCoin") String settleCoin,
-                                 @Query("limit") Integer limit,
-                                 @Query("cursor") String cursor);
+    Call<GenericResponse<PositionResult>> getPositionInfo(@Query("category") String category,
+                                                          @Query("symbol") String symbol,
+                                                          @Query("baseCoin") String baseCoin,
+                                                          @Query("settleCoin") String settleCoin,
+                                                          @Query("limit") Integer limit,
+                                                          @Query("cursor") String cursor);
 
     /**
      * Get Move Position History
