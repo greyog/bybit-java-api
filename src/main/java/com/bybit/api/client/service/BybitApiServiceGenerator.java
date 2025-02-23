@@ -1,5 +1,6 @@
 package com.bybit.api.client.service;
 
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.restApi.BybitApiService;
 import com.bybit.api.client.exception.BybitApiError;
 import com.bybit.api.client.exception.BybitApiException;
@@ -58,6 +59,13 @@ public class BybitApiServiceGenerator {
     private static final Converter<ResponseBody, BybitApiError> errorBodyConverter =
             (Converter<ResponseBody, BybitApiError>) converterFactory.responseBodyConverter(
                     BybitApiError.class, new Annotation[0], null);
+
+    @SuppressWarnings("unchecked")
+    @Nullable
+    private static final Converter<ResponseBody, GenericResponse<?>> okBodyConverter =
+            (Converter<ResponseBody, GenericResponse<?>>) converterFactory.responseBodyConverter(
+                    GenericResponse.class, new Annotation[0], null);
+
 
     public static <S> S createService(Class<S> serviceClass, String baseUrl, boolean debugMode, long recvWindow, String logOption, String referer) {
         return createService(serviceClass, null, null, baseUrl, debugMode, recvWindow, logOption, referer);
