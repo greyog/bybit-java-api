@@ -12,5 +12,11 @@ public enum Side {
     Side(String transactionSide) {
         this.transactionSide = transactionSide;
     }
+
+
+    @Override
+    public String toString() {
+        return this.transactionSide;
+    }
 }
 

@@ -13,4 +13,10 @@ public enum OrderFilter {
     OrderFilter(String orderFilterType) {
         this.orderFilterType = orderFilterType;
     }
+
+    @Override
+    public String toString() {
+        return this.orderFilterType;
+    }
+
 }

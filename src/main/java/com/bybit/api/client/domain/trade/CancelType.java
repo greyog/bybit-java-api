@@ -21,4 +21,9 @@ public enum CancelType {
     CancelType(String cancelReason) {
         this.cancelReason = cancelReason;
     }
+
+    @Override
+    public String toString() {
+        return this.cancelReason;
+    }
 }

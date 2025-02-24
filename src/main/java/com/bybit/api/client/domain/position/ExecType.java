@@ -16,4 +16,11 @@ public enum ExecType {
     ExecType(String execTypeId) {
         this.execTypeId = execTypeId;
     }
+
+
+    @Override
+    public String toString() {
+        return this.execTypeId;
+    }
+
 }

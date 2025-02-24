@@ -3,6 +3,7 @@ package sold_option_basic_hedger;
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
 import com.bybit.api.client.domain.GenericResponse;
+import com.bybit.api.client.domain.TradeOrderType;
 import com.bybit.api.client.domain.market.OptionType;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
@@ -48,6 +49,18 @@ public class Main {
         Optional<PositionEntry> futuresPosition = futuresPositions.stream()
                 .filter(positionEntry -> positionEntry.getSize().compareTo(BigDecimal.ZERO) != 0)
                 .findFirst();
+
+        if (optionPositions.isEmpty() && futuresPosition.isPresent()) {
+            var futPos = futuresPosition.get();
+            var closeFuturesPositionRequest = TradeOrderRequest.builder()
+                    .category(CategoryType.LINEAR)
+                    .symbol(futPos.getSymbol())
+                    .qty(futPos.getSize().abs().toString())
+                    .side(futPos.getSide() == Side.BUY ? Side.SELL : Side.BUY)
+                    .orderType(TradeOrderType.MARKET)
+                    .build();
+            tradeClient.createOrder(closeFuturesPositionRequest);
+        }
 
         optionPositions.forEach(pos -> {
             var typeAndStrike = getOptionTypeAndStrikePrice(pos.getSymbol());
