@@ -20,6 +20,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,35 +52,21 @@ public class Main {
                 .findFirst();
 
         if (optionPositions.isEmpty() && futuresPosition.isPresent()) {
-            var futPos = futuresPosition.get();
-            var closeFuturesPositionRequest = TradeOrderRequest.builder()
-                    .category(CategoryType.LINEAR)
-                    .symbol(futPos.getSymbol())
-                    .qty(futPos.getSize().abs().toString())
-                    .side(futPos.getSide() == Side.BUY ? Side.SELL : Side.BUY)
-                    .orderType(TradeOrderType.MARKET)
-                    .build();
-            tradeClient.createOrder(closeFuturesPositionRequest);
+            closeFuturesPosition(futuresPosition, tradeClient);
         }
 
         optionPositions.forEach(pos -> {
             var typeAndStrike = getOptionTypeAndStrikePrice(pos.getSymbol());
             var strikePrice = typeAndStrike.getRight();
             var type = typeAndStrike.getLeft();
+            var deltaPerOne = pos.getDelta().divide(pos.getSize(), RoundingMode.HALF_UP);
             switch (type) {
                 case CALL:
-                    if (pos.getDelta().compareTo(BigDecimal.valueOf(-0.5)) > 0) {
+                    if (deltaPerOne.compareTo(BigDecimal.valueOf(-0.5)) > 0) {
                         if (futuresPosition.isPresent()) {
-                            var futPos = futuresPosition.get();
-                            var closeFuturesPositionRequest = TradeOrderRequest.builder()
-                                    .category(CategoryType.LINEAR)
-                                    .symbol(futPos.getSymbol())
-                                    .qty(futPos.getSize().abs().toString())
-                                    .side(Side.SELL)
-                                    .build();
-                            tradeClient.createOrder(closeFuturesPositionRequest);
+                            closeFuturesPosition(futuresPosition, tradeClient);
                         }
-//                        checkOrdersForCall(strikePrice, pos.getSize(), );
+                        placeOrderToHedgeSoldCall(strikePrice, pos.getSize(), futuresOrders, tradeClient);
                     }
 //                    else {
 //                        checkPositions();
@@ -90,6 +77,30 @@ public class Main {
             }
         });
 
+    }
+
+    private static void placeOrderToHedgeSoldCall(BigDecimal strikePrice, BigDecimal size,
+                                                  List<OrderEntry> futuresOrders, BybitApiTradeRestClient tradeClient) {
+        var newOrderRequest = TradeOrderRequest.builder()
+                .category(CategoryType.LINEAR)
+                .symbol(HEDGE_SYMBOL)
+                .qty(futPos.getSize().abs().toString())
+                .side(futPos.getSide() == Side.BUY ? Side.SELL : Side.BUY)
+                .orderType(TradeOrderType.MARKET)
+                .build();
+        tradeClient.createOrder(newOrderRequest);
+    }
+
+    private static void closeFuturesPosition(Optional<PositionEntry> futuresPosition, BybitApiTradeRestClient tradeClient) {
+        var futPos = futuresPosition.get();
+        var closeFuturesPositionRequest = TradeOrderRequest.builder()
+                .category(CategoryType.LINEAR)
+                .symbol(futPos.getSymbol())
+                .qty(futPos.getSize().abs().toString())
+                .side(futPos.getSide() == Side.BUY ? Side.SELL : Side.BUY)
+                .orderType(TradeOrderType.MARKET)
+                .build();
+        tradeClient.createOrder(closeFuturesPositionRequest);
     }
 
     @NotNull
