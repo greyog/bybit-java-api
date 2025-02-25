@@ -1105,7 +1105,7 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @POST("/v5/order/create")
-    Call<Object> createOrder(@Body PlaceOrderRequest placeOrderRequest);
+    Call<GenericResponse<OrderResult>> createOrder(@Body PlaceOrderRequest placeOrderRequest);
 
     /**
      * Batch Place Order

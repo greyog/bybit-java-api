@@ -4,10 +4,12 @@ import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
 import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.TradeOrderType;
+import com.bybit.api.client.domain.TriggerBy;
 import com.bybit.api.client.domain.market.OptionType;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
 import com.bybit.api.client.domain.trade.Side;
+import com.bybit.api.client.domain.trade.TriggerDirection;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
 import com.bybit.api.client.domain.trade.response.OrderEntry;
 import com.bybit.api.client.exception.BybitApiException;
@@ -84,11 +86,21 @@ public class Main {
         var newOrderRequest = TradeOrderRequest.builder()
                 .category(CategoryType.LINEAR)
                 .symbol(HEDGE_SYMBOL)
-                .qty(futPos.getSize().abs().toString())
-                .side(futPos.getSide() == Side.BUY ? Side.SELL : Side.BUY)
+                .qty(size.toString())
+                .side(Side.BUY)
                 .orderType(TradeOrderType.MARKET)
+                .triggerPrice(strikePrice.toString())
+                .triggerBy(TriggerBy.LAST_PRICE)
+                .triggerDirection(TriggerDirection.RISE_TO_TRIGGER_PRICE.getIndex())
+                .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
                 .build();
-        tradeClient.createOrder(newOrderRequest);
+        futuresOrders.stream()
+                .filter(order -> newOrderRequest.getSide().equals(order.getSide()))
+                .filter(order -> newOrderRequest.getTriggerPrice().compareTo(order.getTriggerPrice()) == 0)
+                .filter(order -> order.getQty().compareTo(size) == 0)
+        var order = tradeClient.createOrder(newOrderRequest);
+        checkResult(order);
+
     }
 
     private static void closeFuturesPosition(Optional<PositionEntry> futuresPosition, BybitApiTradeRestClient tradeClient) {

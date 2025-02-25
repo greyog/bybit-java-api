@@ -9,6 +9,8 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.math.BigDecimal;
+
 @JsonPropertyOrder()
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -24,12 +26,12 @@ public class OrderEntry {
     private String symbol;
 
 
-    private String price;
+    private BigDecimal price;
 
 
-    private String qty;
+    private BigDecimal qty;
 
-    private String side;
+    private Side side;
 
     private String isLeverage;
 
@@ -74,22 +76,22 @@ public class OrderEntry {
     private String orderIv;
 
 
-    private String triggerPrice;
+    private BigDecimal triggerPrice;
 
 
-    private String takeProfit;
+    private BigDecimal takeProfit;
 
 
-    private String stopLoss;
+    private BigDecimal stopLoss;
 
 
     private String tpslMode;
 
 
-    private String tpLimitPrice;
+    private BigDecimal tpLimitPrice;
 
 
-    private String slLimitPrice;
+    private BigDecimal slLimitPrice;
 
 
     private TriggerBy tpTriggerBy;

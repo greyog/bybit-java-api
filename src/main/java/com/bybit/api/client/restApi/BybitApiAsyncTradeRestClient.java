@@ -17,9 +17,9 @@ public interface BybitApiAsyncTradeRestClient {
     void getBorrowQuota(TradeOrderRequest borrowQuotaRequest, BybitApiCallback<Object> callback);
     void getOpenOrders(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void getTradeHistory(TradeOrderRequest order, BybitApiCallback<Object> callback);
-    void createOrder(TradeOrderRequest order, BybitApiCallback<Object> callback);
-    void createOrder(Map<String, Object> order, BybitApiCallback<Object> callback);
-    void createOrder(String order, BybitApiCallback<Object> callback) throws IOException;
+    void createOrder(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback);
+    void createOrder(Map<String, Object> order, BybitApiCallback<GenericResponse<OrderResult>> callback);
+    void createOrder(String order, BybitApiCallback<GenericResponse<OrderResult>> callback) throws IOException;
     void createBatchOrder(BatchOrderRequest batchOrderRequest, BybitApiCallback<Object> callback);
     void createBathOrder(Map<String, Object> payload, BybitApiCallback<Object> callback);
     void createBathOrder(String json, BybitApiCallback<Object> callback) throws IOException;

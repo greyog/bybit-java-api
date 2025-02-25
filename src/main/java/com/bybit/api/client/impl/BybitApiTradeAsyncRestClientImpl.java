@@ -88,20 +88,20 @@ public class BybitApiTradeAsyncRestClientImpl implements BybitApiAsyncTradeRestC
     }
 
     @Override
-    public void createOrder(TradeOrderRequest order, BybitApiCallback<Object> callback) {
+    public void createOrder(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         var placeOrderRequest = converter.convertTradeToPlaceOrderRequest(order);
         bybitApiService.createOrder(placeOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void createOrder(Map<String, Object> order, BybitApiCallback<Object> callback) {
+    public void createOrder(Map<String, Object> order, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         var singleOrderRequest = converter.convertMapToSingleOrderRequest(order);
         var placeOrderRequest = converter.convertTradeToPlaceOrderRequest(singleOrderRequest);
         bybitApiService.createOrder(placeOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void createOrder(String order, BybitApiCallback<Object> callback) throws IOException {
+    public void createOrder(String order, BybitApiCallback<GenericResponse<OrderResult>> callback) throws IOException {
         var singleOrderRequest = converter.convertJsonToSingleOrderRequest(order);
         var placeOrderRequest = converter.convertTradeToPlaceOrderRequest(singleOrderRequest);
         bybitApiService.createOrder(placeOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));

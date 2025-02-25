@@ -17,7 +17,7 @@ public interface BybitApiTradeRestClient {
     Object getBorrowQuota(TradeOrderRequest borrowQuotaRequest);
     GenericResponse<OrderResult> getOpenOrders(TradeOrderRequest order);
     Object getTradeHistory(TradeOrderRequest order);
-    Object createOrder(TradeOrderRequest order);
+    GenericResponse<OrderResult> createOrder(TradeOrderRequest order);
     Object createOrder(Map<String, Object> payload);
     Object createOrder(String json) throws IOException;
     Object createBatchOrder(BatchOrderRequest batchOrderRequest);

@@ -55,7 +55,7 @@ public class BybitApiTradeRestClientImpl implements BybitApiTradeRestClient {
                 orderHistoryRequest.getCursor()));
     }
 
-    public Object createOrder(TradeOrderRequest tradeOrderRequest) {
+    public GenericResponse<OrderResult> createOrder(TradeOrderRequest tradeOrderRequest) {
         var singleOrderRequest = converter.convertTradeToPlaceOrderRequest(tradeOrderRequest);
         return executeSync(bybitApiService.createOrder(singleOrderRequest));
     }
