@@ -30,6 +30,6 @@ public interface BybitApiTradeRestClient {
     Object cancelBatchOrder(Map<String, Object> payload);
     Object cancelBatchOrder(String json) throws IOException;
     Object cancelOrder(TradeOrderRequest order);
-    Object cancelAllOrder(TradeOrderRequest order);
+    GenericResponse<OrderResult> cancelAllOrder(TradeOrderRequest order);
     Object amendOrder(TradeOrderRequest order);
 }

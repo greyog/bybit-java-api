@@ -148,7 +148,7 @@ public class BybitApiTradeRestClientImpl implements BybitApiTradeRestClient {
 
 
     @Override
-    public Object cancelAllOrder(TradeOrderRequest order) {
+    public GenericResponse<OrderResult> cancelAllOrder(TradeOrderRequest order) {
         var cancelAllOrderRequest = converter.convertTradeToCancelAllOrdersRequest(order);
         return executeSync(bybitApiService.cancelAllOrder(cancelAllOrderRequest));
     }

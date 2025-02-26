@@ -174,7 +174,7 @@ public class BybitApiTradeAsyncRestClientImpl implements BybitApiAsyncTradeRestC
     }
 
     @Override
-    public void cancelAllOrder(TradeOrderRequest order, BybitApiCallback<Object> callback) {
+    public void cancelAllOrder(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         var cancelAllOrderRequest = converter.convertTradeToCancelAllOrdersRequest(order);
         bybitApiService.cancelAllOrder(cancelAllOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }

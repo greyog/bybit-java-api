@@ -54,8 +54,8 @@ public class Main {
                 myAskOrders.add(orderEntry);
             }
         });
-        myBidOrders.sort(Comparator.comparing(o -> new BigDecimal(o.getPrice())));
-        myAskOrders.sort((o1, o2) -> new BigDecimal(o2.getPrice()).compareTo(new BigDecimal(o1.getPrice())));
+        myBidOrders.sort(Comparator.comparing(OrderEntry::getPrice));
+        myAskOrders.sort((o1, o2) -> o2.getPrice().compareTo(o1.getPrice()));
 
         var marketDataClient = factory.newMarketDataRestClient();
         var instrumentInfoRequest = MarketDataRequest.builder()

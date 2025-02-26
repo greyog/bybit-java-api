@@ -30,6 +30,6 @@ public interface BybitApiAsyncTradeRestClient {
     void cancelBatchOrder(Map<String, Object> payload, BybitApiCallback<Object> callback);
     void cancelBatchOrder(String json, BybitApiCallback<Object> callback) throws IOException;
     void cancelOrder(TradeOrderRequest order, BybitApiCallback<Object> callback);
-    void cancelAllOrder(TradeOrderRequest order, BybitApiCallback<Object> callback);
+    void cancelAllOrder(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void amendOrder(TradeOrderRequest order, BybitApiCallback<Object> callback);
 }

@@ -1309,7 +1309,7 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @POST("/v5/order/cancel-all")
-    Call<Object> cancelAllOrder(@Body CancelAllOrdersRequest cancelAllOrdersRequest);
+    Call<GenericResponse<OrderResult>> cancelAllOrder(@Body CancelAllOrdersRequest cancelAllOrdersRequest);
 
     /**
      * Amend Order

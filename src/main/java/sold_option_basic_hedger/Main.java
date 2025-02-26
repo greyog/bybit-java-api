@@ -53,11 +53,15 @@ public class Main {
                 .filter(positionEntry -> positionEntry.getSize().compareTo(BigDecimal.ZERO) != 0)
                 .findFirst();
 
-        if (optionPositions.isEmpty() && futuresPosition.isPresent()) {
-            closeFuturesPosition(futuresPosition, tradeClient);
+        if (optionPositions.isEmpty()) {
+            if (!futuresOrders.isEmpty()) {
+                cancelAllFuturesOrders(tradeClient);
+            }
+            futuresPosition.ifPresent(positionEntry -> closeFuturesPosition(futuresPosition.get(), tradeClient));
         }
 
-        optionPositions.forEach(pos -> {
+        var targetPosition = BigDecimal.ZERO;
+        for (PositionEntry pos : optionPositions) {
             var typeAndStrike = getOptionTypeAndStrikePrice(pos.getSymbol());
             var strikePrice = typeAndStrike.getRight();
             var type = typeAndStrike.getLeft();
@@ -65,24 +69,27 @@ public class Main {
             switch (type) {
                 case CALL:
                     if (deltaPerOne.compareTo(BigDecimal.valueOf(-0.5)) > 0) {
-                        if (futuresPosition.isPresent()) {
-                            closeFuturesPosition(futuresPosition, tradeClient);
+                        futuresPosition.filter(positionEntry -> positionEntry.getSide().equals(Side.BUY))
+                                .ifPresent(positionEntry -> closeFuturesPosition(positionEntry, tradeClient));
+                        if (!futuresOrders.isEmpty()) {
+                            cancelAllFuturesOrders(tradeClient);
                         }
-                        placeOrderToHedgeSoldCall(strikePrice, pos.getSize(), futuresOrders, tradeClient);
+                        placeTriggerOrderToHedgeSoldCall(strikePrice, pos.getSize(), tradeClient);
+                    } else {
+                        placeMarketOrderToHedgeSoldCall(strikePrice, pos.getSize(), tradeClient);
                     }
-//                    else {
-//                        checkPositions();
-//                    }
                     break;
                 case PUT:
                     throw new NotImplementedException("Can't hedge put yet");
             }
-        });
+        }
 
+
+        System.out.println("targetPosition = " + targetPosition);
     }
 
-    private static void placeOrderToHedgeSoldCall(BigDecimal strikePrice, BigDecimal size,
-                                                  List<OrderEntry> futuresOrders, BybitApiTradeRestClient tradeClient) {
+    private static void placeTriggerOrderToHedgeSoldCall(BigDecimal strikePrice, BigDecimal size,
+                                                         BybitApiTradeRestClient tradeClient) {
         var newOrderRequest = TradeOrderRequest.builder()
                 .category(CategoryType.LINEAR)
                 .symbol(HEDGE_SYMBOL)
@@ -94,17 +101,42 @@ public class Main {
                 .triggerDirection(TriggerDirection.RISE_TO_TRIGGER_PRICE.getIndex())
                 .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
                 .build();
-        futuresOrders.stream()
-                .filter(order -> newOrderRequest.getSide().equals(order.getSide()))
-                .filter(order -> newOrderRequest.getTriggerPrice().compareTo(order.getTriggerPrice()) == 0)
-                .filter(order -> order.getQty().compareTo(size) == 0)
         var order = tradeClient.createOrder(newOrderRequest);
         checkResult(order);
-
     }
 
-    private static void closeFuturesPosition(Optional<PositionEntry> futuresPosition, BybitApiTradeRestClient tradeClient) {
-        var futPos = futuresPosition.get();
+    private static void placeMarketOrderToHedgeSoldCall(BigDecimal strikePrice, BigDecimal size,
+                                                         BybitApiTradeRestClient tradeClient) {
+        var newMarketBuyOrderRequest = TradeOrderRequest.builder()
+                .category(CategoryType.LINEAR)
+                .symbol(HEDGE_SYMBOL)
+                .qty(size.toString())
+                .side(Side.BUY)
+                .orderType(TradeOrderType.MARKET)
+                .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
+                .slTriggerBy(TriggerBy.LAST_PRICE)
+                .tpslMode("Partial")
+                .slOrderType(TradeOrderType.MARKET)
+                .build();
+        var order = tradeClient.createOrder(newMarketBuyOrderRequest);
+        checkResult(order);
+
+//        var newSlOrderRequest = TradeOrderRequest.builder()
+//                .category(CategoryType.LINEAR)
+//                .symbol(HEDGE_SYMBOL)
+//                .qty(size.toString())
+//                .side(Side.SELL)
+//                .orderType(TradeOrderType.MARKET)
+//                .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
+////                .slTriggerBy(TriggerBy.LAST_PRICE)
+//                .tpslMode("Partial")
+////                .slOrderType(TradeOrderType.MARKET)
+//                .build();
+//        var slOrder = tradeClient.createOrder(newSlOrderRequest);
+//        checkResult(slOrder);
+    }
+
+    private static void closeFuturesPosition(PositionEntry futPos, BybitApiTradeRestClient tradeClient) {
         var closeFuturesPositionRequest = TradeOrderRequest.builder()
                 .category(CategoryType.LINEAR)
                 .symbol(futPos.getSymbol())
@@ -112,7 +144,17 @@ public class Main {
                 .side(futPos.getSide() == Side.BUY ? Side.SELL : Side.BUY)
                 .orderType(TradeOrderType.MARKET)
                 .build();
-        tradeClient.createOrder(closeFuturesPositionRequest);
+        var order = tradeClient.createOrder(closeFuturesPositionRequest);
+        checkResult(order);
+    }
+
+    public static void cancelAllFuturesOrders(BybitApiTradeRestClient tradeClient) {
+        var cancelAllOrdersRequest = TradeOrderRequest.builder()
+                .category(CategoryType.LINEAR)
+                .symbol(HEDGE_SYMBOL)
+                .build();
+        var order = tradeClient.cancelAllOrder(cancelAllOrdersRequest);
+        checkResult(order);
     }
 
     @NotNull
@@ -136,7 +178,7 @@ public class Main {
 
     @NotNull
     private static List<OrderEntry> getOrders(CategoryType categoryType, BybitApiTradeRestClient client,
-                                                    String symbol) {
+                                              String symbol) {
         List<OrderEntry> orderEntries = new ArrayList<>();
         String nextPageCursor = null;
         var requestBuilder = TradeOrderRequest.builder()
@@ -156,7 +198,7 @@ public class Main {
     private static void checkResult(GenericResponse<?> response) {
         if (response.getRetCode() != 0) {
             throw new BybitApiException("Code: " + response.getRetCode()
-                    + " , message: " + response.getRetMsg());
+                                        + " , message: " + response.getRetMsg());
         }
     }
 
