@@ -124,9 +124,9 @@ public class OrderEntry {
     private String smpOrderId;
 
 
-    private String createdTime;
+    private Long createdTime;
 
-    private String updatedTime;
+    private Long updatedTime;
 
     @Override
     public String toString() {

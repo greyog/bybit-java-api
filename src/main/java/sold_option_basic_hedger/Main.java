@@ -158,7 +158,7 @@ public class Main {
     }
 
     @NotNull
-    private static List<PositionEntry> getPositions(CategoryType categoryType, BybitApiPositionRestClient positionRestClient,
+    public static List<PositionEntry> getPositions(CategoryType categoryType, BybitApiPositionRestClient positionRestClient,
                                                     String symbol) {
         List<PositionEntry> positionEntries = new ArrayList<>();
         String nextPageCursor = null;
