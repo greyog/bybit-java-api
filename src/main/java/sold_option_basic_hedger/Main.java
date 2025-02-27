@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,6 +49,8 @@ public class Main {
         System.out.println(futuresPositions);
 
         List<OrderEntry> futuresOrders = getOrders(CategoryType.LINEAR, tradeClient, HEDGE_SYMBOL);
+        futuresOrders.forEach(o -> System.out.printf("type %s, price %s, triggrePrice %s, qty %s%n",
+                o.getOrderType(), o.getPrice(), o.getTriggerPrice(), o.getQty()));
 
         Optional<PositionEntry> futuresPosition = futuresPositions.stream()
                 .filter(positionEntry -> positionEntry.getSize().compareTo(BigDecimal.ZERO) != 0)
@@ -60,7 +63,10 @@ public class Main {
             futuresPosition.ifPresent(positionEntry -> closeFuturesPosition(futuresPosition.get(), tradeClient));
         }
 
-        var targetPosition = BigDecimal.ZERO;
+        var targetFuturesPosition = BigDecimal.ZERO;
+        var slSellPriceQty = new HashMap<String, BigDecimal>();
+        var triggerBuyPriceQty = new HashMap<String, BigDecimal>();
+
         for (PositionEntry pos : optionPositions) {
             var typeAndStrike = getOptionTypeAndStrikePrice(pos.getSymbol());
             var strikePrice = typeAndStrike.getRight();
@@ -69,14 +75,22 @@ public class Main {
             switch (type) {
                 case CALL:
                     if (deltaPerOne.compareTo(BigDecimal.valueOf(-0.5)) > 0) {
-                        futuresPosition.filter(positionEntry -> positionEntry.getSide().equals(Side.BUY))
-                                .ifPresent(positionEntry -> closeFuturesPosition(positionEntry, tradeClient));
-                        if (!futuresOrders.isEmpty()) {
-                            cancelAllFuturesOrders(tradeClient);
-                        }
-                        placeTriggerOrderToHedgeSoldCall(strikePrice, pos.getSize(), tradeClient);
+//                        futuresPosition.filter(positionEntry -> positionEntry.getSide().equals(Side.BUY))
+//                                .ifPresent(positionEntry -> closeFuturesPosition(positionEntry, tradeClient));
+//                        if (!futuresOrders.isEmpty()) {
+//                            cancelAllFuturesOrders(tradeClient);
+//                        }
+//                        placeTriggerOrderToHedgeSoldCall(strikePrice, pos.getSize(), tradeClient);
+                        triggerBuyPriceQty.put(strikePrice.toString(),
+                                slSellPriceQty.getOrDefault(strikePrice.toString(), BigDecimal.ZERO)
+                                        .add(pos.getSize()));
                     } else {
-                        placeMarketOrderToHedgeSoldCall(strikePrice, pos.getSize(), tradeClient);
+                        targetFuturesPosition = targetFuturesPosition.add(pos.getSize());
+                        var slPrice = strikePrice.subtract(BigDecimal.valueOf(0.01));
+                        slSellPriceQty.put(slPrice.toString(),
+                                slSellPriceQty.getOrDefault(slPrice.toString(), BigDecimal.ZERO)
+                                        .add(pos.getSize()));
+//                        placeMarketOrderToHedgeSoldCall(strikePrice, pos.getSize(), tradeClient);
                     }
                     break;
                 case PUT:
@@ -85,7 +99,10 @@ public class Main {
         }
 
 
-        System.out.println("targetPosition = " + targetPosition);
+        System.out.println("targetFuturesPosition = " + targetFuturesPosition);
+        System.out.println("slSellPriceQty = " + slSellPriceQty);
+        System.out.println("triggerBuyPriceQty = " + triggerBuyPriceQty);
+
     }
 
     private static void placeTriggerOrderToHedgeSoldCall(BigDecimal strikePrice, BigDecimal size,
@@ -114,9 +131,9 @@ public class Main {
                 .side(Side.BUY)
                 .orderType(TradeOrderType.MARKET)
                 .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
-                .slTriggerBy(TriggerBy.LAST_PRICE)
+//                .slTriggerBy(TriggerBy.LAST_PRICE)
                 .tpslMode("Partial")
-                .slOrderType(TradeOrderType.MARKET)
+//                .slOrderType(TradeOrderType.MARKET)
                 .build();
         var order = tradeClient.createOrder(newMarketBuyOrderRequest);
         checkResult(order);
