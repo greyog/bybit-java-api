@@ -15,6 +15,7 @@ import com.bybit.api.client.domain.loan.request.CryptoLoanRepayRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
+import com.bybit.api.client.domain.market.response.tickers.TickersResult;
 import com.bybit.api.client.domain.position.request.ConfirmNewRiskLimitRequest;
 import com.bybit.api.client.domain.position.request.*;
 import com.bybit.api.client.domain.position.response.PositionResult;
@@ -428,7 +429,7 @@ public interface BybitApiService {
      * non-collateral margin coin returns ""
      */
     @GET("/v5/market/tickers")
-    Call<Object> getMarketTickers(@Query("category") String category, @Query("symbol") String symbol, @Query("baseCoin") String baseCoin, @Query("expDate") String expDate);
+    Call<GenericResponse<TickersResult>> getMarketTickers(@Query("category") String category, @Query("symbol") String symbol, @Query("baseCoin") String baseCoin, @Query("expDate") String expDate);
 
     /**
      * Get Funding Rate History

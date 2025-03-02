@@ -5,6 +5,7 @@ import com.bybit.api.client.domain.announcement.request.AnnouncementInfoRequest;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
+import com.bybit.api.client.domain.market.response.tickers.TickersResult;
 
 public interface BybitApiAsyncMarketDataRestClient {
     // Market endpoints
@@ -15,7 +16,7 @@ public interface BybitApiAsyncMarketDataRestClient {
     void getPremiumIndexPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);
     void getInstrumentsInfo(MarketDataRequest instrumentInfoRequest, BybitApiCallback<GenericResponse<InstrumentInfoResult>> callback);
     void getMarketOrderBook(MarketDataRequest marketOrderBookRequest, BybitApiCallback<Object> callback);
-    void getMarketTickers(MarketDataRequest marketDataTickerRequest, BybitApiCallback<Object> callback);
+    void getMarketTickers(MarketDataRequest marketDataTickerRequest, BybitApiCallback<GenericResponse<TickersResult>> callback);
     void getFundingHistory(MarketDataRequest fundingHistoryRequest, BybitApiCallback<Object> callback);
     void getRecentTradeData(MarketDataRequest recentTradeRequest, BybitApiCallback<Object> callback);
     void getOpenInterest(MarketDataRequest openInterestRequest, BybitApiCallback<Object> callback);

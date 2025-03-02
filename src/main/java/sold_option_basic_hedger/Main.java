@@ -6,14 +6,18 @@ import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.TradeOrderType;
 import com.bybit.api.client.domain.TriggerBy;
 import com.bybit.api.client.domain.market.OptionType;
+import com.bybit.api.client.domain.market.request.MarketDataRequest;
+import com.bybit.api.client.domain.market.response.tickers.TickerEntry;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
 import com.bybit.api.client.domain.trade.Side;
 import com.bybit.api.client.domain.trade.TriggerDirection;
+import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
 import com.bybit.api.client.domain.trade.response.OrderEntry;
 import com.bybit.api.client.exception.BybitApiException;
 import com.bybit.api.client.log.LogOption;
+import com.bybit.api.client.restApi.BybitApiMarketRestClient;
 import com.bybit.api.client.restApi.BybitApiPositionRestClient;
 import com.bybit.api.client.restApi.BybitApiTradeRestClient;
 import com.bybit.api.client.service.BybitApiClientFactory;
@@ -31,6 +35,8 @@ import java.util.Optional;
 public class Main {
 
     public static final String HEDGE_SYMBOL = "SOLPERP";
+    private static final BigDecimal SL_OFFSET = BigDecimal.ZERO;
+    private static final BigDecimal TRIGGER_SL_OFFSET = BigDecimal.valueOf(0.05);
 
     public static void main(String[] args) {
         var factory = BybitApiClientFactory.newInstance(
@@ -64,6 +70,8 @@ public class Main {
 //            return;
 //        }
 
+// todo get ticker price
+
         var targetFuturesPosition = BigDecimal.ZERO;
         var slSellPriceQty = new HashMap<String, BigDecimal>();
         var triggerBuyPriceQty = new HashMap<String, BigDecimal>();
@@ -81,7 +89,7 @@ public class Main {
                                         .add(pos.getSize()));
                     } else {
                         targetFuturesPosition = targetFuturesPosition.add(pos.getSize());
-                        var slPrice = strikePrice.subtract(BigDecimal.valueOf(0.01));
+                        var slPrice = strikePrice.subtract(SL_OFFSET);
                         slSellPriceQty.put(slPrice.toString(),
                                 slSellPriceQty.getOrDefault(slPrice.toString(), BigDecimal.ZERO)
                                         .add(pos.getSize()));
@@ -122,26 +130,32 @@ public class Main {
         }
 
         cancelAllFuturesOrders(tradeClient);
+        var batchOrderRequest = BatchOrderRequest.builder();
         slSellPriceQty.forEach((slPrice, slSize) -> {
-
+            placeStopLossOrder(new BigDecimal(slPrice), slSize, Side.SELL, tradeClient);
         });
 
+        triggerBuyPriceQty.forEach((triggerPrice, triggerSize) -> {
+            placeTriggerOrder(new BigDecimal(triggerPrice), triggerSize, Side.BUY, tradeClient);
+        });
+// todo batch order
     }
 
-    private static void placeTriggerOrderToHedgeSoldCall(BigDecimal strikePrice, BigDecimal size,
+    private static void placeTriggerOrder(BigDecimal strikePrice, BigDecimal size, Side side,
                                                          BybitApiTradeRestClient tradeClient) {
-        var newOrderRequest = TradeOrderRequest.builder()
+        var newTriggerOrderRequest = TradeOrderRequest.builder()
                 .category(CategoryType.LINEAR)
                 .symbol(HEDGE_SYMBOL)
                 .qty(size.toString())
-                .side(Side.BUY)
+                .side(side)
                 .orderType(TradeOrderType.MARKET)
                 .triggerPrice(strikePrice.toString())
                 .triggerBy(TriggerBy.LAST_PRICE)
                 .triggerDirection(TriggerDirection.RISE_TO_TRIGGER_PRICE.getIndex())
-                .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
+                .stopLoss(strikePrice.subtract(TRIGGER_SL_OFFSET).toString())
                 .build();
-        var order = tradeClient.createOrder(newOrderRequest);
+        System.out.println("newTriggerOrderRequest = " + newTriggerOrderRequest);
+        var order = tradeClient.createOrder(newTriggerOrderRequest);
         checkResult(order);
     }
 
@@ -153,60 +167,27 @@ public class Main {
                 .qty(size.toString())
                 .side(side)
                 .orderType(TradeOrderType.MARKET)
-//                .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
-//                .slTriggerBy(TriggerBy.LAST_PRICE)
-//                .tpslMode("Partial")
-//                .slOrderType(TradeOrderType.MARKET)
                 .build();
         System.out.println("newMarketOrderRequest = " + newMarketOrderRequest);
         var order = tradeClient.createOrder(newMarketOrderRequest);
         checkResult(order);
-
-//        var newSlOrderRequest = TradeOrderRequest.builder()
-//                .category(CategoryType.LINEAR)
-//                .symbol(HEDGE_SYMBOL)
-//                .qty(size.toString())
-//                .side(Side.SELL)
-//                .orderType(TradeOrderType.MARKET)
-//                .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
-////                .slTriggerBy(TriggerBy.LAST_PRICE)
-//                .tpslMode("Partial")
-////                .slOrderType(TradeOrderType.MARKET)
-//                .build();
-//        var slOrder = tradeClient.createOrder(newSlOrderRequest);
-//        checkResult(slOrder);
     }
 
     private static void placeStopLossOrder(BigDecimal slPrice, BigDecimal size, Side side,
                                          BybitApiTradeRestClient tradeClient) {
-//        var newMarketOrderRequest = TradeOrderRequest.builder()
-//                .category(CategoryType.LINEAR)
-//                .symbol(HEDGE_SYMBOL)
-//                .qty(size.toString())
-//                .side(side)
-//                .orderType(TradeOrderType.MARKET)
-////                .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
-////                .slTriggerBy(TriggerBy.LAST_PRICE)
-////                .tpslMode("Partial")
-////                .slOrderType(TradeOrderType.MARKET)
-//                .build();
-//        System.out.println("newMarketOrderRequest = " + newMarketOrderRequest);
-//        var order = tradeClient.createOrder(newMarketOrderRequest);
-//        checkResult(order);
-
-//        var newSlOrderRequest = TradeOrderRequest.builder()
-//                .category(CategoryType.LINEAR)
-//                .symbol(HEDGE_SYMBOL)
-//                .qty(size.toString())
-//                .side(Side.SELL)
-//                .orderType(TradeOrderType.MARKET)
-//                .stopLoss(strikePrice.subtract(BigDecimal.valueOf(0.05)).toString())
-////                .slTriggerBy(TriggerBy.LAST_PRICE)
-//                .tpslMode("Partial")
-////                .slOrderType(TradeOrderType.MARKET)
-//                .build();
-//        var slOrder = tradeClient.createOrder(newSlOrderRequest);
-//        checkResult(slOrder);
+        var newSlOrderRequest = TradeOrderRequest.builder()
+                .category(CategoryType.LINEAR)
+                .symbol(HEDGE_SYMBOL)
+                .qty("1")
+                .side(Side.SELL)
+                .orderType(TradeOrderType.MARKET)
+                .triggerPrice("130")
+                .triggerDirection(2)
+                .tpslMode("Partial")
+                .build();
+        System.out.println("newSlOrderRequest = " + newSlOrderRequest);
+        var slOrder = tradeClient.createOrder(newSlOrderRequest);
+        checkResult(slOrder);
     }
 
     private static void closeFuturesPosition(PositionEntry futPos, BybitApiTradeRestClient tradeClient) {
@@ -267,6 +248,16 @@ public class Main {
             nextPageCursor = ordersInfo.getResult().getNextPageCursor();
         } while (!nextPageCursor.isEmpty());
         return orderEntries;
+    }
+
+    private static TickerEntry getHedgeTickerInfo(BybitApiMarketRestClient marketRestClient) {
+        var request = MarketDataRequest.builder()
+                .category(CategoryType.LINEAR)
+                .symbol(HEDGE_SYMBOL)
+                .build();
+        var result = marketRestClient.getMarketTickers(request);
+        checkResult(result);
+        return result.getResult().getTickerEntries().getFirst();
     }
 
     private static void checkResult(GenericResponse<?> response) {

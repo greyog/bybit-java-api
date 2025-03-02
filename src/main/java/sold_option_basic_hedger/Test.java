@@ -2,8 +2,12 @@ package sold_option_basic_hedger;
 
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
+import com.bybit.api.client.domain.TradeOrderType;
+import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
+import com.bybit.api.client.domain.trade.OrderFilter;
+import com.bybit.api.client.domain.trade.Side;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
 import com.bybit.api.client.domain.trade.response.OrderEntry;
 import com.bybit.api.client.log.LogOption;
@@ -28,14 +32,14 @@ public class Test {
                 true,
                 LogOption.OKHTTP3.getLogOptionType());
         var tradeClient = factory.newTradeRestClient();
-        BybitApiPositionRestClient positionRestClient = factory.newPositionRestClient();
+        var positionRestClient = factory.newPositionRestClient();
+        var marketRestClient = factory.newMarketDataRestClient();
 
-//        List<PositionEntry> futuresPositions = getPositions(CategoryType.LINEAR, positionRestClient, HEDGE_SYMBOL);
-//        System.out.println(futuresPositions);
-
-        var h = getPositions(CategoryType.LINEAR, positionRestClient, HEDGE_SYMBOL);
-//        h.sort(Comparator.comparing(OrderEntry::getCreatedTime).reversed());
-        System.out.println("h = " + h);
+        var request = MarketDataRequest.builder()
+                .category(CategoryType.LINEAR)
+                .symbol(HEDGE_SYMBOL)
+                .build();
+        var result = marketRestClient.getMarketTickers(request);
     }
 
     private static List<OrderEntry> getOrderHistory(CategoryType categoryType, BybitApiTradeRestClient client,
