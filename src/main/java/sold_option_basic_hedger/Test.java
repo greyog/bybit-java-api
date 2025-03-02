@@ -2,6 +2,7 @@ package sold_option_basic_hedger;
 
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
+import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
 import com.bybit.api.client.domain.trade.response.OrderEntry;
@@ -32,9 +33,9 @@ public class Test {
 //        List<PositionEntry> futuresPositions = getPositions(CategoryType.LINEAR, positionRestClient, HEDGE_SYMBOL);
 //        System.out.println(futuresPositions);
 
-        var h = getOrderHistory(CategoryType.LINEAR, tradeClient, HEDGE_SYMBOL);
-        h.sort(Comparator.comparing(OrderEntry::getCreatedTime).reversed());
-        System.out.println("h = " + h.stream().limit(2).collect(Collectors.toList()));
+        var h = getPositions(CategoryType.LINEAR, positionRestClient, HEDGE_SYMBOL);
+//        h.sort(Comparator.comparing(OrderEntry::getCreatedTime).reversed());
+        System.out.println("h = " + h);
     }
 
     private static List<OrderEntry> getOrderHistory(CategoryType categoryType, BybitApiTradeRestClient client,
@@ -54,5 +55,41 @@ public class Test {
             nextPageCursor = ordersInfo.getResult().getNextPageCursor();
         } while (!nextPageCursor.isEmpty());
         return orderEntries;
+    }
+
+    private static List<OrderEntry> getOrders(CategoryType categoryType, BybitApiTradeRestClient client,
+                                              String symbol) {
+        List<OrderEntry> orderEntries = new ArrayList<>();
+        String nextPageCursor = null;
+        var requestBuilder = TradeOrderRequest.builder()
+                .category(categoryType)
+                .symbol(symbol);
+        do {
+            var ordersInfo = client.getOpenOrders(requestBuilder
+                    .cursor(nextPageCursor)
+                    .build());
+//            checkResult(ordersInfo);
+            orderEntries.addAll(ordersInfo.getResult().getOrderEntries());
+            nextPageCursor = ordersInfo.getResult().getNextPageCursor();
+        } while (!nextPageCursor.isEmpty());
+        return orderEntries;
+    }
+
+    public static List<PositionEntry> getPositions(CategoryType categoryType, BybitApiPositionRestClient positionRestClient,
+                                                   String symbol) {
+        List<PositionEntry> positionEntries = new ArrayList<>();
+        String nextPageCursor = null;
+        PositionDataRequest.PositionDataRequestBuilder requestBuilder = PositionDataRequest.builder()
+                .category(categoryType)
+                .symbol(symbol);
+        do {
+            var optionPositionInfo = positionRestClient.getPositionInfo(requestBuilder
+                    .cursor(nextPageCursor)
+                    .build());
+//            checkResult(optionPositionInfo);
+            positionEntries.addAll(optionPositionInfo.getResult().getPositionEntries());
+            nextPageCursor = optionPositionInfo.getResult().getNextPageCursor();
+        } while (!nextPageCursor.isEmpty());
+        return positionEntries;
     }
 }
