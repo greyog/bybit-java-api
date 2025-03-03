@@ -74,7 +74,7 @@ public class Main {
             var typeAndStrike = getOptionTypeAndStrikePrice(pos.getSymbol());
             var strikePrice = typeAndStrike.getRight();
             var type = typeAndStrike.getLeft();
-            var deltaPerOne = pos.getDelta().divide(pos.getSize(), RoundingMode.HALF_UP);
+//            var deltaPerOne = pos.getDelta().divide(pos.getSize(), RoundingMode.HALF_UP);
             switch (type) {
                 case CALL: // strike price above last, place trigger
 //                    if (deltaPerOne.compareTo(BigDecimal.valueOf(-0.5)) > 0) {
@@ -281,7 +281,7 @@ public class Main {
         switch (splitted[3]) {
             case "C" : return Pair.of(OptionType.CALL, price);
             case "P" : return Pair.of(OptionType.PUT, price);
-            default: throw new IllegalArgumentException("Can't recognise Option type of sumbol " + optionName);
+            default: throw new IllegalArgumentException("Can't recognise Option type of symbol " + optionName);
         }
     }
 
