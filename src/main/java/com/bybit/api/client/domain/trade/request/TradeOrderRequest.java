@@ -4,6 +4,7 @@ import com.bybit.api.client.domain.CategoryType;
 import com.bybit.api.client.domain.TradeOrderType;
 import com.bybit.api.client.domain.TriggerBy;
 import com.bybit.api.client.domain.position.ExecType;
+import com.bybit.api.client.domain.position.TpslMode;
 import com.bybit.api.client.domain.trade.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class TradeOrderRequest {
     private String qty;
     private Integer isLeverage;
     private String price;
-    private Integer triggerDirection;
+    private TriggerDirection triggerDirection;
     private OrderFilter orderFilter;
     private String triggerPrice;
     private TriggerBy triggerBy;
@@ -41,7 +42,7 @@ public class TradeOrderRequest {
     private Boolean closeOnTrigger;
     private SmpType smpType;
     private Boolean mmp;
-    private String tpslMode;
+    private TpslMode tpslMode;
     private String tpLimitPrice;
     private String slLimitPrice;
     private TradeOrderType tpOrderType;

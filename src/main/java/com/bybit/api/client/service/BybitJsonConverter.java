@@ -21,6 +21,7 @@ import com.bybit.api.client.domain.loan.request.CryptoLoanAdjustLtvRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanBorrowRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanDataRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanRepayRequest;
+import com.bybit.api.client.domain.position.TpslMode;
 import com.bybit.api.client.domain.position.request.ConfirmNewRiskLimitRequest;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.position.request.*;
@@ -80,7 +81,7 @@ public class BybitJsonConverter {
                 .price(orderMap.containsKey("price") ? orderMap.get("price").toString() : null)
                 .orderId((String) orderMap.getOrDefault("orderId", null))              // Amend Order ID. Either orderId or orderLinkId is required
                 .orderLinkId((String) orderMap.getOrDefault("orderLinkId", null))              // Amend Order ID. Either orderId or orderLinkId is required
-                .triggerDirection((Integer) orderMap.getOrDefault("triggerDirection", null)) // Optional
+                .triggerDirection(TriggerDirection.fromInt((Integer) orderMap.getOrDefault("triggerDirection", null))) // Optional
                 .orderFilter(orderMap.containsKey("orderFilter") ? OrderFilter.valueOf(orderMap.get("orderFilter").toString().toUpperCase()) : null)  // Optional
                 .triggerPrice((String) orderMap.getOrDefault("triggerPrice", null)) // Optional
                 .triggerBy(orderMap.containsKey("triggerBy") ? TriggerBy.valueOf(orderMap.get("triggerBy").toString().toUpperCase()) : null) // Optional
@@ -96,7 +97,7 @@ public class BybitJsonConverter {
                 .closeOnTrigger((Boolean) orderMap.getOrDefault("closeOnTrigger", false))  // Optional, default to false
                 .smpType(orderMap.containsKey("smpType") ? SmpType.valueOf(orderMap.get("smpType").toString().toUpperCase()) : null) // Optional, replace DEFAULT_SMP_TYPE_VALUE with a real default if needed
                 .mmp((Boolean) orderMap.getOrDefault("mmp", null))               // Optional, default to false
-                .tpslMode((String) orderMap.getOrDefault("tpslMode", null))      // Optional
+                .tpslMode(TpslMode.fromString((String) orderMap.getOrDefault("tpslMode", null)))      // Optional
                 .tpLimitPrice((String) orderMap.getOrDefault("tpLimitPrice", null)) // Optional
                 .slLimitPrice((String) orderMap.getOrDefault("slLimitPrice", null)) // Optional
                 .tpOrderType(orderMap.containsKey("tpOrderType") ? TradeOrderType.valueOf(orderMap.get("tpOrderType").toString().toUpperCase()) : null)  // Optional, default to Market
@@ -119,7 +120,7 @@ public class BybitJsonConverter {
                 .side(Side.valueOf(requestNode.get("side").asText().toUpperCase()))
                 .qty(requestNode.get("qty").asText())
                 .price(requestNode.has("price") ? requestNode.get("price").asText() : null)
-                .triggerDirection(requestNode.has("triggerDirection") ? requestNode.get("triggerDirection").asInt() : null) // Amend Order ID. Either orderId or orderLinkId is required
+                .triggerDirection(TriggerDirection.fromInt(requestNode.has("triggerDirection") ? requestNode.get("triggerDirection").asInt() : null)) // Amend Order ID. Either orderId or orderLinkId is required
                 .orderId(requestNode.has("orderId") ? requestNode.get("orderId").asText() : null) // Amend Order ID. Either orderId or orderLinkId is required
                 .orderLinkId(requestNode.has("orderLinkId") ? requestNode.get("orderLinkId").asText() : null)
                 .orderFilter(requestNode.has("orderFilter") ? OrderFilter.valueOf(requestNode.get("orderFilter").asText().toUpperCase()) : null)
@@ -137,7 +138,7 @@ public class BybitJsonConverter {
                 .closeOnTrigger(requestNode.has("closeOnTrigger") && requestNode.get("closeOnTrigger").asBoolean())
                 .smpType(requestNode.has("smpType") ? SmpType.valueOf(requestNode.get("smpType").asText().toUpperCase()) : null)
                 .mmp(requestNode.has("mmp") ? requestNode.get("mmp").asBoolean() : null)
-                .tpslMode(requestNode.has("tpslMode") ? requestNode.get("tpslMode").asText() : null)
+                .tpslMode(requestNode.has("tpslMode") ? TpslMode.fromString(requestNode.get("tpslMode").asText()) : null)
                 .tpLimitPrice(requestNode.has("tpLimitPrice") ? requestNode.get("tpLimitPrice").asText() : null)
                 .slLimitPrice(requestNode.has("slLimitPrice") ? requestNode.get("slLimitPrice").asText() : null)
                 .tpOrderType(requestNode.has("tpOrderType") ? TradeOrderType.valueOf(requestNode.get("tpOrderType").asText().toUpperCase()) : null)
@@ -281,7 +282,7 @@ public class BybitJsonConverter {
                 .stopLoss(tradeOrderRequest.getStopLoss())      // Optional
                 .tpTriggerBy(tradeOrderRequest.getTpTriggerBy() == null ? null : TriggerBy.LAST_PRICE.getTrigger()) // Optional, default to LastPrice
                 .slTriggerBy(tradeOrderRequest.getSlTriggerBy() == null ? null : TriggerBy.LAST_PRICE.getTrigger()) // Optional, default to LastPrice
-                .tpslMode(tradeOrderRequest.getTpslMode())      // Optional
+                .tpslMode(tradeOrderRequest.getTpslMode() == null ? null : tradeOrderRequest.getTpslMode().getDescription())      // Optional
                 .tpLimitPrice(tradeOrderRequest.getTpLimitPrice()) // Optional
                 .slLimitPrice(tradeOrderRequest.getSlLimitPrice()) // Optional
                 .build();
@@ -296,7 +297,7 @@ public class BybitJsonConverter {
                 .orderType(tradeOrderRequest.getOrderType().getOType())
                 .qty(tradeOrderRequest.getQty())
                 .price(tradeOrderRequest.getPrice())
-                .triggerDirection(tradeOrderRequest.getTriggerDirection()) // Optional
+                .triggerDirection(tradeOrderRequest.getTriggerDirection() == null ? null : tradeOrderRequest.getTriggerDirection().getIndex()) // Optional
                 .orderFilter(tradeOrderRequest.getOrderFilter() == null ? null : tradeOrderRequest.getOrderFilter().getOrderFilterType())  // Optional
                 .triggerPrice(tradeOrderRequest.getTriggerPrice()) // Optional
                 .triggerBy(tradeOrderRequest.getTriggerBy() == null ? null : tradeOrderRequest.getTriggerBy().getTrigger()) // Optional
@@ -312,7 +313,7 @@ public class BybitJsonConverter {
                 .closeOnTrigger(tradeOrderRequest.getCloseOnTrigger())  // Optional, default to false
                 .smpType(tradeOrderRequest.getSmpType() == null ? null : tradeOrderRequest.getSmpType().getDescription()) // Optional, replace DEFAULT_SMP_TYPE_VALUE with a real default if needed
                 .mmp(tradeOrderRequest.getMmp())               // Optional, default to false
-                .tpslMode(tradeOrderRequest.getTpslMode())      // Optional
+                .tpslMode(tradeOrderRequest.getTpslMode() == null ? null : tradeOrderRequest.getTpslMode().getDescription())      // Optional
                 .tpLimitPrice(tradeOrderRequest.getTpLimitPrice()) // Optional
                 .slLimitPrice(tradeOrderRequest.getSlLimitPrice()) // Optional
                 .tpOrderType(tradeOrderRequest.getTpOrderType() == null ? null : tradeOrderRequest.getTpOrderType().getOType())  // Optional, default to Market

@@ -15,4 +15,15 @@ public enum TriggerDirection {
     TriggerDirection(int index) {
         this.index = index;
     }
+
+    public static TriggerDirection fromInt(Integer index) {
+        if (index == null) {
+            return null;
+        }
+        switch (index) {
+            case 1 : return RISE_TO_TRIGGER_PRICE;
+            case 2 : return FALL_TO_TRIGGER_PRICE;
+        }
+        return null;
+    }
 }
