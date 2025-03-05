@@ -35,7 +35,7 @@ import java.util.Optional;
 
 public class Main {
 
-    public static final String HEDGE_SYMBOL = "SOLPERP";
+    public static final String HEDGE_SYMBOL = System.getenv("HEDGE_SYMBOL");
     private static final BigDecimal SL_OFFSET = BigDecimal.ZERO;
     private static final BigDecimal TRIGGER_SL_OFFSET = BigDecimal.valueOf(0.05);
 
@@ -44,7 +44,7 @@ public class Main {
                 System.getenv("API_KEY"),
                 System.getenv("API_SECRET"),
                 BybitApiConfig.DEMO_TRADING_DOMAIN,
-                true,
+                false,
                 LogOption.OKHTTP3.getLogOptionType());
         var tradeClient = factory.newTradeRestClient();
         var positionRestClient = factory.newPositionRestClient();
