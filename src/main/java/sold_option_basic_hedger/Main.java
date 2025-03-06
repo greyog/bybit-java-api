@@ -31,6 +31,7 @@ import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterators;
 
@@ -44,8 +45,9 @@ public class Main {
         var factory = BybitApiClientFactory.newInstance(
                 System.getenv("API_KEY"),
                 System.getenv("API_SECRET"),
-                BybitApiConfig.DEMO_TRADING_DOMAIN,
-                false,
+                "TRUE".equals(System.getenv("IS_REAL")) ? BybitApiConfig.MAINNET_DOMAIN
+                        : BybitApiConfig.DEMO_TRADING_DOMAIN,
+                "TRUE".equals(System.getenv("DEBUG")),
                 LogOption.OKHTTP3.getLogOptionType());
         var tradeClient = factory.newTradeRestClient();
         var positionRestClient = factory.newPositionRestClient();
@@ -58,10 +60,6 @@ public class Main {
         List<PositionEntry> futuresPositions = getPositions(CategoryType.LINEAR, positionRestClient, HEDGE_SYMBOL);
         System.out.println("Futures positions:");
         printPositions(futuresPositions);
-
-//        List<OrderEntry> futuresOrders = getOrders(CategoryType.LINEAR, tradeClient, HEDGE_SYMBOL);
-//        futuresOrders.forEach(o -> System.out.printf("type %s, price %s, triggrePrice %s, qty %s%n",
-//                o.getOrderType(), o.getPrice(), o.getTriggerPrice(), o.getQty()));
 
         Optional<PositionEntry> futuresPosition = futuresPositions.stream()
                 .filter(positionEntry -> positionEntry.getSize().compareTo(BigDecimal.ZERO) != 0)
