@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.Spliterators;
 
 public class Main {
 
@@ -51,56 +52,79 @@ public class Main {
         var marketRestClient = factory.newMarketDataRestClient();
 
         List<PositionEntry> optionPositions = getPositions(CategoryType.OPTION, positionRestClient, null);
-        System.out.println(optionPositions);
+        System.out.println("Options positions:");
+        printPositions(optionPositions);
 
         List<PositionEntry> futuresPositions = getPositions(CategoryType.LINEAR, positionRestClient, HEDGE_SYMBOL);
-        System.out.println(futuresPositions);
+        System.out.println("Futures positions:");
+        printPositions(futuresPositions);
 
-        List<OrderEntry> futuresOrders = getOrders(CategoryType.LINEAR, tradeClient, HEDGE_SYMBOL);
-        futuresOrders.forEach(o -> System.out.printf("type %s, price %s, triggrePrice %s, qty %s%n",
-                o.getOrderType(), o.getPrice(), o.getTriggerPrice(), o.getQty()));
+//        List<OrderEntry> futuresOrders = getOrders(CategoryType.LINEAR, tradeClient, HEDGE_SYMBOL);
+//        futuresOrders.forEach(o -> System.out.printf("type %s, price %s, triggrePrice %s, qty %s%n",
+//                o.getOrderType(), o.getPrice(), o.getTriggerPrice(), o.getQty()));
 
         Optional<PositionEntry> futuresPosition = futuresPositions.stream()
                 .filter(positionEntry -> positionEntry.getSize().compareTo(BigDecimal.ZERO) != 0)
                 .findFirst();
 
         var hedgeFuturesPrice = getHedgeTickerInfo(marketRestClient).getLastPrice();
+        System.out.println("hedgeFuturesPrice = " + hedgeFuturesPrice);
 
         var targetFuturesPosition = BigDecimal.ZERO;
+        // sold Call hedge
         var slSellPriceQty = new HashMap<String, BigDecimal>();
         var triggerBuyPriceQty = new HashMap<String, BigDecimal>();
+        // sold Put hedge
+        var slBuyPriceQty = new HashMap<String, BigDecimal>();
+        var triggerSellPriceQty = new HashMap<String, BigDecimal>();
+
 
         for (PositionEntry pos : optionPositions) {
+            if (Side.BUY.equals(pos.getSide())) {
+                continue; // we will hedge only sold option
+            }
             var typeAndStrike = getOptionTypeAndStrikePrice(pos.getSymbol());
             var strikePrice = typeAndStrike.getRight();
             var type = typeAndStrike.getLeft();
-//            var deltaPerOne = pos.getDelta().divide(pos.getSize(), RoundingMode.HALF_UP);
             switch (type) {
-                case CALL: // strike price above last, place trigger
-//                    if (deltaPerOne.compareTo(BigDecimal.valueOf(-0.5)) > 0) {
-                    if (strikePrice.compareTo(hedgeFuturesPrice) > 0) {
-                        BigDecimal oldSize = triggerBuyPriceQty.getOrDefault(strikePrice.toString(), BigDecimal.ZERO);
-                        BigDecimal newSize = oldSize.add(pos.getSize());
+                case CALL:
+                    if (strikePrice.compareTo(hedgeFuturesPrice) >= 0) { // strike price above last, place trigger
+                        var oldSize = triggerBuyPriceQty.getOrDefault(strikePrice.toString(), BigDecimal.ZERO);
+                        var newSize = oldSize.add(pos.getSize());
                         triggerBuyPriceQty.put(strikePrice.toString(), newSize);
                     } else { // strike price below last, need to hedge immediately
                         targetFuturesPosition = targetFuturesPosition.add(pos.getSize());
                         var slPrice = strikePrice.subtract(SL_OFFSET);
-                        BigDecimal oldSize = slSellPriceQty.getOrDefault(slPrice.toString(), BigDecimal.ZERO);
-                        BigDecimal newSize = oldSize
+                        var oldSize = slSellPriceQty.getOrDefault(slPrice.toString(), BigDecimal.ZERO);
+                        var newSize = oldSize
                                 .add(pos.getSize());
-                        slSellPriceQty.put(slPrice.toString(),
-                                newSize);
+                        slSellPriceQty.put(slPrice.toString(), newSize);
                     }
                     break;
                 case PUT:
-                    throw new NotImplementedException("Can't hedge put yet");
+                    if (strikePrice.compareTo(hedgeFuturesPrice) > 0) { // strike price above last price, need to hedge immediately
+                        targetFuturesPosition = targetFuturesPosition.subtract(pos.getSize());
+                        var slPrice = strikePrice.add(SL_OFFSET);
+                        var oldSize = slBuyPriceQty.getOrDefault(slPrice.toString(), BigDecimal.ZERO);
+                        var newSize = oldSize
+                                .add(pos.getSize());
+                        slBuyPriceQty.put(slPrice.toString(), newSize);
+                    } else { // strike price below last, place trigger
+                        var oldSize = triggerSellPriceQty.getOrDefault(strikePrice.toString(), BigDecimal.ZERO);
+                        var newSize = oldSize.add(pos.getSize());
+                        triggerSellPriceQty.put(strikePrice.toString(), newSize);
+                    }
             }
         }
 
 
         System.out.println("targetFuturesPosition = " + targetFuturesPosition);
+        System.out.println("To hedge sold Calls:");
         System.out.println("slSellPriceQty = " + slSellPriceQty);
         System.out.println("triggerBuyPriceQty = " + triggerBuyPriceQty);
+        System.out.println("To hedge sold Puts:");
+        System.out.println("slBuyPriceQty = " + slBuyPriceQty);
+        System.out.println("triggerSellPriceQty = " + triggerSellPriceQty);
 
         var currentFuturesPosition = futuresPosition.map(positionEntry -> {
             switch (positionEntry.getSide()) {
@@ -112,7 +136,8 @@ public class Main {
             return null;
         }).orElse(BigDecimal.ZERO);
         System.out.println("currentFuturesPosition = " + currentFuturesPosition);
-        if (targetFuturesPosition.compareTo(currentFuturesPosition) != 0) { // need to change fut position
+        if (targetFuturesPosition.compareTo(currentFuturesPosition) != 0) {
+            System.out.println("Need to change futures position");
             var futuresPositionDelta = targetFuturesPosition.subtract(currentFuturesPosition);
             System.out.println("futuresPositionDelta = " + futuresPositionDelta);
             Side side = null;
@@ -128,26 +153,63 @@ public class Main {
 
         cancelAllFuturesOrders(tradeClient);
         var tradeOrderRequests = new ArrayList<TradeOrderRequest>();
+        // hedge sold Calls
         slSellPriceQty.forEach((slPrice, slSize) -> {
             tradeOrderRequests.add(
-                    placeStopLossOrder(new BigDecimal(slPrice), slSize, Side.SELL, tradeClient)
+                    placeStopLossOrder(new BigDecimal(slPrice), slSize, Side.SELL)
             );
         });
-
         triggerBuyPriceQty.forEach((triggerPrice, triggerSize) -> {
             tradeOrderRequests.add(
-                    placeTriggerOrder(new BigDecimal(triggerPrice), triggerSize, Side.BUY, tradeClient)
+                    placeTriggerOrder(new BigDecimal(triggerPrice), triggerSize, Side.BUY)
             );
         });
-        Object batchOrderResult = tradeClient.createBatchOrder(BatchOrderRequest.builder()
-                .category(CategoryType.LINEAR)
-                .request(tradeOrderRequests)
-                .build());
+        // hedge sold Puts
+        slBuyPriceQty.forEach((slPrice, slSize) -> {
+            tradeOrderRequests.add(
+                    placeStopLossOrder(new BigDecimal(slPrice), slSize, Side.BUY)
+            );
+        });
+        triggerSellPriceQty.forEach((triggerPrice, triggerSize) -> {
+            tradeOrderRequests.add(
+                    placeTriggerOrder(new BigDecimal(triggerPrice), triggerSize, Side.SELL)
+            );
+        });
+        System.out.println("tradeOrderRequests.size() = " + tradeOrderRequests.size());
+        placeBatchOrders(tradeOrderRequests, tradeClient);
 
     }
 
-    private static TradeOrderRequest placeTriggerOrder(BigDecimal strikePrice, BigDecimal size, Side side,
-                                                       BybitApiTradeRestClient tradeClient) {
+    private static void printPositions(List<PositionEntry> positions) {
+        positions.stream()
+                .map(pos -> String.format("Symbol: %s, side: %s, size: %s",
+                        pos.getSymbol(), pos.getSide(), pos.getSize()))
+                .forEach(System.out::println);
+    }
+
+    private static void placeBatchOrders(ArrayList<TradeOrderRequest> tradeOrderRequests, BybitApiTradeRestClient tradeClient) {
+        if (tradeOrderRequests.isEmpty()) {
+            System.out.println("There is no orders");
+            return;
+        }
+        int maxBatchSize = 20;
+        int slow = 0;
+        for (int i = 0; i < tradeOrderRequests.size(); i++) {
+            if (i % maxBatchSize == 0) {
+                Object batchOrderResult = tradeClient.createBatchOrder(BatchOrderRequest.builder()
+                        .category(CategoryType.LINEAR)
+                        .request(tradeOrderRequests.subList(slow, i))
+                        .build());
+                slow = i;
+            }
+        }
+        Object batchOrderResult = tradeClient.createBatchOrder(BatchOrderRequest.builder()
+                .category(CategoryType.LINEAR)
+                .request(tradeOrderRequests.subList(slow, tradeOrderRequests.size()))
+                .build());
+    }
+
+    private static TradeOrderRequest placeTriggerOrder(BigDecimal strikePrice, BigDecimal size, Side side) {
         var newTriggerOrderRequest = TradeOrderRequest.builder()
                 .category(CategoryType.LINEAR)
                 .symbol(HEDGE_SYMBOL)
@@ -156,12 +218,13 @@ public class Main {
                 .orderType(TradeOrderType.MARKET)
                 .triggerPrice(strikePrice.toString())
                 .triggerBy(TriggerBy.LAST_PRICE)
-                .triggerDirection(TriggerDirection.RISE_TO_TRIGGER_PRICE)
-                .stopLoss(strikePrice.subtract(TRIGGER_SL_OFFSET).toString())
+                .triggerDirection(side == Side.BUY ? TriggerDirection.RISE_TO_TRIGGER_PRICE
+                        : TriggerDirection.FALL_TO_TRIGGER_PRICE)
+                .stopLoss((side == Side.BUY ? strikePrice.subtract(TRIGGER_SL_OFFSET)
+                        : strikePrice.add(TRIGGER_SL_OFFSET))
+                        .toString())
                 .build();
         System.out.println("newTriggerOrderRequest = " + newTriggerOrderRequest);
-//        var order = tradeClient.createOrder(newTriggerOrderRequest);
-//        checkResult(order);
         return newTriggerOrderRequest;
     }
 
@@ -179,21 +242,19 @@ public class Main {
         checkResult(order);
     }
 
-    private static TradeOrderRequest placeStopLossOrder(BigDecimal slPrice, BigDecimal size, Side side,
-                                                        BybitApiTradeRestClient tradeClient) {
+    private static TradeOrderRequest placeStopLossOrder(BigDecimal slPrice, BigDecimal size, Side side) {
         var newSlOrderRequest = TradeOrderRequest.builder()
                 .category(CategoryType.LINEAR)
                 .symbol(HEDGE_SYMBOL)
                 .qty(size.toString())
-                .side(Side.SELL)
+                .side(side)
                 .orderType(TradeOrderType.MARKET)
                 .triggerPrice(slPrice.toString())
-                .triggerDirection(TriggerDirection.FALL_TO_TRIGGER_PRICE)
+                .triggerDirection(side == Side.BUY ? TriggerDirection.RISE_TO_TRIGGER_PRICE
+                        : TriggerDirection.FALL_TO_TRIGGER_PRICE)
                 .tpslMode(TpslMode.PARTIAL)
                 .build();
         System.out.println("newSlOrderRequest = " + newSlOrderRequest);
-//        var slOrder = tradeClient.createOrder(newSlOrderRequest);
-//        checkResult(slOrder);
         return newSlOrderRequest;
     }
 
@@ -270,7 +331,7 @@ public class Main {
     private static void checkResult(GenericResponse<?> response) {
         if (response.getRetCode() != 0) {
             throw new BybitApiException("Code: " + response.getRetCode()
-                                        + " , message: " + response.getRetMsg());
+                    + " , message: " + response.getRetMsg());
         }
     }
 
