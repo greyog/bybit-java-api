@@ -2,15 +2,17 @@ package com.bybit.api.client.domain.market.response.instrumentInfo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import lombok.Data;
 import lombok.Getter;
 
 @JsonPropertyOrder
 @JsonIgnoreProperties(ignoreUnknown = true)
-@Getter
+@Data
 public class InstrumentEntry {
     private String symbol;
     private String baseCoin;
     private String quoteCoin;
+    private String innovation;
     private String status;
     private String contractType;
     private String launchTime;
@@ -25,6 +27,5 @@ public class InstrumentEntry {
     private String settleCoin;
     private String copyTrading;
     private String optionsType;
-    private String innovation;
     private String marginTrading;
 }

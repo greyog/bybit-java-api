@@ -13,6 +13,7 @@ import com.bybit.api.client.domain.loan.request.CryptoLoanAdjustLtvRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanBorrowRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanRepayRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
+import com.bybit.api.client.domain.market.response.orderbook.OrderbookResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
 import com.bybit.api.client.domain.market.response.tickers.TickersResult;
@@ -331,7 +332,7 @@ public interface BybitApiService {
      * For spot, it is corresponding to u in the wss 50-level orderbook
      */
     @GET("/v5/market/orderbook")
-    Call<Object> getMarketOrderBook(@Query("category") String category, @Query("symbol") String symbol, @Query("limit") Integer limit);
+    Call<GenericResponse<OrderbookResult>> getMarketOrderBook(@Query("category") String category, @Query("symbol") String symbol, @Query("limit") Integer limit);
 
     /**
      * Get Tickers

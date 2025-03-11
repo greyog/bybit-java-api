@@ -6,12 +6,14 @@ import java.math.RoundingMode;
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
+import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentEntry;
 import com.bybit.api.client.log.LogOption;
 import com.bybit.api.client.service.BybitApiClientFactory;
+import common.ResponseValidator;
 
 public class Main {
 
-    private static final String SYMBOL = System.getenv("SYMBOL");
+    private static final String SYMBOL = System.getenv("GRID_SYMBOL");
     private static final int ORDER_COUNT = 5;
 
     public static void main(String[] args) {
@@ -54,9 +56,11 @@ public class Main {
                 .symbol(SYMBOL)
                 .build();
         var instrumentsInfoResponse = marketDataClient.getInstrumentsInfo(instrumentInfoRequest);
-       System.out.println(instrumentsInfoResponse);
+        ResponseValidator.checkResult(instrumentsInfoResponse);
+        System.out.println(instrumentsInfoResponse.getResult());
 
-        var tickSize = BigDecimal.valueOf(0.0001).setScale(4, RoundingMode.HALF_UP);
+        var instrumentInfo = instrumentsInfoResponse.getResult().getInstrumentEntries().getFirst();
+        var tickSize = instrumentInfo.getPriceFilter().getTickSize();
 
         var orderbookRequest = MarketDataRequest.builder()
                 .category(CategoryType.SPOT)

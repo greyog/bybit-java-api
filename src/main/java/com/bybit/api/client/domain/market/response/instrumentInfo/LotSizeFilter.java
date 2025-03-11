@@ -2,14 +2,16 @@ package com.bybit.api.client.domain.market.response.instrumentInfo;
 
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @Getter
 public class LotSizeFilter {
-    private String maxOrderQty;
-    private String minOrderQty;
-    private String qtyStep;
-    private String postOnlyMaxOrderQty;
-    private String basePrecision;
-    private String quotePrecision;
-    private String minOrderAmt;
-    private String maxOrderAmt;
+    private BigDecimal maxOrderQty;
+    private BigDecimal minOrderQty;
+    private BigDecimal qtyStep;
+    private BigDecimal postOnlyMaxOrderQty;
+    private BigDecimal basePrecision;
+    private BigDecimal quotePrecision;
+    private BigDecimal minOrderAmt;
+    private BigDecimal maxOrderAmt;
 }

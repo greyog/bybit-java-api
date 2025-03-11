@@ -2,6 +2,7 @@ package com.bybit.api.client.impl;
 
 import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
+import com.bybit.api.client.domain.market.response.orderbook.OrderbookResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.market.response.tickers.TickersResult;
 import com.bybit.api.client.restApi.BybitApiAsyncMarketDataRestClient;
@@ -80,7 +81,7 @@ public class BybitApiMarketAsyncRestClientImpl implements BybitApiAsyncMarketDat
     }
 
     @Override
-    public void getMarketOrderBook(MarketDataRequest marketOrderBookRequest, BybitApiCallback<Object> callback) {
+    public void getMarketOrderBook(MarketDataRequest marketOrderBookRequest, BybitApiCallback<GenericResponse<OrderbookResult>> callback) {
         bybitApiService.getMarketOrderBook(
                 marketOrderBookRequest.getCategory().getCategoryTypeId(),
                 marketOrderBookRequest.getSymbol(),

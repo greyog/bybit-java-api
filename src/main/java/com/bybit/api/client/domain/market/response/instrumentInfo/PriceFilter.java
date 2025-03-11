@@ -2,9 +2,11 @@ package com.bybit.api.client.domain.market.response.instrumentInfo;
 
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 @Getter
 public class PriceFilter {
-    private String minPrice;
-    private String maxPrice;
-    private String tickSize;
+    private BigDecimal minPrice;
+    private BigDecimal maxPrice;
+    private BigDecimal tickSize;
 }
