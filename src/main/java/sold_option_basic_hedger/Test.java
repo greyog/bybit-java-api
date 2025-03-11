@@ -1,26 +1,21 @@
 package sold_option_basic_hedger;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
-import com.bybit.api.client.domain.TradeOrderType;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
-import com.bybit.api.client.domain.trade.OrderFilter;
-import com.bybit.api.client.domain.trade.Side;
-import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
 import com.bybit.api.client.domain.trade.response.OrderEntry;
 import com.bybit.api.client.log.LogOption;
 import com.bybit.api.client.restApi.BybitApiPositionRestClient;
 import com.bybit.api.client.restApi.BybitApiTradeRestClient;
 import com.bybit.api.client.service.BybitApiClientFactory;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import static sold_option_basic_hedger.Main.HEDGE_SYMBOL;
 
@@ -37,24 +32,11 @@ public class Test {
         var positionRestClient = factory.newPositionRestClient();
         var marketRestClient = factory.newMarketDataRestClient();
 
-//        var request = MarketDataRequest.builder()
-//                .category(CategoryType.LINEAR)
-//                .symbol(HEDGE_SYMBOL)
-//                .build();
-//        var result = marketRestClient.getMarketTickers(request);
-
-        List<Integer> list = IntStream.range(0, 39)
-                .boxed()
-                .collect(Collectors.toList());
-        System.out.println("list = " + list);
-        int slow = 0;
-        for (int i = 1; i < list.size(); i++) {
-            if (i % 10 == 0) {
-                System.out.println("list.subList(i, slow) = " + list.subList(slow, i));
-                slow = i;
-            }
-        }
-        System.out.println("last list.subList(i, slow) = " + list.subList(slow, list.size()));
+       var request = MarketDataRequest.builder()
+               .category(CategoryType.LINEAR)
+               .symbol(HEDGE_SYMBOL)
+               .build();
+       var result = marketRestClient.getMarketTickers(request);
 
     }
 
@@ -111,5 +93,20 @@ public class Test {
             nextPageCursor = optionPositionInfo.getResult().getNextPageCursor();
         } while (!nextPageCursor.isEmpty());
         return positionEntries;
+    }
+
+    private static void batchList() {
+        List<Integer> list = IntStream.range(0, 39)
+                .boxed()
+                .collect(Collectors.toList());
+        System.out.println("list = " + list);
+        int slow = 0;
+        for (int i = 1; i < list.size(); i++) {
+            if (i % 10 == 0) {
+                System.out.println("list.subList(i, slow) = " + list.subList(slow, i));
+                slow = i;
+            }
+        }
+        System.out.println("last list.subList(i, slow) = " + list.subList(slow, list.size()));
     }
 }

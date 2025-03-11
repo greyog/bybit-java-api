@@ -20,7 +20,7 @@ public interface BybitApiTradeRestClient {
     GenericResponse<OrderResult> createOrder(TradeOrderRequest order);
     Object createOrder(Map<String, Object> payload);
     Object createOrder(String json) throws IOException;
-    Object createBatchOrder(BatchOrderRequest batchOrderRequest);
+    GenericResponse<OrderResult> createBatchOrder(BatchOrderRequest batchOrderRequest);
     Object createBathOrder(Map<String, Object> payload);
     Object createBathOrder(String json) throws IOException;
     Object amendBatchOrder(BatchOrderRequest batchOrderRequest);

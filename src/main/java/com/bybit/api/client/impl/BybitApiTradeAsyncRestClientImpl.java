@@ -108,20 +108,20 @@ public class BybitApiTradeAsyncRestClientImpl implements BybitApiAsyncTradeRestC
     }
 
     @Override
-    public void createBatchOrder(BatchOrderRequest batchOrderRequest, BybitApiCallback<Object> callback) {
+    public void createBatchOrder(BatchOrderRequest batchOrderRequest, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         var placeBatchOrderRequest = converter.convertToPlaceBatchOrderRequest(batchOrderRequest);
         bybitApiService.createBatchOrder(placeBatchOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void createBathOrder(Map<String, Object> payload, BybitApiCallback<Object> callback) {
+    public void createBathOrder(Map<String, Object> payload, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         var batchOrderRequest = converter.convertMapToBatchOrderRequest(payload);
         var placeBatchOrderRequest = converter.convertToPlaceBatchOrderRequest(batchOrderRequest);
         bybitApiService.createBatchOrder(placeBatchOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void createBathOrder(String json, BybitApiCallback<Object> callback) throws IOException {
+    public void createBathOrder(String json, BybitApiCallback<GenericResponse<OrderResult>> callback) throws IOException {
         var batchOrderRequest = converter.jsonToBatchOrderRequest(json);
         var placeBatchOrderRequest = converter.convertToPlaceBatchOrderRequest(batchOrderRequest);
         bybitApiService.createBatchOrder(placeBatchOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));

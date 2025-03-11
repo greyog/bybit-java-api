@@ -22,6 +22,8 @@ import com.bybit.api.client.restApi.BybitApiMarketRestClient;
 import com.bybit.api.client.restApi.BybitApiPositionRestClient;
 import com.bybit.api.client.restApi.BybitApiTradeRestClient;
 import com.bybit.api.client.service.BybitApiClientFactory;
+
+import common.ResponseValidator;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
@@ -34,6 +36,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterators;
+
+import javax.sql.CommonDataSource;
 
 public class Main {
 
@@ -180,8 +184,8 @@ public class Main {
 
     private static void printPositions(List<PositionEntry> positions) {
         positions.stream()
-                .map(pos -> String.format("Symbol: %s, side: %s, size: %s",
-                        pos.getSymbol(), pos.getSide(), pos.getSize()))
+                .map(pos -> String.format("Symbol: %s, side: %s, size: %s, avgPrice: %s",
+                        pos.getSymbol(), pos.getSide(), pos.getSize(), pos.getAvgPrice()))
                 .forEach(System.out::println);
     }
 
@@ -192,19 +196,21 @@ public class Main {
         }
         int maxBatchSize = 20;
         int slow = 0;
-        for (int i = 0; i < tradeOrderRequests.size(); i++) {
+        for (int i = 1; i < tradeOrderRequests.size(); i++) {
             if (i % maxBatchSize == 0) {
-                Object batchOrderResult = tradeClient.createBatchOrder(BatchOrderRequest.builder()
+                var batchOrderResult = tradeClient.createBatchOrder(BatchOrderRequest.builder()
                         .category(CategoryType.LINEAR)
                         .request(tradeOrderRequests.subList(slow, i))
                         .build());
+                ResponseValidator.checkResult(batchOrderResult);
                 slow = i;
             }
         }
-        Object batchOrderResult = tradeClient.createBatchOrder(BatchOrderRequest.builder()
+        var batchOrderResult = tradeClient.createBatchOrder(BatchOrderRequest.builder()
                 .category(CategoryType.LINEAR)
                 .request(tradeOrderRequests.subList(slow, tradeOrderRequests.size()))
                 .build());
+        ResponseValidator.checkResult(batchOrderResult);
     }
 
     private static TradeOrderRequest placeTriggerOrder(BigDecimal strikePrice, BigDecimal size, Side side) {
@@ -237,7 +243,7 @@ public class Main {
                 .build();
         System.out.println("newMarketOrderRequest = " + newMarketOrderRequest);
         var order = tradeClient.createOrder(newMarketOrderRequest);
-        checkResult(order);
+        ResponseValidator.checkResult(order);
     }
 
     private static TradeOrderRequest placeStopLossOrder(BigDecimal slPrice, BigDecimal size, Side side) {
@@ -265,7 +271,7 @@ public class Main {
                 .orderType(TradeOrderType.MARKET)
                 .build();
         var order = tradeClient.createOrder(closeFuturesPositionRequest);
-        checkResult(order);
+        ResponseValidator.checkResult(order);
     }
 
     public static void cancelAllFuturesOrders(BybitApiTradeRestClient tradeClient) {
@@ -275,7 +281,7 @@ public class Main {
                 .build();
         System.out.println("cancelAllOrdersRequest = " + cancelAllOrdersRequest);
         var order = tradeClient.cancelAllOrder(cancelAllOrdersRequest);
-        checkResult(order);
+        ResponseValidator.checkResult(order);
     }
 
     @NotNull
@@ -290,7 +296,7 @@ public class Main {
             var optionPositionInfo = positionRestClient.getPositionInfo(requestBuilder
                     .cursor(nextPageCursor)
                     .build());
-            checkResult(optionPositionInfo);
+            ResponseValidator.checkResult(optionPositionInfo);
             positionEntries.addAll(optionPositionInfo.getResult().getPositionEntries());
             nextPageCursor = optionPositionInfo.getResult().getNextPageCursor();
         } while (!nextPageCursor.isEmpty());
@@ -309,7 +315,7 @@ public class Main {
             var ordersInfo = client.getOpenOrders(requestBuilder
                     .cursor(nextPageCursor)
                     .build());
-            checkResult(ordersInfo);
+            ResponseValidator.checkResult(ordersInfo);
             orderEntries.addAll(ordersInfo.getResult().getOrderEntries());
             nextPageCursor = ordersInfo.getResult().getNextPageCursor();
         } while (!nextPageCursor.isEmpty());
@@ -322,16 +328,10 @@ public class Main {
                 .symbol(HEDGE_SYMBOL)
                 .build();
         var result = marketRestClient.getMarketTickers(request);
-        checkResult(result);
+        ResponseValidator.checkResult(result);
         return result.getResult().getTickerEntries().get(0);
     }
 
-    private static void checkResult(GenericResponse<?> response) {
-        if (response.getRetCode() != 0) {
-            throw new BybitApiException("Code: " + response.getRetCode()
-                    + " , message: " + response.getRetMsg());
-        }
-    }
 
     private static Pair<OptionType, BigDecimal> getOptionTypeAndStrikePrice(String optionName) {
 //        SOL-24FEB25-170-C

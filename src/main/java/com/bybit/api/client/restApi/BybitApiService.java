@@ -1200,7 +1200,7 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @POST("/v5/order/create-batch")
-    Call<Object> createBatchOrder(@Body PlaceBatchOrderRequest placeBatchOrderRequest);
+    Call<GenericResponse<OrderResult>> createBatchOrder(@Body PlaceBatchOrderRequest placeBatchOrderRequest);
 
     /**
      * Cancel Order

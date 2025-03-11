@@ -1,23 +1,13 @@
 package usdc_usdt_grid;
 
-import com.bybit.api.client.config.BybitApiConfig;
-import com.bybit.api.client.domain.CategoryType;
-import com.bybit.api.client.domain.TradeOrderType;
-import com.bybit.api.client.domain.market.request.MarketDataRequest;
-import com.bybit.api.client.domain.market.response.orderbook.OrderbookResult;
-import com.bybit.api.client.domain.trade.Side;
-import com.bybit.api.client.domain.trade.TimeInForce;
-import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
-import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
-import com.bybit.api.client.domain.trade.response.OrderEntry;
-import com.bybit.api.client.domain.trade.response.OrderResult;
-import com.bybit.api.client.log.LogOption;
-import com.bybit.api.client.service.BybitApiClientFactory;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.Comparator;
+
+import com.bybit.api.client.config.BybitApiConfig;
+import com.bybit.api.client.domain.CategoryType;
+import com.bybit.api.client.domain.market.request.MarketDataRequest;
+import com.bybit.api.client.log.LogOption;
+import com.bybit.api.client.service.BybitApiClientFactory;
 
 public class Main {
 
@@ -28,42 +18,43 @@ public class Main {
         var factory = BybitApiClientFactory.newInstance(
                 System.getenv("API_KEY"),
                 System.getenv("API_SECRET"),
-                BybitApiConfig.DEMO_TRADING_DOMAIN,
-                false,
+                "TRUE".equals(System.getenv("IS_REAL")) ? BybitApiConfig.MAINNET_DOMAIN
+                        : BybitApiConfig.DEMO_TRADING_DOMAIN,
+                "TRUE".equals(System.getenv("DEBUG")),
                 LogOption.OKHTTP3.getLogOptionType());
         var tradeClient = factory.newTradeRestClient();
-        var orderRequest = TradeOrderRequest.builder()
-                .category(CategoryType.SPOT)
-                .symbol(SYMBOL)
-                .build();
-//        System.out.println("orderRequest = " + orderRequest);
-        var orderResponse = tradeClient.getOpenOrders(orderRequest).getResult();
-        var myOrders = new ArrayList<>(orderResponse.getOrderEntries());
-        while (!orderResponse.getNextPageCursor().isEmpty()) {
-            orderRequest.setCursor(orderResponse.getNextPageCursor());
-            orderResponse = tradeClient.getOpenOrders(orderRequest).getResult();
-            myOrders.addAll(orderResponse.getOrderEntries());
-        }
-        System.out.println("myOrders = " + myOrders);
-        var myBidOrders = new ArrayList<OrderEntry>();
-        var myAskOrders = new ArrayList<OrderEntry>();
-        myOrders.forEach(orderEntry -> {
-            if (orderEntry.getOrderType().equals(Side.BUY.getTransactionSide())) {
-                myBidOrders.add(orderEntry);
-            } else if (orderEntry.getOrderType().equals(Side.SELL.getTransactionSide())) {
-                myAskOrders.add(orderEntry);
-            }
-        });
-        myBidOrders.sort(Comparator.comparing(OrderEntry::getPrice));
-        myAskOrders.sort((o1, o2) -> o2.getPrice().compareTo(o1.getPrice()));
-
         var marketDataClient = factory.newMarketDataRestClient();
+//         var orderRequest = TradeOrderRequest.builder()
+//                 .category(CategoryType.SPOT)
+//                 .symbol(SYMBOL)
+//                 .build();
+// //        System.out.println("orderRequest = " + orderRequest);
+//         var orderResponse = tradeClient.getOpenOrders(orderRequest).getResult();
+//         var myOrders = new ArrayList<>(orderResponse.getOrderEntries());
+//         while (!orderResponse.getNextPageCursor().isEmpty()) {
+//             orderRequest.setCursor(orderResponse.getNextPageCursor());
+//             orderResponse = tradeClient.getOpenOrders(orderRequest).getResult();
+//             myOrders.addAll(orderResponse.getOrderEntries());
+//         }
+//         System.out.println("myOrders = " + myOrders);
+//         var myBidOrders = new ArrayList<OrderEntry>();
+//         var myAskOrders = new ArrayList<OrderEntry>();
+//         myOrders.forEach(orderEntry -> {
+//             if (orderEntry.getOrderType().equals(Side.BUY.getTransactionSide())) {
+//                 myBidOrders.add(orderEntry);
+//             } else if (orderEntry.getOrderType().equals(Side.SELL.getTransactionSide())) {
+//                 myAskOrders.add(orderEntry);
+//             }
+//         });
+//         myBidOrders.sort(Comparator.comparing(OrderEntry::getPrice));
+//         myAskOrders.sort((o1, o2) -> o2.getPrice().compareTo(o1.getPrice()));
+
         var instrumentInfoRequest = MarketDataRequest.builder()
                 .category(CategoryType.SPOT)
                 .symbol(SYMBOL)
                 .build();
         var instrumentsInfoResponse = marketDataClient.getInstrumentsInfo(instrumentInfoRequest);
-//        System.out.println(ResponseUtil.toPrettyString(instrumentsInfoResponse));
+       System.out.println(instrumentsInfoResponse);
 
         var tickSize = BigDecimal.valueOf(0.0001).setScale(4, RoundingMode.HALF_UP);
 
