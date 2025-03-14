@@ -5,16 +5,28 @@ import java.math.RoundingMode;
 
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
+import com.bybit.api.client.domain.GenericResponse;
+import com.bybit.api.client.domain.account.AccountType;
+import com.bybit.api.client.domain.account.request.AccountDataRequest;
+import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentEntry;
+import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
 import com.bybit.api.client.log.LogOption;
+import com.bybit.api.client.restApi.BybitApiAccountRestClient;
+import com.bybit.api.client.restApi.BybitApiMarketRestClient;
+import com.bybit.api.client.restApi.BybitApiTradeRestClient;
 import com.bybit.api.client.service.BybitApiClientFactory;
 import common.ResponseValidator;
 
 public class Main {
 
     private static final String SYMBOL = System.getenv("GRID_SYMBOL");
-    private static final int ORDER_COUNT = 5;
+    private static final BigDecimal MAX_PRICE = new BigDecimal(System.getenv("MAX_PRICE"));
+    private static final BigDecimal MIN_PRICE = new BigDecimal(System.getenv("MIN_PRICE"));
+    private static final BigDecimal START_PRICE = new BigDecimal(System.getenv("START_PRICE"));
+    private static final BigDecimal TRADE_AMOUNT = new BigDecimal(System.getenv("TRADE_AMOUNT"));
+    private static final BigDecimal GRID_COUNT = new BigDecimal(System.getenv("GRID_COUNT"));
 
     public static void main(String[] args) {
         var factory = BybitApiClientFactory.newInstance(
@@ -26,6 +38,7 @@ public class Main {
                 LogOption.OKHTTP3.getLogOptionType());
         var tradeClient = factory.newTradeRestClient();
         var marketDataClient = factory.newMarketDataRestClient();
+        var accountClient = factory.newAccountRestClient();
 //         var orderRequest = TradeOrderRequest.builder()
 //                 .category(CategoryType.SPOT)
 //                 .symbol(SYMBOL)
@@ -51,22 +64,28 @@ public class Main {
 //         myBidOrders.sort(Comparator.comparing(OrderEntry::getPrice));
 //         myAskOrders.sort((o1, o2) -> o2.getPrice().compareTo(o1.getPrice()));
 
-        var instrumentInfoRequest = MarketDataRequest.builder()
-                .category(CategoryType.SPOT)
-                .symbol(SYMBOL)
-                .build();
-        var instrumentsInfoResponse = marketDataClient.getInstrumentsInfo(instrumentInfoRequest);
-        ResponseValidator.checkResult(instrumentsInfoResponse);
-        System.out.println(instrumentsInfoResponse.getResult());
-
-        var instrumentInfo = instrumentsInfoResponse.getResult().getInstrumentEntries().getFirst();
+        var instrumentInfo = getInstrumentInfo(marketDataClient);
         var tickSize = instrumentInfo.getPriceFilter().getTickSize();
+        System.out.println("tickSize = " + tickSize);
+        int tickScale = tickSize.scale();
+        System.out.println("tickSize.scale() = " + tickScale);
+        var gridHeight = MAX_PRICE.subtract(MIN_PRICE).divide(GRID_COUNT, tickScale, RoundingMode.HALF_UP);
+        System.out.println("gridHeight = " + gridHeight);
+        var calculatedMaxPrice = gridHeight.multiply(GRID_COUNT).add(MIN_PRICE);
+        System.out.println("calculatedMaxPrice = " + calculatedMaxPrice);
+        var gridLot = TRADE_AMOUNT.divide(GRID_COUNT.add(BigDecimal.ONE), tickScale, RoundingMode.HALF_DOWN);
+        System.out.println("gridLot = " + gridLot);
 
-        var orderbookRequest = MarketDataRequest.builder()
-                .category(CategoryType.SPOT)
-                .symbol(SYMBOL)
-                .build();
-        var marketOrderBookRaw = marketDataClient.getMarketOrderBook(orderbookRequest);
+        var walletBalance = accountClient.getWalletBalance(AccountDataRequest.builder()
+                        .accountType(AccountType.UNIFIED)
+                        .baseCoin("USDT")
+                .build());
+
+//        var orderbookRequest = MarketDataRequest.builder()
+//                .category(CategoryType.SPOT)
+//                .symbol(SYMBOL)
+//                .build();
+//        var marketOrderBookRaw = marketDataClient.getMarketOrderBook(orderbookRequest);
 //        System.out.println(ResponseUtil.toPrettyString(marketOrderBookRaw));
 //        var marketOrderBookResult = ResponseUtil.toResult(marketOrderBookRaw, OrderbookResult.class);
 //
@@ -139,4 +158,27 @@ public class Main {
 //        var batchOrderSellRaw = tradeClient.createBatchOrder(createBatchOrdersSell);
 //        System.out.println(ResponseUtil.toResult(batchOrderSellRaw, OrderResult.class));
     }
+
+    private static InstrumentEntry getInstrumentInfo(BybitApiMarketRestClient marketDataClient) {
+        var instrumentInfoRequest = MarketDataRequest.builder()
+                .category(CategoryType.SPOT)
+                .symbol(SYMBOL)
+                .build();
+        var instrumentsInfoResponse = marketDataClient.getInstrumentsInfo(instrumentInfoRequest);
+        ResponseValidator.checkResult(instrumentsInfoResponse);
+        System.out.println(instrumentsInfoResponse.getResult().toString());
+
+        return instrumentsInfoResponse.getResult().getInstrumentEntries().getFirst();
+    }
+
+    public static void cancelAllFuturesOrders(BybitApiTradeRestClient tradeClient) {
+        var cancelAllOrdersRequest = TradeOrderRequest.builder()
+                .category(CategoryType.SPOT)
+                .symbol(SYMBOL)
+                .build();
+        System.out.println("cancelAllOrdersRequest = " + cancelAllOrdersRequest);
+        var order = tradeClient.cancelAllOrder(cancelAllOrdersRequest);
+        ResponseValidator.checkResult(order);
+    }
+
 }
