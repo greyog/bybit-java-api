@@ -8,6 +8,7 @@ import com.bybit.api.client.domain.CategoryType;
 import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.account.AccountType;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
+import com.bybit.api.client.domain.account.response.walletBalance.Coin;
 import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentEntry;
@@ -27,6 +28,9 @@ public class Main {
     private static final BigDecimal START_PRICE = new BigDecimal(System.getenv("START_PRICE"));
     private static final BigDecimal TRADE_AMOUNT = new BigDecimal(System.getenv("TRADE_AMOUNT"));
     private static final BigDecimal GRID_COUNT = new BigDecimal(System.getenv("GRID_COUNT"));
+    private static final String COIN = System.getenv("COIN");
+    private static final String BASE_COIN = System.getenv("BASE_COIN");
+
 
     public static void main(String[] args) {
         var factory = BybitApiClientFactory.newInstance(
@@ -78,17 +82,31 @@ public class Main {
 
         var walletBalance = accountClient.getWalletBalance(AccountDataRequest.builder()
                         .accountType(AccountType.UNIFIED)
-                        .baseCoin("USDT")
+                        .coins(String.join(",", COIN, BASE_COIN))
                 .build());
+        ResponseValidator.checkResult(walletBalance);
+        var coinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
+                .filter(coin -> COIN.equals(coin.getCoin()))
+                .findFirst()
+                .map(Coin::getEquity)
+                .orElseThrow();
+        var baseCoinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
+                .filter(coin -> BASE_COIN.equals(coin.getCoin()))
+                .findFirst()
+                .map(Coin::getEquity)
+                .orElseThrow();
+        System.out.printf("coinEquity = %s %s; baseCoinEquity = %s %s%n", coinEquity, COIN, baseCoinEquity, BASE_COIN);
 
-//        var orderbookRequest = MarketDataRequest.builder()
-//                .category(CategoryType.SPOT)
-//                .symbol(SYMBOL)
-//                .build();
-//        var marketOrderBookRaw = marketDataClient.getMarketOrderBook(orderbookRequest);
-//        System.out.println(ResponseUtil.toPrettyString(marketOrderBookRaw));
-//        var marketOrderBookResult = ResponseUtil.toResult(marketOrderBookRaw, OrderbookResult.class);
-//
+        var marketDataRequest = MarketDataRequest.builder()
+                .category(CategoryType.SPOT)
+                .symbol(SYMBOL)
+                .build();
+        var marketTickers = marketDataClient.getMarketTickers(marketDataRequest);
+        ResponseValidator.checkResult(marketTickers);
+        var bid1Price = marketTickers.getResult().getTickerEntries().getFirst().getBid1Price();
+        var ask1Price = marketTickers.getResult().getTickerEntries().getFirst().getAsk1Price();
+        System.out.printf("ask1Price = %s, bid1Price = %s%n", ask1Price, bid1Price);
+
 //        var maxBidPriceStr = marketOrderBookResult.getOrderbookBidEntries().getFirst().getBidPrice();
 //        var minAskPriceStr = marketOrderBookResult.getOrderBookAskEntries().getFirst().getAskPrice();
 //        var bidPrice = new BigDecimal(maxBidPriceStr).setScale(tickSize.scale(), RoundingMode.HALF_UP);
