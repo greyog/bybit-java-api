@@ -2,6 +2,7 @@ package usdc_usdt_grid;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
@@ -106,6 +107,22 @@ public class Main {
         var bid1Price = marketTickers.getResult().getTickerEntries().getFirst().getBid1Price();
         var ask1Price = marketTickers.getResult().getTickerEntries().getFirst().getAsk1Price();
         System.out.printf("ask1Price = %s, bid1Price = %s%n", ask1Price, bid1Price);
+
+        var askOrderPrice = MAX_PRICE;
+        var askOrderPrices = new ArrayList<BigDecimal>();
+        while (askOrderPrice.compareTo(ask1Price) >= 0) {
+            askOrderPrices.add(askOrderPrice);
+            askOrderPrice = askOrderPrice.subtract(gridHeight);
+        }
+        System.out.println("askOrderPrices = " + askOrderPrices);
+
+        var bidOrderPrice = MIN_PRICE;
+        var bidOrderPrices = new ArrayList<BigDecimal>();
+        while (bidOrderPrice.compareTo(bid1Price) <= 0) {
+            bidOrderPrices.add(bidOrderPrice);
+            bidOrderPrice = bidOrderPrice.add(gridHeight);
+        }
+        System.out.println("bidOrderPrices = " + bidOrderPrices);
 
 //        var maxBidPriceStr = marketOrderBookResult.getOrderbookBidEntries().getFirst().getBidPrice();
 //        var minAskPriceStr = marketOrderBookResult.getOrderBookAskEntries().getFirst().getAskPrice();
