@@ -1,4 +1,4 @@
-import sold_option_basic_hedger.Main;
+import usdc_usdt_grid.Main;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -18,10 +18,10 @@ class Response {
     }
 }
 
-public class Handler implements Function<Request, Response> {
+public class UsdcUsdtGridHandler implements Function<Request, Response> {
     @Override
     public Response apply(Request request) {
         Main.main(new String[0]);
-        return new Response(200, "Hello, !");
+        return new Response(200, "Hello, thanks i'm fine!");
     }
 }
