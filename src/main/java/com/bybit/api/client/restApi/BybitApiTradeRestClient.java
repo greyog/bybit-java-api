@@ -16,7 +16,7 @@ public interface BybitApiTradeRestClient {
     Object setDisconnectCancelAllTime(TradeOrderRequest setDcpRequest);
     Object getBorrowQuota(TradeOrderRequest borrowQuotaRequest);
     GenericResponse<OrderResult> getOpenOrders(TradeOrderRequest order);
-    Object getTradeHistory(TradeOrderRequest order);
+    GenericResponse<OrderResult> getTradeHistory(TradeOrderRequest order);
     GenericResponse<OrderResult> createOrder(TradeOrderRequest order);
     Object createOrder(Map<String, Object> payload);
     Object createOrder(String json) throws IOException;

@@ -47,8 +47,6 @@ public class Main {
         var marketDataClient = factory.newMarketDataRestClient();
         var accountClient = factory.newAccountRestClient();
 
-        cancelAllOrders(tradeClient); // first for equity estimation
-
         var instrumentInfo = getInstrumentInfo(marketDataClient);
         var tickSize = instrumentInfo.getPriceFilter().getTickSize();
         int tickScale = tickSize.scale();
@@ -65,23 +63,6 @@ public class Main {
 //        var gridLot = TRADE_AMOUNT.divide(GRID_COUNT.add(BigDecimal.ONE), tickScale, RoundingMode.HALF_DOWN);
 //        System.out.println("gridLot = " + gridLot);
 
-        var walletBalance = accountClient.getWalletBalance(AccountDataRequest.builder()
-                        .accountType(AccountType.UNIFIED)
-                        .coins(String.join(",", BASE_COIN, QUOTE_COIN))
-                .build());
-        ResponseValidator.checkResult(walletBalance);
-        var baseCoinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
-                .filter(coin -> BASE_COIN.equals(coin.getCoin()))
-                .findFirst()
-                .map(Coin::getEquity)
-                .orElseThrow();
-        var quoteCoinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
-                .filter(coin -> QUOTE_COIN.equals(coin.getCoin()))
-                .findFirst()
-                .map(Coin::getEquity)
-                .orElseThrow();
-        System.out.printf("baseCoinEquity = %s %s; quoteCoinEquity = %s %s%n", baseCoinEquity, BASE_COIN, quoteCoinEquity, QUOTE_COIN);
-
         var marketDataRequest = MarketDataRequest.builder()
                 .category(CategoryType.SPOT)
                 .symbol(SYMBOL)
@@ -91,6 +72,8 @@ public class Main {
         var bid1Price = marketTickers.getResult().getTickerEntries().getFirst().getBid1Price();
         var ask1Price = marketTickers.getResult().getTickerEntries().getFirst().getAsk1Price();
         System.out.printf("ask1Price = %s, bid1Price = %s%n", ask1Price, bid1Price);
+
+
 
         var askOrderPrice = MAX_PRICE;
         var askOrderPrices = new ArrayList<BigDecimal>();
@@ -107,6 +90,26 @@ public class Main {
             bidOrderPrice = bidOrderPrice.add(gridHeight);
         }
         System.out.println("bidOrderPrices = " + bidOrderPrices);
+
+        cancelAllOrders(tradeClient); // first for equity estimation
+
+        var walletBalance = accountClient.getWalletBalance(AccountDataRequest.builder()
+                .accountType(AccountType.UNIFIED)
+                .coins(String.join(",", BASE_COIN, QUOTE_COIN))
+                .build());
+        ResponseValidator.checkResult(walletBalance);
+        var baseCoinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
+                .filter(coin -> BASE_COIN.equals(coin.getCoin()))
+                .findFirst()
+                .map(Coin::getEquity)
+                .orElseThrow();
+        var quoteCoinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
+                .filter(coin -> QUOTE_COIN.equals(coin.getCoin()))
+                .findFirst()
+                .map(Coin::getEquity)
+                .orElseThrow();
+        System.out.printf("baseCoinEquity = %s %s; quoteCoinEquity = %s %s%n", baseCoinEquity, BASE_COIN, quoteCoinEquity, QUOTE_COIN);
+
 
         var askSize = baseCoinEquity.divide(BigDecimal.valueOf(askOrderPrices.size()), basePrecisionScale, RoundingMode.DOWN);
         var divisor = BigDecimal.ZERO;

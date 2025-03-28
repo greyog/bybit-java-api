@@ -16,7 +16,7 @@ public interface BybitApiAsyncTradeRestClient {
     void setDisconnectCancelAllTime(TradeOrderRequest tradeOrderRequest, BybitApiCallback<Object> callback);
     void getBorrowQuota(TradeOrderRequest borrowQuotaRequest, BybitApiCallback<Object> callback);
     void getOpenOrders(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback);
-    void getTradeHistory(TradeOrderRequest order, BybitApiCallback<Object> callback);
+    void getTradeHistory(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void createOrder(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void createOrder(Map<String, Object> order, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void createOrder(String order, BybitApiCallback<GenericResponse<OrderResult>> callback) throws IOException;

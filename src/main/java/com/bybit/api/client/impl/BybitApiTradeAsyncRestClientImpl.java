@@ -72,7 +72,7 @@ public class BybitApiTradeAsyncRestClientImpl implements BybitApiAsyncTradeRestC
     }
 
     @Override
-    public void getTradeHistory(TradeOrderRequest order, BybitApiCallback<Object> callback) {
+    public void getTradeHistory(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         bybitApiService.getTradeHistory(
                 order.getCategory().getCategoryTypeId(),
                 order.getSymbol(),

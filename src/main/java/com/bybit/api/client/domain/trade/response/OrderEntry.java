@@ -16,162 +16,113 @@ import java.math.BigDecimal;
 @Data
 public class OrderEntry {
     private String orderId;
-
     private String orderLinkId;
-
-
     private String blockTradeId;
-
-
     private String symbol;
-
-
     private BigDecimal price;
-
-
     private BigDecimal qty;
-
     private Side side;
-
     private String isLeverage;
-
     private PositionIdx positionIdx;
-
-
     private OrderStatus orderStatus;
-
-
     private CancelType cancelType;
-
-
     private RejectReason rejectReason;
-
-
     private String avgPrice;
-
     private String leavesQty;
-
-
     private String leavesValue;
-
-
     private String cumExecQty;
-
-
     private String cumExecValue;
-
-
     private String cumExecFee;
-
-
     private TimeInForce timeInForce;
-
-
     private String orderType;
-
-
     private StopOrderType stopOrderType;
-
-
     private String orderIv;
-
-
     private BigDecimal triggerPrice;
-
-
     private BigDecimal takeProfit;
-
-
     private BigDecimal stopLoss;
-
-
     private String tpslMode;
-
-
     private BigDecimal tpLimitPrice;
-
-
     private BigDecimal slLimitPrice;
-
-
     private TriggerBy tpTriggerBy;
-
-
     private TriggerBy slTriggerBy;
-
-
     private Integer triggerDirection;
-
-
     private TriggerBy triggerBy;
-
     private String lastPriceOnCreated;
-
-
     private Boolean reduceOnly;
-
     private Boolean closeOnTrigger;
-
-
     private String placeType;
-
     private SmpType smpType;
-
-
     private Integer smpGroup;
-
-
     private String smpOrderId;
-
-
     private Long createdTime;
-
     private Long updatedTime;
 
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this, BybitApiConstants.TO_STRING_BUILDER_STYLE)
-                .append("symbol", symbol)
-                .append("orderType", orderType)
-                .append("orderLinkId", orderLinkId)
-                .append("slLimitPrice", slLimitPrice)
-                .append("orderId", orderId)
-                .append("cancelType", cancelType)
-                .append("avgPrice", avgPrice)
-                .append("stopOrderType", stopOrderType)
-                .append("lastPriceOnCreated", lastPriceOnCreated)
-                .append("orderStatus", orderStatus)
-                .append("takeProfit", takeProfit)
-                .append("cumExecValue", cumExecValue)
-                .append("tpslMode", tpslMode)
-                .append("smpType", smpType)
-                .append("triggerDirection", triggerDirection)
-                .append("blockTradeId", blockTradeId)
-                .append("rejectReason", rejectReason)
-                .append("isLeverage", isLeverage)
-                .append("price", price)
-                .append("orderIv", orderIv)
-                .append("createdTime", createdTime)
-                .append("tpTriggerBy", tpTriggerBy)
-                .append("positionIdx", positionIdx)
-                .append("timeInForce", timeInForce)
-                .append("leavesValue", leavesValue)
-                .append("updatedTime", updatedTime)
-                .append("side", side)
-                .append("smpGroup", smpGroup)
-                .append("triggerPrice", triggerPrice)
-                .append("tpLimitPrice", tpLimitPrice)
-                .append("cumExecFee", cumExecFee)
-                .append("slTriggerBy", slTriggerBy)
-                .append("leavesQty", leavesQty)
-                .append("closeOnTrigger", closeOnTrigger)
-                .append("placeType", placeType)
-                .append("cumExecQty", cumExecQty)
-                .append("reduceOnly", reduceOnly)
-                .append("qty", qty)
-                .append("stopLoss", stopLoss)
-                .append("smpOrderId", smpOrderId)
-                .append("triggerBy", triggerBy)
-                .toString();
-    }
+    // trade history
+    private BigDecimal underlyingPrice;
+    private String execTime;
+    private String feeCurrency;
+    private BigDecimal feeRate;
+    private BigDecimal tradeIv;
+    private BigDecimal markPrice;
+    private BigDecimal execPrice;
+    private BigDecimal markIv;
+    private BigDecimal orderQty;
+    private BigDecimal orderPrice;
+    private BigDecimal execValue;
+    private BigDecimal closedSize;
+    private String execType;
+    private long seq;
+    private BigDecimal indexPrice;
+    private boolean isMaker;
+    private BigDecimal execFee;
+    private String execId;
+    private String marketUnit;
+    private BigDecimal execQty;
+
+//    @Override
+//    public String toString() {
+//        return new ToStringBuilder(this, BybitApiConstants.TO_STRING_BUILDER_STYLE)
+//                .append("symbol", symbol)
+//                .append("orderType", orderType)
+//                .append("orderLinkId", orderLinkId)
+//                .append("slLimitPrice", slLimitPrice)
+//                .append("orderId", orderId)
+//                .append("cancelType", cancelType)
+//                .append("avgPrice", avgPrice)
+//                .append("stopOrderType", stopOrderType)
+//                .append("lastPriceOnCreated", lastPriceOnCreated)
+//                .append("orderStatus", orderStatus)
+//                .append("takeProfit", takeProfit)
+//                .append("cumExecValue", cumExecValue)
+//                .append("tpslMode", tpslMode)
+//                .append("smpType", smpType)
+//                .append("triggerDirection", triggerDirection)
+//                .append("blockTradeId", blockTradeId)
+//                .append("rejectReason", rejectReason)
+//                .append("isLeverage", isLeverage)
+//                .append("price", price)
+//                .append("orderIv", orderIv)
+//                .append("createdTime", createdTime)
+//                .append("tpTriggerBy", tpTriggerBy)
+//                .append("positionIdx", positionIdx)
+//                .append("timeInForce", timeInForce)
+//                .append("leavesValue", leavesValue)
+//                .append("updatedTime", updatedTime)
+//                .append("side", side)
+//                .append("smpGroup", smpGroup)
+//                .append("triggerPrice", triggerPrice)
+//                .append("tpLimitPrice", tpLimitPrice)
+//                .append("cumExecFee", cumExecFee)
+//                .append("slTriggerBy", slTriggerBy)
+//                .append("leavesQty", leavesQty)
+//                .append("closeOnTrigger", closeOnTrigger)
+//                .append("placeType", placeType)
+//                .append("cumExecQty", cumExecQty)
+//                .append("reduceOnly", reduceOnly)
+//                .append("qty", qty)
+//                .append("stopLoss", stopLoss)
+//                .append("smpOrderId", smpOrderId)
+//                .append("triggerBy", triggerBy)
+//                .toString();
+//    }
 }

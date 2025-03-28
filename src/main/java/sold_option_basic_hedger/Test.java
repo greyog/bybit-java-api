@@ -1,5 +1,6 @@
 package sold_option_basic_hedger;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import com.bybit.api.client.domain.CategoryType;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
+import com.bybit.api.client.domain.trade.Side;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
 import com.bybit.api.client.domain.trade.response.OrderEntry;
 import com.bybit.api.client.log.LogOption;
@@ -17,6 +19,7 @@ import com.bybit.api.client.restApi.BybitApiPositionRestClient;
 import com.bybit.api.client.restApi.BybitApiTradeRestClient;
 import com.bybit.api.client.service.BybitApiClientFactory;
 
+import static net.bytebuddy.description.type.TypeDescription.Generic.OfWildcardType.SYMBOL;
 import static sold_option_basic_hedger.Main.HEDGE_SYMBOL;
 
 public class Test {
@@ -32,11 +35,15 @@ public class Test {
         var positionRestClient = factory.newPositionRestClient();
         var marketRestClient = factory.newMarketDataRestClient();
 
-       var request = MarketDataRequest.builder()
-               .category(CategoryType.LINEAR)
-               .symbol(HEDGE_SYMBOL)
-               .build();
-       var result = marketRestClient.getMarketTickers(request);
+        var tradeHistory = tradeClient.getTradeHistory(TradeOrderRequest.builder()
+                .category(CategoryType.SPOT)
+                .symbol("USDCUSDT")
+                .limit(3)
+                .build());
+        OrderEntry lastTrade = tradeHistory.getResult().getOrderEntries().getFirst();
+        Side lastSide = lastTrade.getSide();
+        BigDecimal lastTradePrice = lastTrade.getPrice();
+
 
     }
 

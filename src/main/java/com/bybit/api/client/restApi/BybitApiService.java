@@ -945,7 +945,7 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @GET("/v5/execution/list")
-    Call<Object> getTradeHistory(@Query("category") String category,
+    Call<GenericResponse<OrderResult>> getTradeHistory(@Query("category") String category,
                                  @Query("symbol") String symbol,
                                  @Query("orderId") String orderId,
                                  @Query("orderLinkId") String orderLinkId,
