@@ -87,8 +87,12 @@ public class Main {
 //            BigDecimal execValue = lastTrade.getExecValue();
 //            System.out.println("execQty = " + execQty + ", execValue = " + execValue);
             switch (lastSide) {
-                case SELL -> lowestAskPrice = lowestAskPrice.max(lastTradePrice.add(GRID_HEIGHT));
-                case BUY -> highestBidPrice = highestBidPrice.min(lastTradePrice.subtract(GRID_HEIGHT));
+                case SELL, BUY -> {
+                    lowestAskPrice = lowestAskPrice.max(lastTradePrice.add(GRID_HEIGHT));
+                    highestBidPrice = highestBidPrice.min(lastTradePrice.subtract(GRID_HEIGHT));
+                }
+//                case BUY -> highestBidPrice = highestBidPrice.min(lastTradePrice.subtract(GRID_HEIGHT));
+
                 case null, default -> System.err.println("Unknown Side: " + lastSide);
             }
         }
