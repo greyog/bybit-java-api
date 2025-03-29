@@ -1,4 +1,4 @@
-import usdc_usdt_grid.Main;
+package usdc_usdt_grid;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -18,7 +18,7 @@ class Response {
     }
 }
 
-public class UsdcUsdtGridHandler implements Function<Request, Response> {
+public class Handler implements Function<Request, Response> {
     @Override
     public Response apply(Request request) {
         Main.main(new String[0]);

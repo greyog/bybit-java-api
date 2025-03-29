@@ -38,12 +38,15 @@ public class Test {
         var tradeHistory = tradeClient.getTradeHistory(TradeOrderRequest.builder()
                 .category(CategoryType.SPOT)
                 .symbol("USDCUSDT")
-                .limit(3)
+                .limit(1)
                 .build());
         OrderEntry lastTrade = tradeHistory.getResult().getOrderEntries().getFirst();
         Side lastSide = lastTrade.getSide();
-        BigDecimal lastTradePrice = lastTrade.getPrice();
-
+        BigDecimal lastTradePrice = lastTrade.getOrderPrice();
+        System.out.println("lastSide = " + lastSide + ", lastTradePrice = " + lastTradePrice.toString());
+        BigDecimal execQty = lastTrade.getExecQty();
+        BigDecimal execValue = lastTrade.getExecValue();
+        System.out.println("execQty = " + execQty + ", execValue = " + execValue);
 
     }
 
