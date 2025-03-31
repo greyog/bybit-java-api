@@ -270,7 +270,7 @@ public class Main {
     private static List<BigDecimal> calcBidOrderPrices(BigDecimal highestBidPrice) {
         var bidOrderPrice = MIN_PRICE;
         var bidOrderPrices = new ArrayList<BigDecimal>();
-        while (bidOrderPrice.compareTo(highestBidPrice) <= 0) {
+        while (bidOrderPrice.compareTo(highestBidPrice) < 0) {
             bidOrderPrices.add(bidOrderPrice);
             bidOrderPrice = bidOrderPrice.add(GRID_HEIGHT);
         }
