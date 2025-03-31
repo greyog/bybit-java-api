@@ -71,6 +71,8 @@ public class Main {
         var lowestAskPrice = marketBestPrices.ask1Price;
         var highestBidPrice = marketBestPrices.bid1Price;
 
+        cancelAllOrders(tradeClient); // first for equity estimation
+
         var tradeHistory = tradeClient.getTradeHistory(TradeOrderRequest.builder()
                 .category(CategoryType.SPOT)
                 .symbol(SYMBOL)
@@ -101,12 +103,10 @@ public class Main {
         }
 
         var bidOrderPrices = calcBidOrderPrices(highestBidPrice);
-        var maxBidPrice = bidOrderPrices.stream()
-                .max(BigDecimal::compareTo)
-                .orElse(lowestAskPrice.subtract(GRID_HEIGHT));
-        var askOrderPrices = calcAskOrderPrices(maxBidPrice.add(GRID_HEIGHT));
-
-        cancelAllOrders(tradeClient); // first for equity estimation
+//        var maxBidPrice = bidOrderPrices.stream()
+//                .max(BigDecimal::compareTo)
+//                .orElse(lowestAskPrice.subtract(GRID_HEIGHT));
+        var askOrderPrices = calcAskOrderPrices(lowestAskPrice);
 
         var walletBalance = getWalletBalance(accountClient);
 
@@ -135,7 +135,9 @@ public class Main {
                 var price = bidOrderPrices.get(i);
                 resultBidPrices.add(price);
                 i++;
-                var orderValue = orderQty.multiply(price);
+                var orderValue = orderQty
+                        .multiply(price)
+                        .multiply(BigDecimal.valueOf(1 + FEE_PERCENT.doubleValue() / 100));
                 balance = balance.subtract(orderValue);
             }
         }
@@ -143,11 +145,12 @@ public class Main {
         System.out.println("resultBidPrices = " + resultBidPrices);
         var askOrders = prepareAskOrders(resultAskPrices, orderQty);
         var bidOrders = prepareBidOrders(resultBidPrices, orderQty);
-        var allOrders = new ArrayList<TradeOrderRequest>();
-        allOrders.addAll(askOrders);
-        allOrders.addAll(bidOrders);
+//        var allOrders = new ArrayList<TradeOrderRequest>();
+//        allOrders.addAll(askOrders);
+//        allOrders.addAll(bidOrders);
 
-        placeBatchOrders(allOrders, tradeClient);
+        placeBatchOrders(askOrders, tradeClient);
+        placeBatchOrders(bidOrders, tradeClient);
 
     }
 
