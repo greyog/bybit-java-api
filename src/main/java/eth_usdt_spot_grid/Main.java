@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class Main {
@@ -109,15 +110,44 @@ public class Main {
 
         var walletBalance = getWalletBalance(accountClient);
 
-        var commonSize = calcSize(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
-        System.out.println("commonSize = " + commonSize);
-        var askOrders = prepareAskOrders(askOrderPrices, commonSize);
-        var bidOrders = prepareBidOrders(bidOrderPrices, commonSize);
+        var orderQty = calcSize(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
+        System.out.println("orderQty = " + orderQty);
+
+        var resultAskPrices = new ArrayList<BigDecimal>();
+        if (!askOrderPrices.isEmpty()) {
+            askOrderPrices.sort(BigDecimal::compareTo);
+            var balance = walletBalance.baseCoinEquity;
+            int i = 0;
+            while (balance.compareTo(BigDecimal.ZERO) > 0 && i < askOrderPrices.size()) {
+                resultAskPrices.add(askOrderPrices.get(i));
+                i++;
+                balance = balance.subtract(orderQty);
+            }
+        }
+
+        var resultBidPrices = new ArrayList<BigDecimal>();
+        if (!bidOrderPrices.isEmpty()) {
+            bidOrderPrices.sort(BigDecimal::compareTo);
+            bidOrderPrices = bidOrderPrices.reversed();
+            var balance = walletBalance.quoteCoinEquity;
+            int i = 0;
+            while (balance.compareTo(BigDecimal.ZERO) > 0 && i < bidOrderPrices.size()) {
+                var price = bidOrderPrices.get(i);
+                resultBidPrices.add(price);
+                i++;
+                var orderValue = orderQty.multiply(price);
+                balance = balance.subtract(orderValue);
+            }
+        }
+        System.out.println("resultAskPrices = " + resultAskPrices);
+        System.out.println("resultBidPrices = " + resultBidPrices);
+        var askOrders = prepareAskOrders(resultAskPrices, orderQty);
+        var bidOrders = prepareBidOrders(resultBidPrices, orderQty);
         var allOrders = new ArrayList<TradeOrderRequest>();
         allOrders.addAll(askOrders);
         allOrders.addAll(bidOrders);
 
-//        placeBatchOrders(allOrders, tradeClient);
+        placeBatchOrders(allOrders, tradeClient);
 
     }
 
