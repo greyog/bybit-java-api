@@ -1,9 +1,4 @@
-package usdc_usdt_grid;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
+package eth_usdt_spot_grid;
 
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
@@ -13,7 +8,6 @@ import com.bybit.api.client.domain.account.request.AccountDataRequest;
 import com.bybit.api.client.domain.account.response.walletBalance.Coin;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentEntry;
-import com.bybit.api.client.domain.position.TpslMode;
 import com.bybit.api.client.domain.trade.MarketUnit;
 import com.bybit.api.client.domain.trade.Side;
 import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
@@ -27,13 +21,17 @@ import com.bybit.api.client.service.BybitApiClientFactory;
 import common.ResponseValidator;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.List;
+
 public class Main {
 
     private static final String SYMBOL = System.getenv("GRID_SYMBOL");
     private static final BigDecimal MAX_PRICE = new BigDecimal(System.getenv("MAX_PRICE"));
     private static final BigDecimal MIN_PRICE = new BigDecimal(System.getenv("MIN_PRICE"));
-    //    private static final BigDecimal START_PRICE = new BigDecimal(System.getenv("START_PRICE"));
-//    private static final BigDecimal TRADE_AMOUNT = new BigDecimal(System.getenv("TRADE_AMOUNT"));
+    private static final BigDecimal FEE_PERCENT = new BigDecimal(System.getenv("FEE_PERCENT"));
     private static final BigDecimal GRID_HEIGHT = new BigDecimal(System.getenv("GRID_HEIGHT"));
     private static final String BASE_COIN = System.getenv("BASE_COIN"); // BTCUSDT -> BTC
     private static final String QUOTE_COIN = System.getenv("QUOTE_COIN"); // BTCUSDT -> USDT
@@ -52,6 +50,8 @@ public class Main {
         var accountClient = factory.newAccountRestClient();
 
         var instrumentInfo = getInstrumentInfo(marketDataClient);
+        var minOrderValue = instrumentInfo.getLotSizeFilter().getMinOrderAmt();
+        var minOrderQty = instrumentInfo.getLotSizeFilter().getMinOrderQty();
         var tickSize = instrumentInfo.getPriceFilter().getTickSize();
         int tickScale = tickSize.scale();
         System.out.println("tickSize = " + tickSize + ", tickSize.scale() = " + tickScale);
@@ -88,8 +88,10 @@ public class Main {
 //            System.out.println("execQty = " + execQty + ", execValue = " + execValue);
             switch (lastSide) {
                 case SELL, BUY -> {
-                    lowestAskPrice = lowestAskPrice.max(lastTradePrice.add(GRID_HEIGHT));
-                    highestBidPrice = highestBidPrice.min(lastTradePrice.subtract(GRID_HEIGHT));
+                    lowestAskPrice = (lastTradePrice.add(GRID_HEIGHT));
+                    highestBidPrice = (lastTradePrice.subtract(GRID_HEIGHT));
+//                    lowestAskPrice = lowestAskPrice.max(lastTradePrice.add(GRID_HEIGHT));
+//                    highestBidPrice = highestBidPrice.min(lastTradePrice.subtract(GRID_HEIGHT));
                 }
 //                case BUY -> highestBidPrice = highestBidPrice.min(lastTradePrice.subtract(GRID_HEIGHT));
 
@@ -97,14 +99,17 @@ public class Main {
             }
         }
 
-        var askOrderPrices = calcAskOrderPrices(lowestAskPrice);
         var bidOrderPrices = calcBidOrderPrices(highestBidPrice);
+        var maxBidPrice = bidOrderPrices.stream()
+                .max(BigDecimal::compareTo)
+                .orElse(lowestAskPrice.subtract(GRID_HEIGHT));
+        var askOrderPrices = calcAskOrderPrices(maxBidPrice.add(GRID_HEIGHT));
 
         cancelAllOrders(tradeClient); // first for equity estimation
 
         var walletBalance = getWalletBalance(accountClient);
 
-        var commonSize = calcSize(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices);
+        var commonSize = calcSize(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
         System.out.println("commonSize = " + commonSize);
         var askOrders = prepareAskOrders(askOrderPrices, commonSize);
         var bidOrders = prepareBidOrders(bidOrderPrices, commonSize);
@@ -112,32 +117,52 @@ public class Main {
         allOrders.addAll(askOrders);
         allOrders.addAll(bidOrders);
 
-        placeBatchOrders(allOrders, tradeClient);
+//        placeBatchOrders(allOrders, tradeClient);
 
     }
 
     @NotNull
-    private static BigDecimal calcSize(WalletBalance walletBalance, List<BigDecimal> askOrderPrices, int basePrecisionScale, List<BigDecimal> bidOrderPrices) {
+    private static BigDecimal calcSize(WalletBalance walletBalance, List<BigDecimal> askOrderPrices,
+                                       int basePrecisionScale,
+                                       List<BigDecimal> bidOrderPrices,
+                                       BigDecimal minOrderQty, BigDecimal minOrderValue) {
         var askSize = askOrderPrices.isEmpty()
-                ? null
+                ? BigDecimal.valueOf(Long.MAX_VALUE)
                 : walletBalance.baseCoinEquity().divide(BigDecimal.valueOf(askOrderPrices.size()), basePrecisionScale, RoundingMode.DOWN);
-        BigDecimal bidSize = null;
-        if (!bidOrderPrices.isEmpty()) {
+        System.out.println("askSize calculated on grid = " + askSize);
+        BigDecimal bidSize;
+        if (bidOrderPrices.isEmpty()) {
+            bidSize = BigDecimal.valueOf(Long.MAX_VALUE);
+        } else {
             var divisor = 0.0;
             for (BigDecimal price : bidOrderPrices) {
-                divisor = divisor + 1 / price.doubleValue();
+                divisor = divisor + price.doubleValue();
             }
             System.out.println("Bid size divisor = " + divisor);
-            var bidSizeDouble = walletBalance.quoteCoinEquity().doubleValue() / divisor;
-            bidSize = BigDecimal.valueOf(bidSizeDouble).setScale(basePrecisionScale, RoundingMode.DOWN);
+            var feeMultiplier = 1 - FEE_PERCENT.doubleValue() / 100;
+            var bidSizeDouble = walletBalance.quoteCoinEquity().doubleValue() / divisor * feeMultiplier;
+            bidSize = BigDecimal.valueOf(bidSizeDouble)
+                    .setScale(basePrecisionScale, RoundingMode.DOWN);
         }
+        System.out.println("bidSize calculated on grid = " + bidSize);
+
+        var minAskPrice = askOrderPrices.stream()
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.valueOf(Long.MAX_VALUE));
+        var minOrderQtyByValueAndMinAskPrice = minOrderValue.divide(minAskPrice, basePrecisionScale, RoundingMode.CEILING);
+        System.out.println("minOrderQtyByValueAndMinAskPrice = " + minOrderQtyByValueAndMinAskPrice);
+
+        var minBidPrice = bidOrderPrices.stream()
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.valueOf(Long.MAX_VALUE));
+        var minOrderQtyByValueAndMinBidPrice = minOrderValue.divide(minBidPrice, basePrecisionScale, RoundingMode.CEILING);
+        System.out.println("minOrderQtyByValueAndMinBidPrice = " + minOrderQtyByValueAndMinBidPrice);
+
+        var minOrderQtyByValueAndMinPrice = minOrderQtyByValueAndMinBidPrice.max(minOrderQtyByValueAndMinAskPrice);
+
+        askSize = askSize.max(minOrderQtyByValueAndMinPrice);
+        bidSize = bidSize.max(minOrderQtyByValueAndMinPrice);
         System.out.println("askSize = " + askSize + ", bidSize = " + bidSize);
-        if (askSize == null && bidSize != null) {
-            return bidSize;
-        }
-        if (askSize != null && bidSize == null) {
-            return askSize;
-        }
         return askSize.min(bidSize);
     }
 
@@ -179,9 +204,9 @@ public class Main {
                         .price(price.toString())
                         .qty(size.toString())
                         .tpLimitPrice(price.add(GRID_HEIGHT).toString())
-                        .triggerPrice(price.add(GRID_HEIGHT).toString())
+//                        .triggerPrice(price.add(GRID_HEIGHT).toString())
                         .tpOrderType(TradeOrderType.LIMIT)
-                        .tpslMode(TpslMode.FULL)
+//                        .tpslMode(TpslMode.FULL)
                         .build())
                 .toList();
         return bidOrders;
@@ -200,9 +225,9 @@ public class Main {
                         .price(price.toString())
                         .qty(size.toString())
                         .tpLimitPrice(price.subtract(GRID_HEIGHT).toString())
-                        .triggerPrice(price.subtract(GRID_HEIGHT).toString())
+//                        .triggerPrice(price.subtract(GRID_HEIGHT).toString())
                         .tpOrderType(TradeOrderType.LIMIT)
-                        .tpslMode(TpslMode.FULL)
+//                        .tpslMode(TpslMode.FULL)
                         .build())
                 .toList();
         return askOrders;
@@ -223,11 +248,11 @@ public class Main {
 
     @NotNull
     private static List<BigDecimal> calcAskOrderPrices(BigDecimal lowestAskPrice) {
-        var askOrderPrice = MAX_PRICE;
+        var askOrderPrice = lowestAskPrice;
         var askOrderPrices = new ArrayList<BigDecimal>();
-        while (askOrderPrice.compareTo(lowestAskPrice) >= 0) {
+        while (askOrderPrice.compareTo(MAX_PRICE) <= 0) {
             askOrderPrices.add(askOrderPrice);
-            askOrderPrice = askOrderPrice.subtract(GRID_HEIGHT);
+            askOrderPrice = askOrderPrice.add(GRID_HEIGHT);
         }
         List<BigDecimal> reversed = askOrderPrices.reversed();
         System.out.println("askOrderPrices = " + reversed);
@@ -252,7 +277,7 @@ public class Main {
     private record MarketBestPrices(BigDecimal bid1Price, BigDecimal ask1Price) {
     }
 
-    private static InstrumentEntry getInstrumentInfo(BybitApiMarketRestClient marketDataClient) {
+    public static InstrumentEntry getInstrumentInfo(BybitApiMarketRestClient marketDataClient) {
         var instrumentInfoRequest = MarketDataRequest.builder()
                 .category(CategoryType.SPOT)
                 .symbol(SYMBOL)
@@ -274,7 +299,7 @@ public class Main {
         ResponseValidator.checkResult(order);
     }
 
-    private static void placeBatchOrders(List<TradeOrderRequest> tradeOrderRequests, BybitApiTradeRestClient tradeClient) {
+    public static void placeBatchOrders(List<TradeOrderRequest> tradeOrderRequests, BybitApiTradeRestClient tradeClient) {
         if (tradeOrderRequests.isEmpty()) {
             System.out.println("There is no orders");
             return;
