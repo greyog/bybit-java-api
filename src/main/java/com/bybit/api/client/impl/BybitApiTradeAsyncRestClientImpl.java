@@ -148,20 +148,20 @@ public class BybitApiTradeAsyncRestClientImpl implements BybitApiAsyncTradeRestC
     }
 
     @Override
-    public void cancelBatchOrder(BatchOrderRequest batchOrderRequest, BybitApiCallback<Object> callback) {
+    public void cancelBatchOrder(BatchOrderRequest batchOrderRequest, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         var cancelBatchOrderRequest = converter.convertToCancelBatchOrderRequest(batchOrderRequest);
         bybitApiService.cancelBatchOrder(cancelBatchOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void cancelBatchOrder(Map<String, Object> payload, BybitApiCallback<Object> callback) {
+    public void cancelBatchOrder(Map<String, Object> payload, BybitApiCallback<GenericResponse<OrderResult>> callback) {
         var batchOrderRequest = converter.convertMapToBatchOrderRequest(payload);
         var cancelBatchOrderRequest = converter.convertToCancelBatchOrderRequest(batchOrderRequest);
         bybitApiService.cancelBatchOrder(cancelBatchOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
 
     @Override
-    public void cancelBatchOrder(String json, BybitApiCallback<Object> callback) throws IOException {
+    public void cancelBatchOrder(String json, BybitApiCallback<GenericResponse<OrderResult>> callback) throws IOException {
         var batchOrderRequest = converter.jsonToBatchOrderRequest(json);
         var cancelBatchOrderRequest = converter.convertToCancelBatchOrderRequest(batchOrderRequest);
         bybitApiService.cancelBatchOrder(cancelBatchOrderRequest).enqueue(new BybitApiCallbackAdapter<>(callback));

@@ -127,7 +127,7 @@ public class BybitApiTradeRestClientImpl implements BybitApiTradeRestClient {
     }
 
     @Override
-    public Object cancelBatchOrder(BatchOrderRequest batchOrderRequest) {
+    public GenericResponse<OrderResult> cancelBatchOrder(BatchOrderRequest batchOrderRequest) {
         var cancelBatchOrderRequest = converter.convertToCancelBatchOrderRequest(batchOrderRequest);
         return executeSync(bybitApiService.cancelBatchOrder(cancelBatchOrderRequest));
     }

@@ -1265,7 +1265,7 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @POST("/v5/order/cancel-batch")
-    Call<Object> cancelBatchOrder(@Body CancelBatchOrderRequest cancelBatchOrderRequest);
+    Call<GenericResponse<OrderResult>> cancelBatchOrder(@Body CancelBatchOrderRequest cancelBatchOrderRequest);
 
     /**
      * Cancel All Orders

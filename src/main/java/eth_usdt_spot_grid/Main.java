@@ -24,8 +24,11 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -71,7 +74,7 @@ public class Main {
         var lowestAskPrice = marketBestPrices.ask1Price;
         var highestBidPrice = marketBestPrices.bid1Price;
 
-        cancelAllOrders(tradeClient); // first for equity estimation
+//        cancelAllOrders(tradeClient); // first for equity estimation
 
         var tradeHistory = tradeClient.getTradeHistory(TradeOrderRequest.builder()
                 .category(CategoryType.SPOT)
@@ -113,19 +116,19 @@ public class Main {
         var orderQty = calcSize(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
         System.out.println("orderQty = " + orderQty);
 
-        var resultAskPrices = new ArrayList<BigDecimal>();
+        var filteredAskPrices = new ArrayList<BigDecimal>();
         if (!askOrderPrices.isEmpty()) {
             askOrderPrices.sort(BigDecimal::compareTo);
             var balance = walletBalance.baseCoinEquity;
             int i = 0;
             while (balance.compareTo(BigDecimal.ZERO) > 0 && i < askOrderPrices.size()) {
-                resultAskPrices.add(askOrderPrices.get(i));
+                filteredAskPrices.add(askOrderPrices.get(i));
                 i++;
                 balance = balance.subtract(orderQty);
             }
         }
 
-        var resultBidPrices = new ArrayList<BigDecimal>();
+        var filteredBidPrices = new ArrayList<BigDecimal>();
         if (!bidOrderPrices.isEmpty()) {
             bidOrderPrices.sort(BigDecimal::compareTo);
             bidOrderPrices = bidOrderPrices.reversed();
@@ -133,7 +136,7 @@ public class Main {
             int i = 0;
             while (balance.compareTo(BigDecimal.ZERO) > 0 && i < bidOrderPrices.size()) {
                 var price = bidOrderPrices.get(i);
-                resultBidPrices.add(price);
+                filteredBidPrices.add(price);
                 i++;
                 var orderValue = orderQty
                         .multiply(price)
@@ -141,17 +144,89 @@ public class Main {
                 balance = balance.subtract(orderValue);
             }
         }
-        System.out.println("resultAskPrices = " + resultAskPrices);
-        System.out.println("resultBidPrices = " + resultBidPrices);
-        var askOrders = prepareAskOrders(resultAskPrices, orderQty);
-        var bidOrders = prepareBidOrders(resultBidPrices, orderQty);
-//        var allOrders = new ArrayList<TradeOrderRequest>();
-//        allOrders.addAll(askOrders);
-//        allOrders.addAll(bidOrders);
+        System.out.println("filteredAskPrices = " + filteredAskPrices);
+        System.out.println("filteredBidPrices = " + filteredBidPrices);
 
-        placeBatchOrders(askOrders, tradeClient);
-        placeBatchOrders(bidOrders, tradeClient);
+        var openAskOrders = new ArrayList<OrderEntry>();
+        var openBidOrders = new ArrayList<OrderEntry>();
+        var allOpenOrders = new ArrayList<OrderEntry>();
+        String nextPageCursor = null;
+        do {
+            var openOrdersResponse = tradeClient.getOpenOrders(TradeOrderRequest.builder()
+                    .category(CategoryType.SPOT)
+                    .symbol(SYMBOL)
+                    .cursor(nextPageCursor)
+                    .build());
+            ResponseValidator.checkResult(openOrdersResponse);
+            openOrdersResponse.getResult().getOrderEntries().forEach(orderEntry -> {
+                switch (orderEntry.getSide()) {
+                    case BUY -> openBidOrders.add(orderEntry);
+                    case SELL -> openAskOrders.add(orderEntry);
+                }
+            });
+            allOpenOrders.addAll(openOrdersResponse.getResult().getOrderEntries());
+            nextPageCursor = openOrdersResponse.getResult().getNextPageCursor();
+        } while (nextPageCursor != null && !nextPageCursor.isEmpty());
+        var askPricesToChange = getPricesToChange(openAskOrders, filteredAskPrices, tickScale);
+        System.out.println("ask pricesToAdd = " + askPricesToChange.pricesToAdd());
+        System.out.println("ask pricesToRemove = " + askPricesToChange.pricesToRemove());
 
+        var bidPricesToChange = getPricesToChange(openBidOrders, filteredBidPrices, tickScale);
+        System.out.println("bid pricesToAdd = " + bidPricesToChange.pricesToAdd());
+        System.out.println("bid pricesToRemove = " + bidPricesToChange.pricesToRemove());
+
+        var openOrdersQtyEqualsTargetOrderQty = allOpenOrders.stream()
+                .map(OrderEntry::getQty)
+                .allMatch(q -> orderQty.compareTo(q) == 0);
+        System.out.println("openOrdersQtyEqualsTargetOrderQty = " + openOrdersQtyEqualsTargetOrderQty);
+        if (!openOrdersQtyEqualsTargetOrderQty) {
+            cancelAllOrders(tradeClient);
+            var askOrders = prepareAskOrders(filteredAskPrices, orderQty);
+            var bidOrders = prepareBidOrders(filteredBidPrices, orderQty);
+            placeBatchOrders(askOrders, tradeClient);
+            placeBatchOrders(bidOrders, tradeClient);
+        } else {
+            var askOrdersToAdd = prepareAskOrders(askPricesToChange.pricesToAdd, orderQty);
+            var bidOrdersToAdd = prepareBidOrders(bidPricesToChange.pricesToAdd, orderQty);
+            var allOrdersToAdd = new ArrayList<>(askOrdersToAdd);
+            allOrdersToAdd.addAll(bidOrdersToAdd);
+            placeBatchOrders(allOrdersToAdd, tradeClient);
+
+            var ordersToRemove = allOpenOrders.stream()
+                    .peek(orderEntry -> orderEntry.setPrice(orderEntry.getPrice().setScale(tickScale, RoundingMode.HALF_UP)))
+                    .filter(orderEntry ->
+                            askPricesToChange.pricesToRemove.contains(orderEntry.getPrice())
+                            || bidPricesToChange.pricesToRemove.contains(orderEntry.getPrice()))
+                    .map(orderEntry -> TradeOrderRequest.builder()
+                            .category(CategoryType.SPOT)
+                            .symbol(SYMBOL)
+                            .orderId(orderEntry.getOrderId())
+                            .build())
+                    .toList();
+            cancelBatchOrders(ordersToRemove, tradeClient);
+        }
+    }
+
+    @NotNull
+    private static PricesToChange getPricesToChange(List<OrderEntry> openOrders, List<BigDecimal> calculatedPrices, int tickScale) {
+        var openPrices = openOrders.stream()
+                .map(OrderEntry::getPrice)
+                .map(p -> p.setScale(tickScale, RoundingMode.HALF_UP))
+                .collect(Collectors.toSet());
+        var calcPricesSet = calculatedPrices.stream()
+                .map(p -> p.setScale(tickScale, RoundingMode.HALF_UP))
+                .collect(Collectors.toSet());
+        System.out.println("calcPricesSet = " + calcPricesSet);
+        var pricesToAdd = calcPricesSet.stream()
+                .filter(p -> !openPrices.contains(p))
+                .collect(Collectors.toSet());
+        var pricesToRemove = openPrices.stream()
+                .filter(p -> !calcPricesSet.contains(p))
+                .collect(Collectors.toSet());
+        return new PricesToChange(pricesToAdd, pricesToRemove);
+    }
+
+    private record PricesToChange(Set<BigDecimal> pricesToAdd, Set<BigDecimal> pricesToRemove) {
     }
 
     @NotNull
@@ -224,53 +299,10 @@ public class Main {
     }
 
     @NotNull
-    private static List<TradeOrderRequest> prepareBidOrders(List<BigDecimal> bidOrderPrices,
-                                                            BigDecimal size) {
-        if (bidOrderPrices.isEmpty()) return List.of();
-        var bidOrders = bidOrderPrices.stream()
-                .map(price -> TradeOrderRequest.builder()
-                        .category(CategoryType.SPOT)
-                        .symbol(SYMBOL)
-                        .marketUnit(MarketUnit.QUOTE_COIN.getValue())
-                        .side(Side.BUY)
-                        .orderType(TradeOrderType.LIMIT)
-                        .price(price.toString())
-                        .qty(size.toString())
-                        .tpLimitPrice(price.add(GRID_HEIGHT).toString())
-//                        .triggerPrice(price.add(GRID_HEIGHT).toString())
-                        .tpOrderType(TradeOrderType.LIMIT)
-//                        .tpslMode(TpslMode.FULL)
-                        .build())
-                .toList();
-        return bidOrders;
-    }
-
-    @NotNull
-    private static List<TradeOrderRequest> prepareAskOrders(List<BigDecimal> askOrderPrices, BigDecimal size) {
-        if (askOrderPrices.isEmpty()) return List.of();
-        var askOrders = askOrderPrices.stream()
-                .map(price -> TradeOrderRequest.builder()
-                        .category(CategoryType.SPOT)
-                        .symbol(SYMBOL)
-                        .side(Side.SELL)
-                        .marketUnit(MarketUnit.BASE_COIN.getValue())
-                        .orderType(TradeOrderType.LIMIT)
-                        .price(price.toString())
-                        .qty(size.toString())
-                        .tpLimitPrice(price.subtract(GRID_HEIGHT).toString())
-//                        .triggerPrice(price.subtract(GRID_HEIGHT).toString())
-                        .tpOrderType(TradeOrderType.LIMIT)
-//                        .tpslMode(TpslMode.FULL)
-                        .build())
-                .toList();
-        return askOrders;
-    }
-
-    @NotNull
     private static List<BigDecimal> calcBidOrderPrices(BigDecimal highestBidPrice) {
         var bidOrderPrice = MIN_PRICE;
         var bidOrderPrices = new ArrayList<BigDecimal>();
-        while (bidOrderPrice.compareTo(highestBidPrice) < 0) {
+        while (bidOrderPrice.compareTo(highestBidPrice) <= 0) {
             bidOrderPrices.add(bidOrderPrice);
             bidOrderPrice = bidOrderPrice.add(GRID_HEIGHT);
         }
@@ -332,9 +364,52 @@ public class Main {
         ResponseValidator.checkResult(order);
     }
 
+    @NotNull
+    private static List<TradeOrderRequest> prepareBidOrders(Collection<BigDecimal> bidOrderPrices,
+                                                            BigDecimal size) {
+        if (bidOrderPrices.isEmpty()) return List.of();
+        var bidOrders = bidOrderPrices.stream()
+                .map(price -> TradeOrderRequest.builder()
+                        .category(CategoryType.SPOT)
+                        .symbol(SYMBOL)
+                        .marketUnit(MarketUnit.QUOTE_COIN.getValue())
+                        .side(Side.BUY)
+                        .orderType(TradeOrderType.LIMIT)
+                        .price(price.toString())
+                        .qty(size.toString())
+                        .tpLimitPrice(price.add(GRID_HEIGHT).toString())
+//                        .triggerPrice(price.add(GRID_HEIGHT).toString())
+                        .tpOrderType(TradeOrderType.LIMIT)
+//                        .tpslMode(TpslMode.FULL)
+                        .build())
+                .toList();
+        return bidOrders;
+    }
+
+    @NotNull
+    private static List<TradeOrderRequest> prepareAskOrders(Collection<BigDecimal> askOrderPrices, BigDecimal size) {
+        if (askOrderPrices.isEmpty()) return List.of();
+        var askOrders = askOrderPrices.stream()
+                .map(price -> TradeOrderRequest.builder()
+                        .category(CategoryType.SPOT)
+                        .symbol(SYMBOL)
+                        .side(Side.SELL)
+                        .marketUnit(MarketUnit.BASE_COIN.getValue())
+                        .orderType(TradeOrderType.LIMIT)
+                        .price(price.toString())
+                        .qty(size.toString())
+                        .tpLimitPrice(price.subtract(GRID_HEIGHT).toString())
+//                        .triggerPrice(price.subtract(GRID_HEIGHT).toString()) // todo to test
+                        .tpOrderType(TradeOrderType.LIMIT)
+//                        .tpslMode(TpslMode.FULL)
+                        .build())
+                .toList();
+        return askOrders;
+    }
+
     public static void placeBatchOrders(List<TradeOrderRequest> tradeOrderRequests, BybitApiTradeRestClient tradeClient) {
         if (tradeOrderRequests.isEmpty()) {
-            System.out.println("There is no orders");
+            System.out.println("There is no orders to place");
             return;
         }
         int maxBatchSize = 10;
@@ -350,6 +425,30 @@ public class Main {
             }
         }
         var batchOrderResult = tradeClient.createBatchOrder(BatchOrderRequest.builder()
+                .category(CategoryType.SPOT)
+                .request(tradeOrderRequests.subList(slow, tradeOrderRequests.size()))
+                .build());
+        ResponseValidator.checkResult(batchOrderResult);
+    }
+
+    public static void cancelBatchOrders(List<TradeOrderRequest> tradeOrderRequests, BybitApiTradeRestClient tradeClient) {
+        if (tradeOrderRequests.isEmpty()) {
+            System.out.println("There is no orders to cancel");
+            return;
+        }
+        int maxBatchSize = 10;
+        int slow = 0;
+        for (int i = 1; i < tradeOrderRequests.size(); i++) {
+            if (i % maxBatchSize == 0) {
+                var batchOrderResult = tradeClient.cancelBatchOrder(BatchOrderRequest.builder()
+                        .category(CategoryType.SPOT)
+                        .request(tradeOrderRequests.subList(slow, i))
+                        .build());
+                ResponseValidator.checkResult(batchOrderResult);
+                slow = i;
+            }
+        }
+        var batchOrderResult = tradeClient.cancelBatchOrder(BatchOrderRequest.builder()
                 .category(CategoryType.SPOT)
                 .request(tradeOrderRequests.subList(slow, tradeOrderRequests.size()))
                 .build());

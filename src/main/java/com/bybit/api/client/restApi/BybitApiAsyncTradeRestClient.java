@@ -26,9 +26,9 @@ public interface BybitApiAsyncTradeRestClient {
     void amendBatchOrder(BatchOrderRequest batchOrderRequest, BybitApiCallback<Object> callback);
     void amendBatchOrder(Map<String, Object> payload, BybitApiCallback<Object> callback);
     void amendBatchOrder(String json, BybitApiCallback<Object> callback) throws IOException;
-    void cancelBatchOrder(BatchOrderRequest batchOrderRequest, BybitApiCallback<Object> callback);
-    void cancelBatchOrder(Map<String, Object> payload, BybitApiCallback<Object> callback);
-    void cancelBatchOrder(String json, BybitApiCallback<Object> callback) throws IOException;
+    void cancelBatchOrder(BatchOrderRequest batchOrderRequest, BybitApiCallback<GenericResponse<OrderResult>> callback);
+    void cancelBatchOrder(Map<String, Object> payload, BybitApiCallback<GenericResponse<OrderResult>> callback);
+    void cancelBatchOrder(String json, BybitApiCallback<GenericResponse<OrderResult>> callback) throws IOException;
     void cancelOrder(TradeOrderRequest order, BybitApiCallback<Object> callback);
     void cancelAllOrder(TradeOrderRequest order, BybitApiCallback<GenericResponse<OrderResult>> callback);
     void amendOrder(TradeOrderRequest order, BybitApiCallback<Object> callback);

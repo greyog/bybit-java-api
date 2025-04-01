@@ -26,7 +26,7 @@ public interface BybitApiTradeRestClient {
     Object amendBatchOrder(BatchOrderRequest batchOrderRequest);
     Object amendBatchOrder(Map<String, Object> payload);
     Object amendBatchOrder(String json) throws IOException;
-    Object cancelBatchOrder(BatchOrderRequest batchOrderRequest);
+    GenericResponse<OrderResult> cancelBatchOrder(BatchOrderRequest batchOrderRequest);
     Object cancelBatchOrder(Map<String, Object> payload);
     Object cancelBatchOrder(String json) throws IOException;
     Object cancelOrder(TradeOrderRequest order);

@@ -3,12 +3,18 @@ package eth_usdt_spot_grid;
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
 import com.bybit.api.client.domain.TradeOrderType;
+import com.bybit.api.client.domain.trade.OrderStatus;
 import com.bybit.api.client.domain.trade.Side;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
+import com.bybit.api.client.domain.trade.response.OrderEntry;
 import com.bybit.api.client.log.LogOption;
 import com.bybit.api.client.service.BybitApiClientFactory;
+import common.ResponseValidator;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Test extends Main{
 
@@ -22,21 +28,34 @@ public class Test extends Main{
                 LogOption.OKHTTP3.getLogOptionType());
         var tradeClient = factory.newTradeRestClient();
 
-        var r = List.of(TradeOrderRequest.builder()
-                        .category(CategoryType.SPOT)
-                        .symbol("ETHUSDT")
-                        .side(Side.SELL)
-                        .orderType(TradeOrderType.LIMIT)
-                        .qty("0.00257")
-                        .price("1947.4")
-                        .tpLimitPrice("1942.7")
-                        .triggerPrice("1943")
-                        .tpOrderType(TradeOrderType.LIMIT)
-//                        .marketUnit("baseCoin")
-                .build()
-        );
-//        Main.placeBatchOrders(r, tradeClient);
-        Main.getInstrumentInfo(factory.newMarketDataRestClient());
-//        tradeClient.createOrder(r.getFirst());
+        var openAskOrders = new ArrayList<OrderEntry>();
+        var openBidOrders = new ArrayList<OrderEntry>();
+        String nextPageCursor = null;
+        do {
+            var openOrdersResponse = tradeClient.getOpenOrders(TradeOrderRequest.builder()
+                    .category(CategoryType.SPOT)
+                    .symbol("ETHUSDT")
+                    .cursor(nextPageCursor)
+//                    .orderStatus(OrderStatus.ACTIVE)
+                    .build());
+            ResponseValidator.checkResult(openOrdersResponse);
+            openOrdersResponse.getResult().getOrderEntries().forEach(orderEntry -> {
+                switch (orderEntry.getSide()) {
+                    case BUY -> openBidOrders.add(orderEntry);
+                    case SELL -> openAskOrders.add(orderEntry);
+                }
+            });
+            nextPageCursor = openOrdersResponse.getResult().getNextPageCursor();
+        } while (nextPageCursor != null && !nextPageCursor.isEmpty());
+        var openAskPrices = openAskOrders.stream()
+                .map(OrderEntry::getPrice)
+//                .map(BigDecimal::toString)
+                .collect(Collectors.toSet());
+        System.out.println("openAskPrices = " + openAskPrices);
+        var openBidPrices = openBidOrders.stream()
+                .map(OrderEntry::getPrice)
+                .collect(Collectors.toSet());
+        System.out.println("openBidPrices = " + openBidPrices);
+        System.out.println("openBidPrices.size() + openAskPrices.size() = " + (openBidPrices.size() + openAskPrices.size()));
     }
 }
