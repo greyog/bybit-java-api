@@ -77,7 +77,8 @@ public class BybitApiTradeRestClientImpl implements BybitApiTradeRestClient {
     @Override
     public GenericResponse<OrderResult> createBatchOrder(BatchOrderRequest batchOrderRequest) {
         var placeBatchOrderRequest = converter.convertToPlaceBatchOrderRequest(batchOrderRequest);
-        return executeSync(bybitApiService.createBatchOrder(placeBatchOrderRequest));
+        return executeSync(bybitApiService.createBatchOrder(placeBatchOrderRequest),
+                batchOrderRequest.getRequest().size());
     }
 
     @Override

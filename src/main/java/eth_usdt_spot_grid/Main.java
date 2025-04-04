@@ -145,12 +145,19 @@ public class Main {
         System.out.println("resultBidPrices = " + resultBidPrices);
         var askOrders = prepareAskOrders(resultAskPrices, orderQty);
         var bidOrders = prepareBidOrders(resultBidPrices, orderQty);
-//        var allOrders = new ArrayList<TradeOrderRequest>();
-//        allOrders.addAll(askOrders);
-//        allOrders.addAll(bidOrders);
+        var allOrders = new ArrayList<TradeOrderRequest>();
+        allOrders.addAll(askOrders);
+        allOrders.addAll(bidOrders);
+        var midPrice = lowestAskPrice.add(highestBidPrice).divide(BigDecimal.TWO, tickScale, RoundingMode.HALF_UP);
+        allOrders.stream()
+                .sorted((o1, o2) -> {
+                    var o1Price = new BigDecimal(o1.getPrice());
+                    var o2Price =
+                })
+        placeBatchOrders(allOrders, tradeClient);
 
-        placeBatchOrders(askOrders, tradeClient);
-        placeBatchOrders(bidOrders, tradeClient);
+//        placeBatchOrders(askOrders, tradeClient);
+//        placeBatchOrders(bidOrders, tradeClient);
 
     }
 

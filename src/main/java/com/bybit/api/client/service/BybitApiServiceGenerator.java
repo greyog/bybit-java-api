@@ -8,6 +8,7 @@ import com.bybit.api.client.security.AuthenticationInterceptor;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.google.common.util.concurrent.RateLimiter;
 import lombok.Getter;
 import okhttp3.Dispatcher;
 import okhttp3.OkHttpClient;
@@ -37,6 +38,7 @@ public class BybitApiServiceGenerator {
     @Getter
     private static final OkHttpClient sharedClient;
     private static final Converter.Factory converterFactory;
+    private static final RateLimiter rateLimiter;
 
     static {
         Dispatcher dispatcher = new Dispatcher();
@@ -52,6 +54,7 @@ public class BybitApiServiceGenerator {
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 //        objectMapper.enable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
         converterFactory = JacksonConverterFactory.create(objectMapper);
+        rateLimiter = RateLimiter.create(20);
     }
 
 
@@ -105,7 +108,12 @@ public class BybitApiServiceGenerator {
     /**
      * Execute a REST call and block until the response is received.
      */
-    public static <T> T executeSync(Call<T> call) {
+    public static <T> T executeSync(Call<T> call, int... acquireLimit) {
+        if (acquireLimit == null) {
+            rateLimiter.acquire(1);
+        } else if (acquireLimit.length > 0){
+            rateLimiter.acquire(acquireLimit[0]);
+        }
         try {
             var response = call.execute();
             if (response.isSuccessful()) {
