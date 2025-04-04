@@ -159,7 +159,7 @@ public class Main {
                     return o1Offset.compareTo(o2Offset);
                 })
                 .toList();
-        allOrdersSortedFiltered.forEach(System.out::println);
+//        allOrdersSortedFiltered.forEach(System.out::println);
         placeBatchOrders(allOrdersSortedFiltered, tradeClient);
 
 //        placeBatchOrders(askOrders, tradeClient);
