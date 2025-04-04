@@ -23,6 +23,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static com.bybit.api.client.log.Slf4jLoggingInterceptor.HandleLoggingInterceptor;
@@ -54,7 +55,7 @@ public class BybitApiServiceGenerator {
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 //        objectMapper.enable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
         converterFactory = JacksonConverterFactory.create(objectMapper);
-        rateLimiter = RateLimiter.create(20);
+        rateLimiter = RateLimiter.create((int)(Math.random() * 10));
     }
 
 
@@ -109,9 +110,9 @@ public class BybitApiServiceGenerator {
      * Execute a REST call and block until the response is received.
      */
     public static <T> T executeSync(Call<T> call, int... acquireLimit) {
-        if (acquireLimit == null) {
+        if (acquireLimit == null || acquireLimit.length == 0) {
             rateLimiter.acquire(1);
-        } else if (acquireLimit.length > 0){
+        } else {
             rateLimiter.acquire(acquireLimit[0]);
         }
         try {
