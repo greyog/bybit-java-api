@@ -71,7 +71,6 @@ public class Main {
         var lowestAskPrice = marketBestPrices.ask1Price;
         var highestBidPrice = marketBestPrices.bid1Price;
 
-        cancelAllOrders(tradeClient); // first for equity estimation
 
         var tradeHistory = tradeClient.getTradeHistory(TradeOrderRequest.builder()
                 .category(CategoryType.SPOT)
@@ -107,6 +106,8 @@ public class Main {
 //                .max(BigDecimal::compareTo)
 //                .orElse(lowestAskPrice.subtract(GRID_HEIGHT));
         var askOrderPrices = calcAskOrderPrices(lowestAskPrice);
+
+        cancelAllOrders(tradeClient); // first for equity estimation
 
         var walletBalance = getWalletBalance(accountClient);
 
@@ -149,12 +150,17 @@ public class Main {
         allOrders.addAll(askOrders);
         allOrders.addAll(bidOrders);
         var midPrice = lowestAskPrice.add(highestBidPrice).divide(BigDecimal.TWO, tickScale, RoundingMode.HALF_UP);
-        allOrders.stream()
+        var allOrdersSortedFiltered = allOrders.stream()
                 .sorted((o1, o2) -> {
                     var o1Price = new BigDecimal(o1.getPrice());
-                    var o2Price =
+                    var o2Price = new BigDecimal(o2.getPrice());
+                    var o1Offset = midPrice.subtract(o1Price).abs();
+                    var o2Offset = midPrice.subtract(o2Price).abs();
+                    return o1Offset.compareTo(o2Offset);
                 })
-        placeBatchOrders(allOrders, tradeClient);
+                .toList();
+        allOrdersSortedFiltered.forEach(System.out::println);
+//        placeBatchOrders(allOrdersSortedFiltered, tradeClient);
 
 //        placeBatchOrders(askOrders, tradeClient);
 //        placeBatchOrders(bidOrders, tradeClient);
