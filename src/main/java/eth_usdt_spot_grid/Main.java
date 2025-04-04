@@ -160,7 +160,7 @@ public class Main {
                 })
                 .toList();
         allOrdersSortedFiltered.forEach(System.out::println);
-//        placeBatchOrders(allOrdersSortedFiltered, tradeClient);
+        placeBatchOrders(allOrdersSortedFiltered, tradeClient);
 
 //        placeBatchOrders(askOrders, tradeClient);
 //        placeBatchOrders(bidOrders, tradeClient);
