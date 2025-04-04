@@ -55,7 +55,7 @@ public class BybitApiServiceGenerator {
         objectMapper.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING);
 //        objectMapper.enable(DeserializationFeature.READ_DATE_TIMESTAMPS_AS_NANOSECONDS);
         converterFactory = JacksonConverterFactory.create(objectMapper);
-        rateLimiter = RateLimiter.create((int)(Math.random() * 10));
+        rateLimiter = RateLimiter.create(10);
     }
 
 
