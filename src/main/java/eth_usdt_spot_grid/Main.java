@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 public class Main {
@@ -111,8 +110,7 @@ public class Main {
 
         var walletBalance = getWalletBalance(accountClient);
 
-        var orderQty = calcSize(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
-        System.out.println("orderQty = " + orderQty);
+        var orderQty = calcOrderQty(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
 
         var resultAskPrices = new ArrayList<BigDecimal>();
         if (!askOrderPrices.isEmpty()) {
@@ -126,6 +124,12 @@ public class Main {
             }
         }
 
+        var onePlusFee = BigDecimal.valueOf(1 + FEE_PERCENT.doubleValue() / 100);
+        var bidOrderQty = onePlusFee
+                .multiply(orderQty)
+                .setScale(basePrecisionScale, RoundingMode.CEILING);
+        System.out.println("ask orderQty = " + orderQty + ", bid orderQty = " + bidOrderQty);
+
         var resultBidPrices = new ArrayList<BigDecimal>();
         if (!bidOrderPrices.isEmpty()) {
             bidOrderPrices.sort(BigDecimal::compareTo);
@@ -136,16 +140,15 @@ public class Main {
                 var price = bidOrderPrices.get(i);
                 resultBidPrices.add(price);
                 i++;
-                var orderValue = orderQty
-                        .multiply(price)
-                        .multiply(BigDecimal.valueOf(1 + FEE_PERCENT.doubleValue() / 100));
+                var orderValue = bidOrderQty
+                        .multiply(price);
                 balance = balance.subtract(orderValue);
             }
         }
         System.out.println("resultAskPrices = " + resultAskPrices);
         System.out.println("resultBidPrices = " + resultBidPrices);
         var askOrders = prepareAskOrders(resultAskPrices, orderQty);
-        var bidOrders = prepareBidOrders(resultBidPrices, orderQty);
+        var bidOrders = prepareBidOrders(resultBidPrices, bidOrderQty);
         var allOrders = new ArrayList<TradeOrderRequest>();
         allOrders.addAll(askOrders);
         allOrders.addAll(bidOrders);
@@ -168,10 +171,10 @@ public class Main {
     }
 
     @NotNull
-    private static BigDecimal calcSize(WalletBalance walletBalance, List<BigDecimal> askOrderPrices,
-                                       int basePrecisionScale,
-                                       List<BigDecimal> bidOrderPrices,
-                                       BigDecimal minOrderQty, BigDecimal minOrderValue) {
+    private static BigDecimal calcOrderQty(WalletBalance walletBalance, List<BigDecimal> askOrderPrices,
+                                           int basePrecisionScale,
+                                           List<BigDecimal> bidOrderPrices,
+                                           BigDecimal minOrderQty, BigDecimal minOrderValue) {
         var askSize = askOrderPrices.isEmpty()
                 ? BigDecimal.valueOf(Long.MAX_VALUE)
                 : walletBalance.baseCoinEquity().divide(BigDecimal.valueOf(askOrderPrices.size()), basePrecisionScale, RoundingMode.DOWN);
