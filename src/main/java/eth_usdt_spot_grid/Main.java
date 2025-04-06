@@ -106,11 +106,11 @@ public class Main {
 //                .orElse(lowestAskPrice.subtract(GRID_HEIGHT));
         var askOrderPrices = calcAskOrderPrices(lowestAskPrice);
 
-        cancelAllOrders(tradeClient); // first for equity estimation
+//        cancelAllOrders(tradeClient); // first for equity estimation
 
         var walletBalance = getWalletBalance(accountClient);
 
-        var orderQty = calcOrderQty(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
+        var askOrderQty = calcOrderQty(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
 
         var resultAskPrices = new ArrayList<BigDecimal>();
         if (!askOrderPrices.isEmpty()) {
@@ -120,15 +120,26 @@ public class Main {
             while (balance.compareTo(BigDecimal.ZERO) > 0 && i < askOrderPrices.size()) {
                 resultAskPrices.add(askOrderPrices.get(i));
                 i++;
-                balance = balance.subtract(orderQty);
+                balance = balance.subtract(askOrderQty);
             }
         }
 
-        var onePlusFee = BigDecimal.valueOf(1 + FEE_PERCENT.doubleValue() / 100);
-        var bidOrderQty = onePlusFee
-                .multiply(orderQty)
-                .setScale(basePrecisionScale, RoundingMode.CEILING);
-        System.out.println("ask orderQty = " + orderQty + ", bid orderQty = " + bidOrderQty);
+        var oneMinusFee = BigDecimal.valueOf(1 - FEE_PERCENT.doubleValue() / 100);
+        var bidOrderQty = askOrderQty
+                .divide(oneMinusFee, basePrecisionScale, RoundingMode.CEILING);
+        System.out.println("ask orderQty = " + askOrderQty + ", bid orderQty = " + bidOrderQty);
+
+        var minGridHeight = MAX_PRICE
+                .multiply(bidOrderQty
+                        .divide(askOrderQty, 10, RoundingMode.HALF_UP)
+                        .divide(oneMinusFee, 10, RoundingMode.HALF_UP)
+                        .subtract(BigDecimal.ONE))
+                .setScale(tickScale, RoundingMode.CEILING);
+        System.out.println("minGridHeight = " + minGridHeight);
+        if (GRID_HEIGHT.compareTo(minGridHeight) <= 0) {
+            System.err.println("+++++++++++++WARNING!++++++++++++++++ " +
+                    "GRID_HEIGHT %s is less than Minimum profitable grid height %s".formatted(GRID_HEIGHT, minGridHeight));
+        }
 
         var resultBidPrices = new ArrayList<BigDecimal>();
         if (!bidOrderPrices.isEmpty()) {
@@ -147,7 +158,7 @@ public class Main {
         }
         System.out.println("resultAskPrices = " + resultAskPrices);
         System.out.println("resultBidPrices = " + resultBidPrices);
-        var askOrders = prepareAskOrders(resultAskPrices, orderQty);
+        var askOrders = prepareAskOrders(resultAskPrices, askOrderQty);
         var bidOrders = prepareBidOrders(resultBidPrices, bidOrderQty);
         var allOrders = new ArrayList<TradeOrderRequest>();
         allOrders.addAll(askOrders);
@@ -163,10 +174,7 @@ public class Main {
                 })
                 .toList();
 //        allOrdersSortedFiltered.forEach(System.out::println);
-        placeBatchOrders(allOrdersSortedFiltered, tradeClient);
-
-//        placeBatchOrders(askOrders, tradeClient);
-//        placeBatchOrders(bidOrders, tradeClient);
+//        placeBatchOrders(allOrdersSortedFiltered, tradeClient);
 
     }
 
