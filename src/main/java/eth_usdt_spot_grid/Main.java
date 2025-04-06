@@ -106,7 +106,7 @@ public class Main {
 //                .orElse(lowestAskPrice.subtract(GRID_HEIGHT));
         var askOrderPrices = calcAskOrderPrices(lowestAskPrice);
 
-//        cancelAllOrders(tradeClient); // first for equity estimation
+        cancelAllOrders(tradeClient); // first for equity estimation
 
         var walletBalance = getWalletBalance(accountClient);
 
@@ -174,7 +174,7 @@ public class Main {
                 })
                 .toList();
 //        allOrdersSortedFiltered.forEach(System.out::println);
-//        placeBatchOrders(allOrdersSortedFiltered, tradeClient);
+        placeBatchOrders(allOrdersSortedFiltered, tradeClient);
 
     }
 
@@ -260,9 +260,9 @@ public class Main {
                         .orderType(TradeOrderType.LIMIT)
                         .price(price.toString())
                         .qty(size.toString())
-                        .tpLimitPrice(price.add(GRID_HEIGHT).toString())
+//                        .tpLimitPrice(price.add(GRID_HEIGHT).toString())
 //                        .triggerPrice(price.add(GRID_HEIGHT).toString())
-                        .tpOrderType(TradeOrderType.LIMIT)
+//                        .tpOrderType(TradeOrderType.LIMIT)
 //                        .tpslMode(TpslMode.FULL)
                         .build())
                 .toList();
@@ -272,7 +272,7 @@ public class Main {
     @NotNull
     private static List<TradeOrderRequest> prepareAskOrders(List<BigDecimal> askOrderPrices, BigDecimal size) {
         if (askOrderPrices.isEmpty()) return List.of();
-        var askOrders = askOrderPrices.stream()
+     uncomment   var askOrders = askOrderPrices.stream()
                 .map(price -> TradeOrderRequest.builder()
                         .category(CategoryType.SPOT)
                         .symbol(SYMBOL)
@@ -281,9 +281,9 @@ public class Main {
                         .orderType(TradeOrderType.LIMIT)
                         .price(price.toString())
                         .qty(size.toString())
-                        .tpLimitPrice(price.subtract(GRID_HEIGHT).toString())
+//                        .tpLimitPrice(price.subtract(GRID_HEIGHT).toString())
 //                        .triggerPrice(price.subtract(GRID_HEIGHT).toString())
-                        .tpOrderType(TradeOrderType.LIMIT)
+//                        .tpOrderType(TradeOrderType.LIMIT)
 //                        .tpslMode(TpslMode.FULL)
                         .build())
                 .toList();
