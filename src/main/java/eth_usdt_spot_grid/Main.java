@@ -272,7 +272,7 @@ public class Main {
     @NotNull
     private static List<TradeOrderRequest> prepareAskOrders(List<BigDecimal> askOrderPrices, BigDecimal size) {
         if (askOrderPrices.isEmpty()) return List.of();
-     uncomment   var askOrders = askOrderPrices.stream()
+        var askOrders = askOrderPrices.stream()
                 .map(price -> TradeOrderRequest.builder()
                         .category(CategoryType.SPOT)
                         .symbol(SYMBOL)
