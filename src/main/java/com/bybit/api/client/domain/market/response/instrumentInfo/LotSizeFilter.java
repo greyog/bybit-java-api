@@ -16,4 +16,5 @@ public class LotSizeFilter {
     private BigDecimal quotePrecision;
     private BigDecimal minOrderAmt;
     private BigDecimal maxOrderAmt;
+    private BigDecimal minNotionalValue;
 }

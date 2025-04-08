@@ -1,4 +1,4 @@
-package eth_usdt_cumulative_stop_grid;
+package random_in_trailing_stop_fut_grid;
 
 import java.util.Map;
 import java.util.function.Function;

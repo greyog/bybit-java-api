@@ -1,4 +1,4 @@
-package eth_usdt_cumulative_stop_grid;
+package random_in_trailing_stop_fut_grid;
 
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
