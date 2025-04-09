@@ -6,6 +6,7 @@ import com.bybit.api.client.domain.TradeOrderType;
 import com.bybit.api.client.domain.account.AccountType;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
 import com.bybit.api.client.domain.account.response.walletBalance.Coin;
+import com.bybit.api.client.domain.market.MarketInterval;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentEntry;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
@@ -14,7 +15,6 @@ import com.bybit.api.client.domain.trade.MarketUnit;
 import com.bybit.api.client.domain.trade.Side;
 import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
-import com.bybit.api.client.domain.trade.response.OrderEntry;
 import com.bybit.api.client.log.LogOption;
 import com.bybit.api.client.restApi.BybitApiAccountRestClient;
 import com.bybit.api.client.restApi.BybitApiMarketRestClient;
@@ -32,8 +32,8 @@ import java.util.List;
 public class Main {
 
     private static final String SYMBOL = System.getenv("SYMBOL");
-    private static final BigDecimal FEE_PERCENT = new BigDecimal(System.getenv("FEE_PERCENT"));
-//    private static final BigDecimal SL_PERCENT = new BigDecimal(System.getenv("SL_PERCENT"));
+    private static final BigDecimal FEE_PERCENT = BigDecimal.valueOf(0.036);
+    private static final BigDecimal RISK_PERCENT = BigDecimal.valueOf(1);
 //    private static final String ATR_TIMEFRAME = System.getenv("ATR_TIMEFRAME");
 //    private static final String ATR_PERIOD = System.getenv("ATR_PERIOD");
 
@@ -59,6 +59,7 @@ public class Main {
         var tickSize = instrumentInfo.getPriceFilter().getTickSize();
         int tickScale = tickSize.scale();
         System.out.println("tickSize = " + tickSize + ", tickSize.scale() = " + tickScale);
+        var quoteCoin = instrumentInfo.getQuoteCoin();
 
         var marketBestPrices = getMarketBestPrices(marketDataClient);
         var midPrice = marketBestPrices.ask1Price
@@ -80,75 +81,48 @@ public class Main {
             return;
         }
 
+        var atrPeriod = 20;
+        var atrMarketInterval = MarketInterval.ONE_MINUTE;
+        var atr = getAtr(marketDataClient, atrPeriod, atrMarketInterval, tickScale);
 
-//        var walletBalance = getWalletBalance(accountClient);
-//
-//        var askOrderQty = calcOrderQty(walletBalance, askOrderPrices, basePrecisionScale, bidOrderPrices, minOrderQty, minOrderValue);
-//
-//        var resultAskPrices = new ArrayList<BigDecimal>();
-//        if (!askOrderPrices.isEmpty()) {
-//            askOrderPrices.sort(BigDecimal::compareTo);
-//            var balance = walletBalance.baseCoinEquity;
-//            int i = 0;
-//            while (balance.compareTo(BigDecimal.ZERO) > 0 && i < askOrderPrices.size()) {
-//                resultAskPrices.add(askOrderPrices.get(i));
-//                i++;
-//                balance = balance.subtract(askOrderQty);
-//            }
-//        }
-//
-//        var oneMinusFee = BigDecimal.valueOf(1 - FEE_PERCENT.doubleValue() / 100);
-//        var bidOrderQty = askOrderQty
-//                .divide(oneMinusFee, basePrecisionScale, RoundingMode.CEILING);
-//        System.out.println("ask orderQty = " + askOrderQty + ", bid orderQty = " + bidOrderQty);
-//
-//        var minGridHeight = MAX_PRICE
-//                .multiply(bidOrderQty
-//                        .divide(askOrderQty, 10, RoundingMode.HALF_UP)
-//                        .divide(oneMinusFee, 10, RoundingMode.HALF_UP)
-//                        .subtract(BigDecimal.ONE))
-//                .setScale(tickScale, RoundingMode.CEILING);
-//        System.out.println("minGridHeight = " + minGridHeight);
-//        if (GRID_HEIGHT.compareTo(minGridHeight) <= 0) {
-//            System.err.println("+++++++++++++WARNING!++++++++++++++++ " +
-//                    "GRID_HEIGHT %s is less than Minimum profitable grid height %s".formatted(GRID_HEIGHT, minGridHeight));
-//        }
-//
-//        var resultBidPrices = new ArrayList<BigDecimal>();
-//        if (!bidOrderPrices.isEmpty()) {
-//            bidOrderPrices.sort(BigDecimal::compareTo);
-//            bidOrderPrices = bidOrderPrices.reversed();
-//            var balance = walletBalance.quoteCoinEquity;
-//            int i = 0;
-//            while (balance.compareTo(BigDecimal.ZERO) > 0 && i < bidOrderPrices.size()) {
-//                var price = bidOrderPrices.get(i);
-//                resultBidPrices.add(price);
-//                i++;
-//                var orderValue = bidOrderQty
-//                        .multiply(price);
-//                balance = balance.subtract(orderValue);
-//            }
-//        }
-//        System.out.println("resultAskPrices = " + resultAskPrices);
-//        System.out.println("resultBidPrices = " + resultBidPrices);
-//        var askOrders = prepareAskOrders(resultAskPrices, askOrderQty);
-//        var bidOrders = prepareBidOrders(resultBidPrices, bidOrderQty);
-//        var allOrders = new ArrayList<TradeOrderRequest>();
-//        allOrders.addAll(askOrders);
-//        allOrders.addAll(bidOrders);
-//        var midPrice = lowestAskPrice.add(highestBidPrice).divide(BigDecimal.TWO, tickScale, RoundingMode.HALF_UP);
-//        var allOrdersSortedFiltered = allOrders.stream()
-//                .sorted((o1, o2) -> {
-//                    var o1Price = new BigDecimal(o1.getPrice());
-//                    var o2Price = new BigDecimal(o2.getPrice());
-//                    var o1Offset = midPrice.subtract(o1Price).abs();
-//                    var o2Offset = midPrice.subtract(o2Price).abs();
-//                    return o1Offset.compareTo(o2Offset);
-//                })
-//                .toList();
-////        allOrdersSortedFiltered.forEach(System.out::println);
-//        placeBatchOrders(allOrdersSortedFiltered, tradeClient);
+        var walletBalance = getWalletBalance(accountClient, quoteCoin);
+        var riskValue = walletBalance.multiply(BigDecimal.valueOf(RISK_PERCENT.doubleValue() / 100));
+        var qtyByAtr = riskValue.divide(atr, tickScale, RoundingMode.FLOOR);
+        System.out.println("qtyByAtr = " + qtyByAtr);
 
+        var qty = qtyByAtr.max(minOrderQtyByInstrumentParams);
+
+        var side = Math.random() > 0.5 ? Side.SELL : Side.BUY;
+
+        var orderRequest = TradeOrderRequest.builder()
+                        .category(CATEGORY)
+                        .symbol(SYMBOL)
+                        .side(side)
+                        .orderType(TradeOrderType.MARKET)
+                        .qty(qty.toString())
+                        .build();
+        placeBatchOrders(List.of(orderRequest), tradeClient);
+        // todo trailing stop on atr
+    }
+
+    @NotNull
+    private static BigDecimal getAtr(BybitApiMarketRestClient marketDataClient, int atrPeriod, MarketInterval marketInterval, int tickScale) {
+        var marketDataRequest = MarketDataRequest.builder()
+                .category(CATEGORY)
+                .symbol(SYMBOL)
+                .marketInterval(marketInterval)
+                .limit(atrPeriod)
+                .build();
+        var marketLinesData = marketDataClient.getMarketLinesData(marketDataRequest);
+        ResponseValidator.checkResult(marketLinesData);
+        var atr = marketLinesData.getResult().getMarketKlineEntries().stream()
+                .map(e -> e.getHighPrice().subtract(e.getLowPrice()).abs())
+                .reduce(BigDecimal::add)
+                .orElseThrow()
+                .divide(BigDecimal.valueOf(marketLinesData.getResult().getMarketKlineEntries().size()),
+                        tickScale, RoundingMode.HALF_UP);
+        System.out.println("ATR = " + atr);
+        return atr;
     }
 
     @NotNull
@@ -196,26 +170,21 @@ public class Main {
         return askSize.min(bidSize);
     }
 
-//    @NotNull
-//    private static WalletBalance getWalletBalance(BybitApiAccountRestClient accountClient) {
-//        var walletBalance = accountClient.getWalletBalance(AccountDataRequest.builder()
-//                .accountType(AccountType.UNIFIED)
-//                .coins(String.join(",", QUOTE_COIN))
-//                .build());
-//        ResponseValidator.checkResult(walletBalance);
-//        var baseCoinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
-//                .filter(coin -> BASE_COIN.equals(coin.getCoin()))
-//                .findFirst()
-//                .map(Coin::getEquity)
-//                .orElseThrow(() -> new IllegalStateException("%s not found".formatted(BASE_COIN)));
-//        var quoteCoinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
-//                .filter(coin -> QUOTE_COIN.equals(coin.getCoin()))
-//                .findFirst()
-//                .map(Coin::getEquity)
-//                .orElseThrow(() -> new IllegalStateException("%s not found".formatted(QUOTE_COIN)));
-//        System.out.printf("baseCoinEquity = %s %s; quoteCoinEquity = %s %s%n", baseCoinEquity, BASE_COIN, quoteCoinEquity, QUOTE_COIN);
-//        return new WalletBalance(baseCoinEquity, quoteCoinEquity);
-//    }
+    @NotNull
+    private static BigDecimal getWalletBalance(BybitApiAccountRestClient accountClient, String coin) {
+        var walletBalance = accountClient.getWalletBalance(AccountDataRequest.builder()
+                .accountType(AccountType.UNIFIED)
+                .coins(coin)
+                .build());
+        ResponseValidator.checkResult(walletBalance);
+        var quoteCoinEquity = walletBalance.getResult().getTickerEntries().getFirst().getCoin().stream()
+                .filter(c -> coin.equals(c.getCoin()))
+                .findFirst()
+                .map(Coin::getWalletBalance)
+                .orElseThrow(() -> new IllegalStateException("%s not found".formatted(coin)));
+        System.out.printf("quote WalletBalance = %s %s%n", quoteCoinEquity, coin);
+        return quoteCoinEquity;
+    }
 
     private record WalletBalance(BigDecimal baseCoinEquity, BigDecimal quoteCoinEquity) {
     }

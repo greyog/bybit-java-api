@@ -5,16 +5,18 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.math.BigDecimal;
+
 @Getter
 @JsonFormat(shape = JsonFormat.Shape.ARRAY)
 public class MarketKlineEntry {
     private long startTime;
-    private String openPrice;
-    private String highPrice;
-    private String lowPrice;
-    private String closePrice;
-    private String volume;
-    private String turnover;
+    private BigDecimal openPrice;
+    private BigDecimal highPrice;
+    private BigDecimal lowPrice;
+    private BigDecimal closePrice;
+    private BigDecimal volume;
+    private BigDecimal turnover;
 
     @Override
     public String toString() {

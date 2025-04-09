@@ -13,6 +13,7 @@ import com.bybit.api.client.domain.loan.request.CryptoLoanAdjustLtvRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanBorrowRequest;
 import com.bybit.api.client.domain.loan.request.CryptoLoanRepayRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
+import com.bybit.api.client.domain.market.response.kline.MarketKlineResult;
 import com.bybit.api.client.domain.market.response.orderbook.OrderbookResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.account.response.walletBalance.WalletBalanceResult;
@@ -84,12 +85,12 @@ public interface BybitApiService {
      * * &gt; list[6]: turnover	string	Turnover. Unit of figure: quantity of quota coin
      */
     @GET("/v5/market/kline")
-    Call<Object> getMarketLinesData(@Query("category") String category,
-                                    @Query("symbol") String symbol,
-                                    @Query("interval") String interval,
-                                    @Query("start") Long start,
-                                    @Query("end") Long end,
-                                    @Query("limit") Integer limit);
+    Call<GenericResponse<MarketKlineResult>> getMarketLinesData(@Query("category") String category,
+                                                                @Query("symbol") String symbol,
+                                                                @Query("interval") String interval,
+                                                                @Query("start") Long start,
+                                                                @Query("end") Long end,
+                                                                @Query("limit") Integer limit);
 
     /**
      * Query for historical mark price klines. Charts are returned in groups based on the requested interval.

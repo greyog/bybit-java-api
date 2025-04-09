@@ -1,5 +1,6 @@
 package com.bybit.api.client.domain.market.response.kline;
 
+import com.bybit.api.client.domain.CategoryType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -15,7 +16,7 @@ import java.util.List;
 @Getter
 public class MarketKlineResult {
     @JsonProperty("category")
-    private String category;
+    private CategoryType category;
     @JsonProperty("symbol")
     private String symbol;
     @JsonProperty("list")

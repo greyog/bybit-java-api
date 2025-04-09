@@ -4,6 +4,7 @@ import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.announcement.request.AnnouncementInfoRequest;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
+import com.bybit.api.client.domain.market.response.kline.MarketKlineResult;
 import com.bybit.api.client.domain.market.response.orderbook.OrderbookResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.market.response.tickers.TickersResult;
@@ -11,7 +12,7 @@ import com.bybit.api.client.domain.market.response.tickers.TickersResult;
 public interface BybitApiAsyncMarketDataRestClient {
     // Market endpoints
     void getServerTime(BybitApiCallback<GenericResponse<ServerTimeResult>> callback);
-    void getMarketLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);
+    void getMarketLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<GenericResponse<MarketKlineResult>> callback);
     void getMarketPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);
     void getIndexPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);
     void getPremiumIndexPriceLinesData(MarketDataRequest marketKlineRequest, BybitApiCallback<Object> callback);

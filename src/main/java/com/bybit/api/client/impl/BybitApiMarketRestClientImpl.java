@@ -2,6 +2,7 @@ package com.bybit.api.client.impl;
 
 import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentInfoResult;
+import com.bybit.api.client.domain.market.response.kline.MarketKlineResult;
 import com.bybit.api.client.domain.market.response.orderbook.OrderbookResult;
 import com.bybit.api.client.domain.market.response.serverTime.ServerTimeResult;
 import com.bybit.api.client.domain.market.response.tickers.TickersResult;
@@ -40,7 +41,7 @@ public class BybitApiMarketRestClientImpl implements BybitApiMarketRestClient {
     }
 
     @Override
-    public Object getMarketLinesData(MarketDataRequest marketKlineRequest) {
+    public GenericResponse<MarketKlineResult> getMarketLinesData(MarketDataRequest marketKlineRequest) {
         return executeSync(
                 bybitApiService.getMarketLinesData(
                         marketKlineRequest.getCategory().getCategoryTypeId(),
