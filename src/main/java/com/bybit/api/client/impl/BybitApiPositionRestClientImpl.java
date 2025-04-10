@@ -65,7 +65,7 @@ public class BybitApiPositionRestClientImpl implements BybitApiPositionRestClien
     }
 
     @Override
-    public GenericResponse<?> setTradingStop(PositionDataRequest positionDataRequest) {
+    public GenericResponse<Object> setTradingStop(PositionDataRequest positionDataRequest) {
         var tradingStopRequest = converter.mapToTradingStopRequest(positionDataRequest);
         return executeSync(bybitApiService.setTradingStop(tradingStopRequest));
     }

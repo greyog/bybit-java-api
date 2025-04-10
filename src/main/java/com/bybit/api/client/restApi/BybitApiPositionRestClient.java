@@ -15,7 +15,7 @@ public interface BybitApiPositionRestClient {
     Object setTpslMode(PositionDataRequest setTpSlModeRequest);
     @Deprecated
     Object setRiskLimit(PositionDataRequest setRiskLimitRequest);
-    GenericResponse<?> setTradingStop(PositionDataRequest tradingStopRequest);
+    GenericResponse<Object> setTradingStop(PositionDataRequest tradingStopRequest);
     Object setAutoAddMargin(PositionDataRequest setAutoAddMarginRequest);
     Object modifyPositionMargin(PositionDataRequest modifyMarginRequest);
     Object getClosePnlList(PositionDataRequest closePnlHistoryRequest);

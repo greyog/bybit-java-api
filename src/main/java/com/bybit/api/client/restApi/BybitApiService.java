@@ -2300,7 +2300,7 @@ public interface BybitApiService {
      */
     @Headers(BybitApiConstants.ENDPOINT_SECURITY_TYPE_SIGNED_HEADER)
     @POST("/v5/position/trading-stop")
-    Call<GenericResponse<?>> setTradingStop(
+    Call<GenericResponse<Object>> setTradingStop(
             @Body TradingStopRequest tradingStopRequest);
 
     /**
