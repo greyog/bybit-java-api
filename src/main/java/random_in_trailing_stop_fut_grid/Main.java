@@ -2,6 +2,7 @@ package random_in_trailing_stop_fut_grid;
 
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
+import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.TradeOrderType;
 import com.bybit.api.client.domain.account.AccountType;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
@@ -10,8 +11,10 @@ import com.bybit.api.client.domain.market.MarketInterval;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentEntry;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
+import com.bybit.api.client.domain.position.request.TradingStopRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
 import com.bybit.api.client.domain.trade.MarketUnit;
+import com.bybit.api.client.domain.trade.PositionIdx;
 import com.bybit.api.client.domain.trade.Side;
 import com.bybit.api.client.domain.trade.request.BatchOrderRequest;
 import com.bybit.api.client.domain.trade.request.TradeOrderRequest;
@@ -53,6 +56,17 @@ public class Main {
         var accountClient = factory.newAccountRestClient();
         var positionRestClient = factory.newPositionRestClient();
 
+        var futuresPositions = getPositions(positionRestClient, SYMBOL);
+        printPositions(futuresPositions);
+        var position = futuresPositions.stream()
+                .filter(p -> p.getSide() != null)
+                .filter(p -> p.getSize().compareTo(BigDecimal.ZERO) != 0)
+                .findFirst();
+        if (position.isPresent()) {
+            System.out.println("Position exists. Nothing to do");
+            return;
+        }
+
         var instrumentInfo = getInstrumentInfo(marketDataClient);
         var minOrderValue = instrumentInfo.getLotSizeFilter().getMinNotionalValue();
         var minOrderQty = instrumentInfo.getLotSizeFilter().getMinOrderQty();
@@ -69,17 +83,6 @@ public class Main {
                 .divide(midPrice, minOrderQty.scale(), RoundingMode.CEILING);
         var minOrderQtyByInstrumentParams = minOrderQty.max(minOrderQtyByMinNotionalValue);
         System.out.println("minOrderQtyByInstrumentParams = " + minOrderQtyByInstrumentParams);
-
-        var futuresPositions = getPositions(positionRestClient, SYMBOL);
-        printPositions(futuresPositions);
-        var position = futuresPositions.stream()
-                .filter(p -> p.getSide() != null)
-                .filter(p -> p.getSize().compareTo(BigDecimal.ZERO) != 0)
-                .findFirst();
-        if (position.isPresent()) {
-            System.out.println("Position exists. Nothing to do");
-            return;
-        }
 
         var atrPeriod = 20;
         var atrMarketInterval = MarketInterval.ONE_MINUTE;
@@ -102,7 +105,39 @@ public class Main {
                         .qty(qty.toString())
                         .build();
         placeBatchOrders(List.of(orderRequest), tradeClient);
-        // todo trailing stop on atr
+
+        var slSetError = false;
+        try {
+            var tradingStopRequest = PositionDataRequest.builder()
+                    .category(CATEGORY)
+                    .symbol(SYMBOL)
+                    .trailingStop(atr.toString())
+                    .positionIdx(PositionIdx.ONE_WAY_MODE)
+                    .build();
+            var result = positionRestClient.setTradingStop(tradingStopRequest);
+            if (!ResponseValidator.checkResult(result)) {
+                slSetError = true;
+            }
+        } catch (Exception e) {
+            System.err.println("SL set error: " + e.getLocalizedMessage());
+            slSetError = true;
+        }
+        if (slSetError) {
+            System.out.println("Setting Stop Loss has error. Now will close position.");
+            var closeSide = switch (side) {
+                case SELL -> Side.BUY;
+                case BUY -> Side.SELL;
+            };
+            var closePositionRequest = TradeOrderRequest.builder()
+                    .category(CATEGORY)
+                    .symbol(SYMBOL)
+                    .side(closeSide)
+                    .orderType(TradeOrderType.MARKET)
+                    .qty(qty.toString())
+                    .reduceOnly(true)
+                    .build();
+            placeBatchOrders(List.of(closePositionRequest), tradeClient);
+        }
     }
 
     @NotNull

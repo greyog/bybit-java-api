@@ -15,7 +15,7 @@ public interface BybitApiAsyncPositionRestClient {
     void setTpslMode(PositionDataRequest setTpSlModeRequest, BybitApiCallback<Object> callback);
     @Deprecated
     void setRiskLimit(PositionDataRequest setRiskLimitRequest, BybitApiCallback<Object> callback);
-    void setTradingStop(PositionDataRequest tradingStopRequest, BybitApiCallback<Object> callback);
+    void setTradingStop(PositionDataRequest tradingStopRequest, BybitApiCallback<GenericResponse<?>> callback);
     void setAutoAddMargin(PositionDataRequest setAutoAddMarginRequest, BybitApiCallback<Object> callback);
     void modifyPositionMargin(PositionDataRequest modifyMarginRequest, BybitApiCallback<Object> callback);
     void getClosePnlList(PositionDataRequest closePnlHistoryRequest, BybitApiCallback<Object> callback);

@@ -69,7 +69,7 @@ public class BybitApiAsyncPositionRestClientImpl implements BybitApiAsyncPositio
     }
 
     @Override
-    public void setTradingStop(PositionDataRequest positionDataRequest, BybitApiCallback<Object> callback) {
+    public void setTradingStop(PositionDataRequest positionDataRequest, BybitApiCallback<GenericResponse<?>> callback) {
         var tradingStopRequest = converter.mapToTradingStopRequest(positionDataRequest);
         bybitApiService.setTradingStop(tradingStopRequest).enqueue(new BybitApiCallbackAdapter<>(callback));
     }
