@@ -1,8 +1,7 @@
-package random_in_trailing_stop_fut_grid;
+package eth_btc_stat_arb;
 
 import com.bybit.api.client.config.BybitApiConfig;
 import com.bybit.api.client.domain.CategoryType;
-import com.bybit.api.client.domain.GenericResponse;
 import com.bybit.api.client.domain.TradeOrderType;
 import com.bybit.api.client.domain.account.AccountType;
 import com.bybit.api.client.domain.account.request.AccountDataRequest;
@@ -10,8 +9,8 @@ import com.bybit.api.client.domain.account.response.walletBalance.Coin;
 import com.bybit.api.client.domain.market.MarketInterval;
 import com.bybit.api.client.domain.market.request.MarketDataRequest;
 import com.bybit.api.client.domain.market.response.instrumentInfo.InstrumentEntry;
+import com.bybit.api.client.domain.market.response.tickers.TickerEntry;
 import com.bybit.api.client.domain.position.request.PositionDataRequest;
-import com.bybit.api.client.domain.position.request.TradingStopRequest;
 import com.bybit.api.client.domain.position.response.PositionEntry;
 import com.bybit.api.client.domain.trade.MarketUnit;
 import com.bybit.api.client.domain.trade.PositionIdx;
@@ -31,16 +30,25 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
 
-   private static final String SYMBOL = System.getenv("SYMBOL");
+    private static final String BASE_COIN = System.getenv("BASE_COIN");
+    private static final String QUOTE_COIN = System.getenv("QUOTE_COIN");
+    private static final String SYMBOL = System.getenv("SYMBOL");
     private static final BigDecimal FEE_PERCENT = BigDecimal.valueOf(0.036);
     private static final BigDecimal RISK_PERCENT = BigDecimal.valueOf(0.5);
 //    private static final String ATR_TIMEFRAME = System.getenv("ATR_TIMEFRAME");
 //    private static final String ATR_PERIOD = System.getenv("ATR_PERIOD");
 
     private static final CategoryType CATEGORY = CategoryType.LINEAR;
+    private static final String STABLE = "USDT";
+    private static final String BASE2STABLE = BASE_COIN + STABLE;
+    private static final String QUOTE2STABLE = QUOTE_COIN + STABLE;
+    private static final String BASE2QUOTE = BASE_COIN + QUOTE_COIN;
 
 
     public static void main(String[] args) {
@@ -56,29 +64,50 @@ public class Main {
         var accountClient = factory.newAccountRestClient();
         var positionRestClient = factory.newPositionRestClient();
 
-        var futuresPositions = getPositions(positionRestClient, SYMBOL);
-        printPositions(futuresPositions);
-        var position = futuresPositions.stream()
-                .filter(p -> p.getSide() != null)
-                .filter(p -> p.getSize().compareTo(BigDecimal.ZERO) != 0)
-                .findFirst();
-        if (position.isPresent()) {
-            System.out.println("Position exists. Nothing to do");
-            return;
-        }
+//        var futuresPositions = getPositions(positionRestClient, SYMBOL);
+//        printPositions(futuresPositions);
+//        var position = futuresPositions.stream()
+//                .filter(p -> p.getSide() != null)
+//                .filter(p -> p.getSize().compareTo(BigDecimal.ZERO) != 0)
+//                .findFirst();
+//        if (position.isPresent()) {
+//            System.out.println("Position exists. Nothing to do");
+//            return;
+//        }
 
-        var instrumentInfo = getInstrumentInfo(marketDataClient);
-        var minOrderValue = instrumentInfo.getLotSizeFilter().getMinNotionalValue();
-        var minOrderQty = instrumentInfo.getLotSizeFilter().getMinOrderQty();
-        var tickSize = instrumentInfo.getPriceFilter().getTickSize();
-        int tickScale = tickSize.scale();
-        System.out.println("tickSize = " + tickSize + ", tickSize.scale() = " + tickScale);
-        var quoteCoin = instrumentInfo.getQuoteCoin();
+        var instrumentsInfoBase2Stable = getInstrumentInfo(marketDataClient, CategoryType.LINEAR,
+                BASE2STABLE);
+        var instrumentsInfoQuote2Stable = getInstrumentInfo(marketDataClient, CategoryType.LINEAR,
+                QUOTE2STABLE);
+        var instrumentsInfoBase2Quote = getInstrumentInfo(marketDataClient, CategoryType.SPOT,
+                BASE2QUOTE);
 
-        var marketBestPrices = getMarketBestPrices(marketDataClient);
-        var midPrice = marketBestPrices.ask1Price
-                .add(marketBestPrices.bid1Price)
-                .divide(BigDecimal.TWO, tickScale, RoundingMode.HALF_UP);
+        Map<String, Integer> symbolTickScale = Stream.of(instrumentsInfoBase2Stable,
+                        instrumentsInfoQuote2Stable,
+                        instrumentsInfoBase2Quote)
+                .collect(Collectors.toMap(InstrumentEntry::getSymbol, instrumentEntry -> {
+                    var tickSize = instrumentEntry.getPriceFilter().getTickSize();
+                    return tickSize.scale();
+                }));
+
+        var minOrderValue = BigDecimal.ONE; // instrumentInfo.getLotSizeFilter().getMinNotionalValue();
+        var minOrderQty =  BigDecimal.ONE; // instrumentInfo.getLotSizeFilter().getMinOrderQty();
+
+        System.out.println("symbolTickScale = " + symbolTickScale);
+        var quoteCoin = QUOTE_COIN; //instrumentInfo.getQuoteCoin();
+        var tickScale =1;
+
+        var marketMidPriceBs = getMarketMidPrice(marketDataClient, CategoryType.LINEAR, BASE2STABLE);
+        var marketMidPriceQs = getMarketMidPrice(marketDataClient, CategoryType.LINEAR, QUOTE2STABLE);
+        var marketMidPriceBq = getMarketMidPrice(marketDataClient, CategoryType.SPOT, BASE2QUOTE);
+        var marketMidPrices = Map.of(BASE2STABLE, marketMidPriceBs,
+                QUOTE2STABLE, marketMidPriceQs,
+                BASE2QUOTE, marketMidPriceBq
+                );
+        System.out.println("marketMidPrices = " + marketMidPrices);
+        var midPrice = BigDecimal.ONE; // marketBestPrices.ask1Price
+//                .add(marketBestPrices.bid1Price)
+//                .divide(BigDecimal.TWO, tickScale, RoundingMode.HALF_UP);
         var minOrderQtyByMinNotionalValue = minOrderValue
                 .divide(midPrice, minOrderQty.scale(), RoundingMode.CEILING);
         var minOrderQtyByInstrumentParams = minOrderQty.max(minOrderQtyByMinNotionalValue);
@@ -98,12 +127,12 @@ public class Main {
         var side = Math.random() > 0.5 ? Side.SELL : Side.BUY;
 
         var orderRequest = TradeOrderRequest.builder()
-                        .category(CATEGORY)
-                        .symbol(SYMBOL)
-                        .side(side)
-                        .orderType(TradeOrderType.MARKET)
-                        .qty(qty.toString())
-                        .build();
+                .category(CATEGORY)
+                .symbol(SYMBOL)
+                .side(side)
+                .orderType(TradeOrderType.MARKET)
+                .qty(qty.toString())
+                .build();
         placeBatchOrders(List.of(orderRequest), tradeClient);
 
         var slSetError = false;
@@ -247,32 +276,34 @@ public class Main {
     }
 
     @NotNull
-    private static MarketBestPrices getMarketBestPrices(BybitApiMarketRestClient marketDataClient) {
+    private static BigDecimal getMarketMidPrice(BybitApiMarketRestClient marketDataClient,
+                                                             CategoryType category, String symbol) {
         var marketDataRequest = MarketDataRequest.builder()
-                .category(CATEGORY)
-                .symbol(SYMBOL)
+                .category(category)
+                .symbol(symbol)
                 .build();
         var marketTickers = marketDataClient.getMarketTickers(marketDataRequest);
         ResponseValidator.checkResult(marketTickers);
-        var bid1Price = marketTickers.getResult().getTickerEntries().getFirst().getBid1Price();
-        var ask1Price = marketTickers.getResult().getTickerEntries().getFirst().getAsk1Price();
-        System.out.printf("ask1Price = %s, bid1Price = %s%n", ask1Price, bid1Price);
-        MarketBestPrices result = new MarketBestPrices(bid1Price, ask1Price);
+        var tickerEntry = marketTickers.getResult().getTickerEntries().getFirst();
+        var result = tickerEntry.getBid1Price()
+                .add(tickerEntry.getAsk1Price())
+                .multiply(BigDecimal.valueOf(0.5));
+//        System.out.printf("MarketMidPrices = %s", map);
         return result;
     }
 
     private record MarketBestPrices(BigDecimal bid1Price, BigDecimal ask1Price) {
     }
 
-    public static InstrumentEntry getInstrumentInfo(BybitApiMarketRestClient marketDataClient) {
+    public static InstrumentEntry getInstrumentInfo(BybitApiMarketRestClient marketDataClient,
+                                                    CategoryType category, String symbol) {
         var instrumentInfoRequest = MarketDataRequest.builder()
-                .category(CATEGORY)
-                .symbol(SYMBOL)
+                .category(category)
+                .symbol(symbol)
                 .build();
         var instrumentsInfoResponse = marketDataClient.getInstrumentsInfo(instrumentInfoRequest);
         ResponseValidator.checkResult(instrumentsInfoResponse);
-        System.out.println(instrumentsInfoResponse.getResult().toString());
-
+//        System.out.println(instrumentsInfoResponse.getResult().toString());
         return instrumentsInfoResponse.getResult().getInstrumentEntries().getFirst();
     }
 
